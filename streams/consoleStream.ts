@@ -24,7 +24,7 @@ export class ConsoleStream extends BaseStream<string> {
     this.#colorRules.set(Level.CRITICAL, (msg: string) => bold(red(msg)));
   }
 
-  async setup():Promise<void> {}
+  async setup(): Promise<void> {}
   async destroy(): Promise<void> {}
 
   getDefaultFormatFunction(): FormatterFunction<string> {
@@ -32,12 +32,12 @@ export class ConsoleStream extends BaseStream<string> {
       // TODO - break dependency on Deno here.
       let msg = Deno.inspect(logRecord.msg);
       if (logRecord.metadata.length > 0) {
-        msg += ', ' + Deno.inspect(logRecord.metadata);
+        msg += ", " + Deno.inspect(logRecord.metadata);
       }
 
       return msg;
     };
-  };
+  }
 
   level(level: Level): ConsoleStream {
     this.minLevel = level;
@@ -57,7 +57,7 @@ export class ConsoleStream extends BaseStream<string> {
         msg = colorize(msg);
       }
     }
-    return msg;    
+    return msg;
   }
 
   log(msg: string): void {

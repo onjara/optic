@@ -11,7 +11,7 @@ export abstract class BaseStream<T> implements Stream {
     this.#formatter = this.getDefaultFormatFunction();
   }
 
-  abstract async setup():Promise<void>;
+  abstract async setup(): Promise<void>;
   abstract async destroy(): Promise<void>;
   abstract getDefaultFormatFunction(): FormatterFunction<T>;
   abstract log(msg: T): void;

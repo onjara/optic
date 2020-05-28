@@ -9,12 +9,12 @@ export class Logger {
   #streams: Stream[] = [new ConsoleStream(), new FileStream()];
   #streamAdded = false;
 
-  level(level:Level): Logger {
+  level(level: Level): Logger {
     this.#minLevel = level;
     return this;
   }
 
-  withStream(stream:Stream): Logger {
+  withStream(stream: Stream): Logger {
     if (!this.#streamAdded) {
       // remove the default console stream if adding specified ones
       this.#streams = [];
@@ -24,7 +24,11 @@ export class Logger {
     return this;
   }
 
-  private logToStreams(level: Level, msg: unknown, ...metadata:unknown[]): void {
+  private logToStreams(
+    level: Level,
+    msg: unknown,
+    ...metadata: unknown[]
+  ): void {
     if (this.#minLevel > level) return;
 
     const logRecord = new LogRecord(msg, metadata, level);
@@ -33,23 +37,23 @@ export class Logger {
     });
   }
 
-  debug(msg: unknown, ...metadata:unknown[]) {
+  debug(msg: unknown, ...metadata: unknown[]) {
     this.logToStreams(Level.DEBUG, msg, metadata);
   }
 
-  info(msg: unknown, ...metadata:unknown[]) {
+  info(msg: unknown, ...metadata: unknown[]) {
     this.logToStreams(Level.INFO, msg, metadata);
   }
 
-  warning(msg: unknown, ...metadata:unknown[]) {
+  warning(msg: unknown, ...metadata: unknown[]) {
     this.logToStreams(Level.WARNING, msg, metadata);
   }
 
-  error(msg: unknown, ...metadata:unknown[]) {
+  error(msg: unknown, ...metadata: unknown[]) {
     this.logToStreams(Level.ERROR, msg, metadata);
   }
 
-  critical(msg: unknown, ...metadata:unknown[]) {
+  critical(msg: unknown, ...metadata: unknown[]) {
     this.logToStreams(Level.CRITICAL, msg, metadata);
   }
 
