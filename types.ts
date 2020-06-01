@@ -4,6 +4,10 @@ export interface Stream {
   handle(logRecord: LogRecord): void;
 }
 
+export interface Formatter<T> {
+  format(logRecord: LogRecord): T;
+}
+
 export class LogRecord {
   readonly msg: unknown;
   #metadata: unknown[];

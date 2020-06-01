@@ -1,12 +1,10 @@
 import { Level, levelMap } from "./levels.ts";
 import { Stream, LogRecord } from "./types.ts";
 import { ConsoleStream } from "./streams/consoleStream.ts";
-import { BaseStream } from "./streams/baseStream.ts";
-import { FileStream } from "./streams/fileStream.ts";
 
 export class Logger {
   #minLevel: Level = Level.DEBUG;
-  #streams: Stream[] = [new ConsoleStream(), new FileStream()];
+  #streams: Stream[] = [new ConsoleStream()];
   #streamAdded = false;
 
   level(level: Level): Logger {
@@ -27,7 +25,7 @@ export class Logger {
   private logToStreams(
     level: Level,
     msg: unknown,
-    ...metadata: unknown[]
+    metadata: unknown[]
   ): void {
     if (this.#minLevel > level) return;
 

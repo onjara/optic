@@ -1,20 +1,17 @@
 import { Level } from "../levels.ts";
-import { LogRecord, Stream } from "../types.ts";
+import { LogRecord, Stream, Formatter } from "../types.ts";
 
-export type FormatterFunction<T> = (logRecord: LogRecord) => T;
-
-export abstract class BaseStream<T> implements Stream {
+export abstract class BaseStream implements Stream {
   minLevel = Level.DEBUG;
-  #formatter: FormatterFunction<T>;
+  formatter: Formatter<string>;
 
-  constructor() {
-    this.#formatter = this.getDefaultFormatFunction();
+  constructor(defaultFormatters: Formatter<string>) {
+    this.formatter = defaultFormatters;
   }
 
-  abstract async setup(): Promise<void>;
-  abstract async destroy(): Promise<void>;
-  abstract getDefaultFormatFunction(): FormatterFunction<T>;
-  abstract log(msg: T): void;
+  abstract setup(): void;
+  abstract destroy(): void;
+  abstract log(msg: string): void;
 
   handle(logRecord: LogRecord): void {
     if (this.minLevel > logRecord.level) return;
@@ -23,7 +20,17 @@ export abstract class BaseStream<T> implements Stream {
     return this.log(msg);
   }
 
-  format(logRecord: LogRecord): T {
-    return this.#formatter(logRecord);
+  level(level: Level): this {
+    this.minLevel = level;
+    return this;
+  }
+
+  withFormat(newFormatter: Formatter<string>): this {
+    this.formatter = newFormatter;
+    return this;
+  }
+
+  format(logRecord: LogRecord): string {
+    return this.formatter.format(logRecord);
   }
 }
