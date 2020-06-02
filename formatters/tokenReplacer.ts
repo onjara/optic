@@ -6,7 +6,7 @@ export class TokenReplacer implements Formatter<string> {
 
   #format = "{dateTime} {level} {msg} {metadata}";
   #levelPadding = 8;
-  #withColor = true;
+  #withColor = false;
 
   constructor(tokens?: string) {
     if (tokens) this.#format = tokens;
@@ -17,7 +17,7 @@ export class TokenReplacer implements Formatter<string> {
     return this;
   }
 
-  colorize(on?:boolean): TokenReplacer {
+  withColor(on?:boolean): TokenReplacer {
     if (on === undefined) this.#withColor = true;
     else this.#withColor = on;
     return this;

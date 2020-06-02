@@ -4,7 +4,7 @@ import { TokenReplacer } from "../formatters/tokenReplacer.ts";
 export class ConsoleStream extends BaseStream {
 
   constructor() {
-    super(new TokenReplacer());
+    super(new TokenReplacer().withColor());
   }
 
   setup(): void {}

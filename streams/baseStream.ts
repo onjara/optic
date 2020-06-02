@@ -9,8 +9,6 @@ export abstract class BaseStream implements Stream {
     this.formatter = defaultFormatters;
   }
 
-  abstract setup(): void;
-  abstract destroy(): void;
   abstract log(msg: string): void;
 
   handle(logRecord: LogRecord): void {

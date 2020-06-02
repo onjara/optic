@@ -1,6 +1,8 @@
 import { Level } from "./levels.ts";
 
 export interface Stream {
+  setup?(): void;
+  destroy?(): void;
   handle(logRecord: LogRecord): void;
 }
 
