@@ -23,7 +23,6 @@ const log = LogGear.newLogger()
   .addFilter((stream, logRecord) => logRecord.msg === null)
   .addStream(consoleStream)
 //.addConcern("config", Level.INFO)
-
 //.removeConcern("config")
 //.removeStream(consoleStream)
 
