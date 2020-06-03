@@ -1,6 +1,8 @@
 import { Level } from "./levels.ts";
 
 export interface Stream {
+  logHeader?(): void;
+  logFooter?(): void;
   setup?(): void;
   destroy?(): void;
   handle(logRecord: LogRecord): void;
@@ -8,6 +10,16 @@ export interface Stream {
 
 export interface Formatter<T> {
   format(logRecord: LogRecord): T;
+}
+
+export type FilterFn = (stream: Stream, logRecord: LogRecord) => boolean;
+
+export interface Filter {
+  shouldFilterOut(stream: Stream, logRecord: LogRecord): boolean;
+}
+
+export function isFilter(object: any): object is Filter {
+  return 'shouldFilterOut' in object;
 }
 
 export class LogRecord {

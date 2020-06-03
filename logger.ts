@@ -1,15 +1,17 @@
-import { Level, levelMap } from "./levels.ts";
-import { Stream, LogRecord } from "./types.ts";
+import { Level } from "./levels.ts";
+import { Stream, LogRecord, FilterFn, Filter, isFilter } from "./types.ts";
 import { ConsoleStream } from "./streams/consoleStream.ts";
 
 export class Logger {
   #minLevel: Level = Level.DEBUG;
   #streams: Stream[] = [new ConsoleStream()];
+  #filters: (Filter | FilterFn)[] = [];
   #streamAdded = false;
 
   constructor() {
     addEventListener('unload', () => {
       for (const stream of this.#streams) {
+        if (stream.logFooter) stream.logFooter();
         if (stream.destroy) stream.destroy();
       }
     });
@@ -28,6 +30,24 @@ export class Logger {
     }
     this.#streams.push(stream);
     if (stream.setup) stream.setup();
+    if (stream.logHeader) stream.logHeader();
+    return this;
+  }
+
+  removeStream(removeStream: Stream): Logger {
+    this.#streams = this.#streams.filter((stream) => stream !== removeStream);
+    if (removeStream.logFooter) removeStream.logFooter();
+    if (removeStream.destroy) removeStream.destroy();
+    return this;
+  }
+
+  addFilter(filter: Filter | FilterFn): Logger {
+    this.#filters.push(filter);
+    return this;
+  }
+
+  removeFilter(filterToRemove: Filter | FilterFn): Logger {
+    this.#filters = this.#filters.filter((filter) => filter !== filterToRemove);
     return this;
   }
 
@@ -43,7 +63,14 @@ export class Logger {
 
     const logRecord = new LogRecord(resolvedMsg, metadata, level);
     this.#streams.forEach((stream: Stream) => {
-      stream.handle(logRecord);
+      let skip = false;
+      for (let filter of this.#filters) {
+        if ((isFilter(filter) && filter.shouldFilterOut(stream, logRecord))
+              || (typeof filter === "function" && filter(stream, logRecord))) {
+          skip = true;
+        }
+      }
+      if (!skip) stream.handle(logRecord);
     });
     return resolvedMsg;
   }

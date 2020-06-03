@@ -12,24 +12,26 @@ class LogGear {
 }
 
 const consoleStream = new ConsoleStream()
-  .level(Level.DEBUG)
-  .withFormat(new TokenReplacer());
+  .minLogLevel(Level.DEBUG)
+  .withLogFooter(true)
+  .withFormat(new TokenReplacer().withColor());
 //.addConcern("config", Level.INFO)
 
 
-// const log = LogGear.logger()
-//   .level(Level.DEBUG)
-//   .addStream(consoleStream)
+const log = LogGear.newLogger()
+  .level(Level.DEBUG)
+  .addFilter((stream, logRecord) => logRecord.msg === null)
+  .addStream(consoleStream)
 //.addConcern("config", Level.INFO)
 
 //.removeConcern("config")
 //.removeStream(consoleStream)
 
-const log = LogGear.newLogger();
+//const log = LogGear.newLogger();
 const s: string = log.debug("hello world", "really!");
 const u: unknown = log.info({ a: 6, b: "hello", c: { d: 7, e: "world" } });
 const n: number = log.warning(10);
-
+//log.removeStream(consoleStream);
 const test: number | undefined = log.debug(() => 5);
 const test2: number = log.debug(5);
 
