@@ -12,14 +12,16 @@ export interface Formatter<T> {
   format(logRecord: LogRecord): T;
 }
 
+export type TriggerFn = (logRecord: LogRecord) => void;
+
+export interface Trigger {
+  check(logRecord: LogRecord): void;
+}
+
 export type FilterFn = (stream: Stream, logRecord: LogRecord) => boolean;
 
 export interface Filter {
   shouldFilterOut(stream: Stream, logRecord: LogRecord): boolean;
-}
-
-export function isFilter(object: any): object is Filter {
-  return 'shouldFilterOut' in object;
 }
 
 export class LogRecord {

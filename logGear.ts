@@ -37,6 +37,7 @@ const test2: number = log.debug(5);
 log.error(true);
 log.critical(null);
 log.log(Level.INFO, undefined);
+//log.for('config').info('hello world');
 
 // How to handle metadata?
 // Strip logger - Remove statements from source if level < XXX, safety/security/speed
