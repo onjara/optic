@@ -3,7 +3,6 @@ import { levelMap } from "../levels.ts";
 import { colorRules } from "./color.ts";
 
 export class TokenReplacer implements Formatter<string> {
-
   #format = "{dateTime} {level} {msg} {metadata}";
   #levelPadding = 8;
   #withColor = false;
@@ -12,12 +11,12 @@ export class TokenReplacer implements Formatter<string> {
     if (tokens) this.#format = tokens;
   }
 
-  levelPadding(padding:number): TokenReplacer {
+  levelPadding(padding: number): TokenReplacer {
     this.#levelPadding = padding;
     return this;
   }
 
-  withColor(on?:boolean): TokenReplacer {
+  withColor(on?: boolean): TokenReplacer {
     if (on === undefined) this.#withColor = true;
     else this.#withColor = on;
     return this;
@@ -26,21 +25,26 @@ export class TokenReplacer implements Formatter<string> {
   format(logRecord: LogRecord): string {
     let formattedMsg = this.#format.replace(/{(\S+)}/g, (match, p1): string => {
       const value = logRecord[p1 as keyof LogRecord];
-    
+
       // don't replace missing values
       if (!value) return match;
-      else if (p1 === "level") return levelMap.get(value as number)?.padEnd(this.#levelPadding, ' ') || 'UNKNOWN';
-      else if (p1 === 'metadata' && logRecord.metadata.length === 0) return '';
-      else return this.asString(value);
+      else if (
+        p1 === "level"
+      ) {
+        return levelMap.get(value as number)?.padEnd(this.#levelPadding, " ") ||
+          "UNKNOWN";
+      } else if (p1 === "metadata" && logRecord.metadata.length === 0) {
+        return "";
+      } else return this.asString(value);
     });
-    
+
     if (this.#withColor && globalThis.Deno) {
       const colorize = colorRules.get(logRecord.level);
       formattedMsg = colorize ? colorize(formattedMsg) : formattedMsg;
     }
     return formattedMsg;
   }
-  
+
   private asString(data: unknown): string {
     if (typeof data === "string") {
       return data;
@@ -64,4 +68,3 @@ export class TokenReplacer implements Formatter<string> {
     return "undefined";
   }
 }
-

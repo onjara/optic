@@ -15,8 +15,3 @@ colorRules.set(Level.INFO, (msg: string) => blue(msg));
 colorRules.set(Level.WARNING, (msg: string) => yellow(msg));
 colorRules.set(Level.ERROR, (msg: string) => red(msg));
 colorRules.set(Level.CRITICAL, (msg: string) => bold(red(msg)));
-
-// export const THEN_COLOR: FormatterFunction = (logRecord: LogRecord, ongoingMsg?: string): string => {
-//   const colorize = colorRules.get(logRecord.level);
-//   return ongoingMsg && ongoingMsg.length > 0 ? colorize!(ongoingMsg) : '';
-// };

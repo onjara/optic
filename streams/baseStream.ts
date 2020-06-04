@@ -30,12 +30,12 @@ export abstract class BaseStream implements Stream {
     return this;
   }
 
-  withLogHeader(on?:boolean): this {
+  withLogHeader(on?: boolean): this {
     this.outputHeader = (on === undefined) || on;
     return this;
   }
 
-  withLogFooter(on?:boolean): this {
+  withLogFooter(on?: boolean): this {
     this.outputFooter = (on === undefined) || on;
     return this;
   }

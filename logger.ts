@@ -1,12 +1,23 @@
 import { Level } from "./levels.ts";
-import { Stream, LogRecord, FilterFn, Filter, TriggerFn, Trigger } from "./types.ts";
+import {
+  Stream,
+  FilterFn,
+  Filter,
+  TriggerFn,
+  Trigger,
+  ImmutableLogRecord,
+  Obfuscator,
+  ObfuscatorFn,
+  LogRecord,
+} from "./types.ts";
 import { ConsoleStream } from "./streams/consoleStream.ts";
 
 export class Logger {
   #minLevel: Level = Level.DEBUG;
   #streams: Stream[] = [new ConsoleStream()];
-  #filters: (Filter | FilterFn)[] = [];
-  #triggers: (Trigger | TriggerFn)[] = [];
+  #filters: Filter[] = [];
+  #triggers: Trigger[] = [];
+  #obfuscators: Obfuscator[] = [];
   #streamAdded = false;
 
   constructor() {
@@ -43,22 +54,45 @@ export class Logger {
   }
 
   addTrigger(trigger: Trigger | TriggerFn): Logger {
+    if (typeof trigger === "function") {
+      trigger = { check: trigger };
+    }
     this.#triggers.push(trigger);
     return this;
   }
 
-  removeTrigger(triggerToRemove: Trigger | TriggerFn): Logger {
-    this.#triggers = this.#triggers.filter((trigger) => trigger !== triggerToRemove);
+  removeTrigger(triggerToRemove: Trigger): Logger {
+    this.#triggers = this.#triggers.filter((trigger) =>
+      trigger !== triggerToRemove
+    );
     return this;
   }
 
   addFilter(filter: Filter | FilterFn): Logger {
+    if (typeof filter === "function") {
+      filter = { shouldFilterOut: filter };
+    }
     this.#filters.push(filter);
     return this;
   }
 
-  removeFilter(filterToRemove: Filter | FilterFn): Logger {
+  removeFilter(filterToRemove: Filter): Logger {
     this.#filters = this.#filters.filter((filter) => filter !== filterToRemove);
+    return this;
+  }
+
+  addObfuscator(obfuscator: Obfuscator | ObfuscatorFn): Logger {
+    if (typeof obfuscator === "function") {
+      obfuscator = { obfuscate: obfuscator };
+    }
+    this.#obfuscators.push(obfuscator);
+    return this;
+  }
+
+  removeObfuscator(obfuscatorToRemove: Obfuscator): Logger {
+    this.#obfuscators = this.#obfuscators.filter((obfuscator) =>
+      obfuscator !== obfuscatorToRemove
+    );
     return this;
   }
 
@@ -72,12 +106,15 @@ export class Logger {
     }
     let resolvedMsg = msg instanceof Function ? msg() : msg;
 
-    const logRecord = new LogRecord(resolvedMsg, metadata, level);
+    let logRecord: LogRecord = new ImmutableLogRecord(
+      resolvedMsg,
+      metadata,
+      level,
+    );
 
     // Check triggers
-    for (let i=0; i < this.#triggers.length; i++) {
-      const trigger = this.#triggers[i];
-      typeof trigger === "function" ? trigger(logRecord) : trigger.check(logRecord);
+    for (let i = 0; i < this.#triggers.length; i++) {
+      this.#triggers[i].check(logRecord);
     }
 
     // Process streams
@@ -85,16 +122,16 @@ export class Logger {
       const stream = this.#streams[i];
       let skip = false;
 
-      // Check Filters
-      for (let j=0; j < this.#filters.length && !skip; j++) {
-        const filter = this.#filters[j];
-        if (
-          (typeof filter !== "function" &&
-            filter.shouldFilterOut(stream, logRecord)) ||
-          (typeof filter === "function" && filter(stream, logRecord))
-        ) {
+      // Apply Filters
+      for (let j = 0; j < this.#filters.length && !skip; j++) {
+        if (this.#filters[j].shouldFilterOut(stream, logRecord)) {
           skip = true;
         }
+      }
+
+      // Apply obfuscators
+      for (let j = 0; j < this.#obfuscators.length && !skip; j++) {
+        logRecord = this.#obfuscators[j].obfuscate(stream, logRecord);
       }
 
       if (!skip) stream.handle(logRecord);
