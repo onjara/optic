@@ -1,16 +1,25 @@
-import { Level } from "./levels.ts";
+import { Level, levelNameMap } from "./levels.ts";
 import {
   Stream,
   FilterFn,
   Filter,
   TriggerFn,
   Trigger,
-  ImmutableLogRecord,
   Obfuscator,
   ObfuscatorFn,
   LogRecord,
+  LogMeta,
 } from "./types.ts";
 import { ConsoleStream } from "./streams/consoleStream.ts";
+import { ImmutableLogRecord } from "./logRecord.ts";
+
+class LogMetaImpl implements LogMeta {
+  logCount: Map<Level, number> = new Map<Level, number>();
+  minLogLevel: Level = Level.DEBUG;
+  minLogLevelFrom: string = "default value";
+  readonly hostname = "unavailable";
+  unableToReadEnvVar = false;
+}
 
 export class Logger {
   #minLevel: Level = Level.DEBUG;
@@ -19,18 +28,33 @@ export class Logger {
   #triggers: Trigger[] = [];
   #obfuscators: Obfuscator[] = [];
   #streamAdded = false;
+  #meta: LogMetaImpl = new LogMetaImpl();
 
   constructor() {
     addEventListener("unload", () => {
       for (const stream of this.#streams) {
-        if (stream.logFooter) stream.logFooter();
+        if (stream.logFooter) stream.logFooter(this.#meta);
         if (stream.destroy) stream.destroy();
       }
     });
+
+    //TODO check permissions here for meta.unableToReadEnvVar
+
+    // Set min log level for logger from env variable
+    const envDefaultMinLevel = this.getEnvMinLevel();
+    if (
+      envDefaultMinLevel && levelNameMap.get(envDefaultMinLevel) !== undefined
+    ) {
+      this.#minLevel = levelNameMap.get(envDefaultMinLevel)!;
+      this.#meta.minLogLevelFrom = "environment variable";
+      this.#meta.minLogLevel = this.#minLevel;
+    }
   }
 
   level(level: Level): Logger {
     this.#minLevel = level;
+    this.#meta.minLogLevelFrom = "logger.level()";
+    this.#meta.minLogLevel = this.#minLevel;
     return this;
   }
 
@@ -42,13 +66,13 @@ export class Logger {
     }
     this.#streams.push(stream);
     if (stream.setup) stream.setup();
-    if (stream.logHeader) stream.logHeader();
+    if (stream.logHeader) stream.logHeader(this.#meta);
     return this;
   }
 
   removeStream(removeStream: Stream): Logger {
     this.#streams = this.#streams.filter((stream) => stream !== removeStream);
-    if (removeStream.logFooter) removeStream.logFooter();
+    if (removeStream.logFooter) removeStream.logFooter(this.#meta);
     if (removeStream.destroy) removeStream.destroy();
     return this;
   }
@@ -94,6 +118,15 @@ export class Logger {
       obfuscator !== obfuscatorToRemove
     );
     return this;
+  }
+
+  getEnvMinLevel(): string | undefined {
+    try {
+      return Deno.env.get("LOGGEAR_MIN_LEVEL");
+    } catch (err) {
+      this.#meta.unableToReadEnvVar = true;
+      return undefined;
+    }
   }
 
   private logToStreams<T>(

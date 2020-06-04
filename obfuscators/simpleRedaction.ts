@@ -2,8 +2,8 @@ import {
   Obfuscator,
   Stream,
   LogRecord,
-  ObfuscatedLogRecord,
 } from "../types.ts";
+import { ObfuscatedLogRecord } from "../logRecord.ts";
 
 export class SimpleRedaction implements Obfuscator {
   #redactionKey: string;
