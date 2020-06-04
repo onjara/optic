@@ -16,11 +16,6 @@ export class ConsoleStream extends BaseStream {
   logHeader(meta: LogMeta): void {
     if (!this.outputHeader) return;
 
-    if (meta.unableToReadEnvVar) {
-      console.log(
-        "Unable to read environment variables.  Use '--allow-env' permission flag to enable.",
-      );
-    }
     console.log(
       "Default min log level set at:",
       levelMap.get(meta.minLogLevel),
