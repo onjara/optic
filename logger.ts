@@ -31,24 +31,34 @@ export class Logger {
   #meta: LogMetaImpl = new LogMetaImpl();
 
   constructor() {
+    //TODO check permissions here for meta.unableToReadEnvVar once stable
+
+    const argsMinLevel = this.getArgsMinLevel();
+    if (
+      argsMinLevel !== undefined &&
+      levelNameMap.get(argsMinLevel) !== undefined
+    ) {
+      this.#minLevel = levelNameMap.get(argsMinLevel)!;
+      this.#meta.minLogLevelFrom = "command line arguments";
+      this.#meta.minLogLevel = this.#minLevel;
+    } else {
+      // Set min log level for logger from env variable
+      const envDefaultMinLevel = this.getEnvMinLevel();
+      if (
+        envDefaultMinLevel && levelNameMap.get(envDefaultMinLevel) !== undefined
+      ) {
+        this.#minLevel = levelNameMap.get(envDefaultMinLevel)!;
+        this.#meta.minLogLevelFrom = "environment variable";
+        this.#meta.minLogLevel = this.#minLevel;
+      }
+    }
+
     addEventListener("unload", () => {
       for (const stream of this.#streams) {
         if (stream.logFooter) stream.logFooter(this.#meta);
         if (stream.destroy) stream.destroy();
       }
     });
-
-    //TODO check permissions here for meta.unableToReadEnvVar
-
-    // Set min log level for logger from env variable
-    const envDefaultMinLevel = this.getEnvMinLevel();
-    if (
-      envDefaultMinLevel && levelNameMap.get(envDefaultMinLevel) !== undefined
-    ) {
-      this.#minLevel = levelNameMap.get(envDefaultMinLevel)!;
-      this.#meta.minLogLevelFrom = "environment variable";
-      this.#meta.minLogLevel = this.#minLevel;
-    }
   }
 
   level(level: Level): Logger {
@@ -118,6 +128,16 @@ export class Logger {
       obfuscator !== obfuscatorToRemove
     );
     return this;
+  }
+
+  getArgsMinLevel(): string | undefined {
+    for (let i = 0; i < Deno.args.length; i++) {
+      let arg = Deno.args[i];
+      if (arg.startsWith("minLogLevel=")) {
+        return arg.slice("minLogLevel=".length);
+      }
+    }
+    return undefined;
   }
 
   getEnvMinLevel(): string | undefined {

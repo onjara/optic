@@ -19,7 +19,7 @@ const consoleStream = new ConsoleStream()
 //.addConcern("config", Level.INFO)
 
 const log = LogGear.newLogger()
-  .level(Level.DEBUG)
+  //.level(Level.DEBUG)
   .addFilter((stream, logRecord) => logRecord.msg === null)
   .addObfuscator(new SimpleRedaction("c"))
   .addStream(consoleStream);
