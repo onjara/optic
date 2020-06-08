@@ -1,11 +1,13 @@
-import { LogRecord, Formatter } from "../types.ts";
+import { LogRecord, Formatter, DateTimeFormatterFn, DateTimeFormatter } from "../types.ts";
 import { levelMap } from "../levels.ts";
 import { colorRules } from "./color.ts";
+import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
 
 export class TokenReplacer implements Formatter<string> {
   #format = "{dateTime} {level} {msg} {metadata}";
   #levelPadding = 8;
   #withColor = false;
+  #dateTimeFormatter: DateTimeFormatter = { formatDateTime: (date: Date) => date.toISOString() };
 
   constructor(tokens?: string) {
     if (tokens) this.#format = tokens;
@@ -13,6 +15,16 @@ export class TokenReplacer implements Formatter<string> {
 
   levelPadding(padding: number): TokenReplacer {
     this.#levelPadding = padding;
+    return this;
+  }
+
+  withDateTimeFormat(dtf: DateTimeFormatterFn | DateTimeFormatter | string): TokenReplacer {
+    if (typeof dtf === "string") {
+      dtf = new SimpleDateTimeFormatter(dtf);
+    } else if (typeof dtf === "function") {
+      dtf = { formatDateTime: dtf };
+    }
+    this.#dateTimeFormatter = dtf;
     return this;
   }
 
@@ -28,7 +40,9 @@ export class TokenReplacer implements Formatter<string> {
 
       // don't replace missing values
       if (!value) return match;
-      else if (
+      else if (p1 === "dateTime") {
+        return this.#dateTimeFormatter.formatDateTime(logRecord.dateTime);
+      } else if (
         p1 === "level"
       ) {
         return levelMap.get(value as number)?.padEnd(this.#levelPadding, " ") ||

@@ -12,6 +12,12 @@ export interface Formatter<T> {
   format(logRecord: LogRecord): T;
 }
 
+export type DateTimeFormatterFn = (dateTime: Date) => string;
+
+export interface DateTimeFormatter {
+  formatDateTime: DateTimeFormatterFn;
+}
+
 export type TriggerFn = (logRecord: LogRecord) => void;
 
 export interface Trigger {
@@ -38,9 +44,8 @@ export interface LogRecord {
 }
 
 export interface LogMeta {
-  readonly logCount: Map<Level, number>;
   readonly hostname: string;
+  readonly sessionStarted: Date;
   minLogLevel: Level;
   minLogLevelFrom: string;
-  unableToReadEnvVar: boolean;
 }

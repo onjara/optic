@@ -14,11 +14,10 @@ import { ConsoleStream } from "./streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 
 class LogMetaImpl implements LogMeta {
-  logCount: Map<Level, number> = new Map<Level, number>();
   minLogLevel: Level = Level.DEBUG;
   minLogLevelFrom: string = "default value";
+  readonly sessionStarted = new Date();
   readonly hostname = "unavailable";
-  unableToReadEnvVar = false;
 }
 
 export class Logger {
@@ -33,6 +32,7 @@ export class Logger {
   constructor() {
     //TODO check permissions here for meta.unableToReadEnvVar once stable
 
+    //Check environment variable and parameters for min log level
     const argsMinLevel = this.getArgsMinLevel();
     if (
       argsMinLevel !== undefined &&
@@ -53,6 +53,7 @@ export class Logger {
       }
     }
 
+    // Append footers and destroy loggers on unload of module
     addEventListener("unload", () => {
       for (const stream of this.#streams) {
         if (stream.logFooter) stream.logFooter(this.#meta);
@@ -144,7 +145,6 @@ export class Logger {
     try {
       return Deno.env.get("LOGGEAR_MIN_LEVEL");
     } catch (err) {
-      this.#meta.unableToReadEnvVar = true;
       return undefined;
     }
   }

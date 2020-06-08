@@ -4,7 +4,6 @@ import { LogMeta } from "../types.ts";
 import { levelMap } from "../levels.ts";
 
 export class ConsoleStream extends BaseStream {
-  #started = new Date();
 
   constructor() {
     super(new TokenReplacer().withColor());
@@ -25,15 +24,17 @@ export class ConsoleStream extends BaseStream {
     console.log("Console logging initialized at", new Date().toString());
     // TODO Enable once hostname is stable
     // console.log('Running on machine:', Deno.hostname());
+    console.log("---------------------------------------------------");
   }
 
   logFooter(meta: LogMeta): void {
     if (!this.outputFooter) return;
 
+    console.log("---------------------------------------------------");
     console.log("Console logging completed at", new Date().toString());
     console.log(
       "Log session duration:",
-      (new Date().getTime() - this.#started.getTime()) + "ms",
+      (new Date().getTime() - meta.sessionStarted.getTime()) + "ms",
     );
   }
 

@@ -15,7 +15,7 @@ class LogGear {
 const consoleStream = new ConsoleStream()
   .minLogLevel(Level.DEBUG)
   .withLogFooter(true)
-  .withFormat(new TokenReplacer().withColor());
+  .withFormat(new TokenReplacer().withColor().withDateTimeFormat('YYYY.MM.DD hh:mm:ss:SSS'));
 //.addConcern("config", Level.INFO)
 
 const log = LogGear.newLogger()
