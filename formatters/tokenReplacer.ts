@@ -49,22 +49,21 @@ export class TokenReplacer implements Formatter<string> {
   }
 
   format(logRecord: LogRecord): string {
-    let formattedMsg = this.#format.replace(/{(\S+)}/g, (match, p1): string => {
-      const value = logRecord[p1 as keyof LogRecord];
-
-      // don't replace missing values
-      if (!value) return match;
-      else if (p1 === "dateTime") {
-        return this.#dateTimeFormatter.formatDateTime(logRecord.dateTime);
-      } else if (
-        p1 === "level"
-      ) {
-        return levelMap.get(value as number)?.padEnd(this.#levelPadding, " ") ||
-          "UNKNOWN";
-      } else if (p1 === "metadata" && logRecord.metadata.length === 0) {
-        return "";
-      } else return this.asString(value);
-    });
+    let formattedMsg = this.#format;
+    formattedMsg = formattedMsg.replace(
+      "{dateTime}",
+      this.#dateTimeFormatter.formatDateTime(logRecord.dateTime),
+    );
+    formattedMsg = formattedMsg.replace(
+      "{level}",
+      levelMap.get(logRecord.level)?.padEnd(this.#levelPadding, " ") ||
+        "UNKNOWN",
+    );
+    formattedMsg = formattedMsg.replace("{msg}", this.asString(logRecord.msg));
+    formattedMsg = formattedMsg.replace(
+      "{metadata}",
+      logRecord.metadata.length === 0 ? "" : this.asString(logRecord.metadata),
+    );
 
     if (this.#withColor && globalThis.Deno) {
       const colorize = colorRules.get(logRecord.level);
