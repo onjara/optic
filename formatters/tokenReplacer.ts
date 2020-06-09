@@ -9,7 +9,7 @@ import { colorRules } from "./color.ts";
 import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
 
 export class TokenReplacer implements Formatter<string> {
-  #format = "{dateTime} {level} {msg} {metadata}";
+  #formatString = "{dateTime} {level} {msg} {metadata}";
   #levelPadding = 0;
   #withColor = false;
   #dateTimeFormatter: DateTimeFormatter = {
@@ -17,7 +17,7 @@ export class TokenReplacer implements Formatter<string> {
   };
 
   constructor(tokens?: string) {
-    if (tokens) this.#format = tokens;
+    if (tokens) this.#formatString = tokens;
     for (let key of levelNameMap.keys()) {
       this.#levelPadding = key.length > this.#levelPadding
         ? key.length
@@ -25,7 +25,15 @@ export class TokenReplacer implements Formatter<string> {
     }
   }
 
-  levelPadding(padding: number): TokenReplacer {
+  get formatString(): string {
+    return this.#formatString;
+  }
+
+  get levelPadding(): number {
+    return this.#levelPadding;
+  }
+
+  withLevelPadding(padding: number): TokenReplacer {
     this.#levelPadding = padding;
     return this;
   }
@@ -49,7 +57,7 @@ export class TokenReplacer implements Formatter<string> {
   }
 
   format(logRecord: LogRecord): string {
-    let formattedMsg = this.#format;
+    let formattedMsg = this.#formatString;
     formattedMsg = formattedMsg.replace(
       "{dateTime}",
       this.#dateTimeFormatter.formatDateTime(logRecord.dateTime),
