@@ -5,6 +5,8 @@ export class SimpleDateTimeFormatter implements DateTimeFormatter {
 
   #shortDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   #longDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  #shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  #longMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   formatDateTime(dateTime: Date): string {
     let formatted = this.format;
@@ -32,11 +34,11 @@ export class SimpleDateTimeFormatter implements DateTimeFormatter {
 
     // Format milliseconds
     if (formatted.indexOf('SSS') >= 0) {
-      formatted = formatted.replace('SSS', String(dateTime.getMilliseconds()).padStart(3, '0'));
+      formatted = formatted.replace('SSS', this.toStringWithSignificantDigits(dateTime.getMilliseconds(), 3));
     } else if (formatted.indexOf('SS') >= 0) {
-      formatted = formatted.replace('SS', String(Number(dateTime.getMilliseconds().toPrecision(2))).padStart(3, '0'));
+      formatted = formatted.replace('SS', this.toStringWithSignificantDigits(dateTime.getMilliseconds(), 2));
     } else if (formatted.indexOf('S') >= 0) {
-      formatted = formatted.replace('S', String(Number(dateTime.getMilliseconds().toPrecision(1))).padStart(3, '0'));
+      formatted = formatted.replace('S', this.toStringWithSignificantDigits(dateTime.getMilliseconds(), 1));
     }
 
     // Format am/pm
@@ -52,28 +54,36 @@ export class SimpleDateTimeFormatter implements DateTimeFormatter {
     } else if (formatted.indexOf('YY') >= 0) {
       formatted = formatted.replace('YY', String(dateTime.getFullYear()).slice(2));
     }
-
-    // Format month
-    if (formatted.indexOf('MM') >= 0) {
-      formatted = formatted.replace('MM', String(dateTime.getMonth() + 1).padStart(2, '0'));
-    } else if (formatted.indexOf('M') >= 0) {
-      formatted = formatted.replace('M', String(dateTime.getMonth() + 1));
-    }
-
+    
     // Format day
     if (formatted.indexOf('DD') >= 0) {
       formatted = formatted.replace('DD', String(dateTime.getDate()).padStart(2, '0'));
     } else if (formatted.indexOf('D') >= 0) {
       formatted = formatted.replace('D', String(dateTime.getDate()));
     }
+    
+    // Format month
+    if (formatted.indexOf('MMMM') >= 0) {
+      formatted = formatted.replace('MMMM', this.#longMonths[dateTime.getMonth()]);
+    } else if (formatted.indexOf('MMM') >= 0) {
+      formatted = formatted.replace('MMM', this.#shortMonths[dateTime.getMonth()]);
+    } else if (formatted.indexOf('MM') >= 0) {
+      formatted = formatted.replace('MM', String(dateTime.getMonth() + 1).padStart(2, '0'));
+    } else if (formatted.indexOf('M') >= 0) {
+      formatted = formatted.replace('M', String(dateTime.getMonth() + 1));
+    }
 
     // Format day of week
-    if (formatted.indexOf('ddd') >= 0) {
-      formatted = formatted.replace('ddd', this.#shortDays[dateTime.getDay()]);
-    } else if (formatted.indexOf('dddd') >= 0) {
+    if (formatted.indexOf('dddd') >= 0) {
       formatted = formatted.replace('dddd', this.#longDays[dateTime.getDay()]);
+    } else if (formatted.indexOf('ddd') >= 0) {
+      formatted = formatted.replace('ddd', this.#shortDays[dateTime.getDay()]);
     }
 
     return formatted;
+  }
+
+  toStringWithSignificantDigits(milli: number, sigFig: number) {
+    return String(milli).padStart(3, '0').substr(0, sigFig);
   }
 }
