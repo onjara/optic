@@ -1,4 +1,9 @@
-import { LogRecord, Formatter, DateTimeFormatterFn, DateTimeFormatter } from "../types.ts";
+import {
+  LogRecord,
+  Formatter,
+  DateTimeFormatterFn,
+  DateTimeFormatter,
+} from "../types.ts";
 import { levelMap } from "../levels.ts";
 import { colorRules } from "./color.ts";
 import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
@@ -7,7 +12,9 @@ export class TokenReplacer implements Formatter<string> {
   #format = "{dateTime} {level} {msg} {metadata}";
   #levelPadding = 8;
   #withColor = false;
-  #dateTimeFormatter: DateTimeFormatter = { formatDateTime: (date: Date) => date.toISOString() };
+  #dateTimeFormatter: DateTimeFormatter = {
+    formatDateTime: (date: Date) => date.toISOString(),
+  };
 
   constructor(tokens?: string) {
     if (tokens) this.#format = tokens;
@@ -18,7 +25,9 @@ export class TokenReplacer implements Formatter<string> {
     return this;
   }
 
-  withDateTimeFormat(dtf: DateTimeFormatterFn | DateTimeFormatter | string): TokenReplacer {
+  withDateTimeFormat(
+    dtf: DateTimeFormatterFn | DateTimeFormatter | string,
+  ): TokenReplacer {
     if (typeof dtf === "string") {
       dtf = new SimpleDateTimeFormatter(dtf);
     } else if (typeof dtf === "function") {

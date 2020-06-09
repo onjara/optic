@@ -4,7 +4,6 @@ import { LogMeta } from "../types.ts";
 import { levelMap } from "../levels.ts";
 
 export class ConsoleStream extends BaseStream {
-
   constructor() {
     super(new TokenReplacer().withColor());
   }
