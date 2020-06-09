@@ -4,13 +4,13 @@ import {
   DateTimeFormatterFn,
   DateTimeFormatter,
 } from "../types.ts";
-import { levelMap } from "../levels.ts";
+import { levelMap, levelNameMap } from "../levels.ts";
 import { colorRules } from "./color.ts";
 import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
 
 export class TokenReplacer implements Formatter<string> {
   #format = "{dateTime} {level} {msg} {metadata}";
-  #levelPadding = 8;
+  #levelPadding = 0;
   #withColor = false;
   #dateTimeFormatter: DateTimeFormatter = {
     formatDateTime: (date: Date) => date.toISOString(),
@@ -18,6 +18,11 @@ export class TokenReplacer implements Formatter<string> {
 
   constructor(tokens?: string) {
     if (tokens) this.#format = tokens;
+    for (let key of levelNameMap.keys()) {
+      this.#levelPadding = key.length > this.#levelPadding
+        ? key.length
+        : this.#levelPadding;
+    }
   }
 
   levelPadding(padding: number): TokenReplacer {
@@ -85,6 +90,8 @@ export class TokenReplacer implements Formatter<string> {
       return "undefined";
     } else if (data instanceof Date) {
       return data.toISOString();
+    } else if (data instanceof Error) {
+      return data.stack ? data.stack : "Undefined Error";
     } else if (typeof data === "object") {
       return JSON.stringify(data);
     }
