@@ -7,6 +7,7 @@ import {
 import { levelMap, levelNameMap } from "../levels.ts";
 import { colorRules } from "./color.ts";
 import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
+import { asString } from "./asString.ts";
 
 export class TokenReplacer implements Formatter<string> {
   #formatString = "{dateTime} {level} {msg} {metadata}";
@@ -31,6 +32,10 @@ export class TokenReplacer implements Formatter<string> {
 
   get levelPadding(): number {
     return this.#levelPadding;
+  }
+
+  isColor(): boolean {
+    return this.#withColor;
   }
 
   withLevelPadding(padding: number): TokenReplacer {
@@ -67,41 +72,21 @@ export class TokenReplacer implements Formatter<string> {
       levelMap.get(logRecord.level)?.padEnd(this.#levelPadding, " ") ||
         "UNKNOWN",
     );
-    formattedMsg = formattedMsg.replace("{msg}", this.asString(logRecord.msg));
-    formattedMsg = formattedMsg.replace(
-      "{metadata}",
-      logRecord.metadata.length === 0 ? "" : this.asString(logRecord.metadata),
-    );
+    formattedMsg = formattedMsg.replace("{msg}", asString(logRecord.msg));
+
+    let metadataReplacement = "";
+    if (logRecord.metadata.length > 0) {
+      for (const metaItem of logRecord.metadata) {
+        metadataReplacement += asString(metaItem) + " ";
+      }
+      metadataReplacement = metadataReplacement.slice(0, -1);
+    }
+    formattedMsg = formattedMsg.replace("{metadata}", metadataReplacement);
 
     if (this.#withColor && globalThis.Deno) {
       const colorize = colorRules.get(logRecord.level);
       formattedMsg = colorize ? colorize(formattedMsg) : formattedMsg;
     }
     return formattedMsg;
-  }
-
-  private asString(data: unknown): string {
-    if (typeof data === "string") {
-      return data;
-    } else if (
-      data === null ||
-      typeof data === "number" ||
-      typeof data === "bigint" ||
-      typeof data === "boolean" ||
-      typeof data === "undefined"
-    ) {
-      return `${data}`;
-    } else if (typeof data === "symbol") {
-      return String(data);
-    } else if (typeof data === "function") {
-      return "undefined";
-    } else if (data instanceof Date) {
-      return data.toISOString();
-    } else if (data instanceof Error) {
-      return data.stack ? data.stack : "Undefined Error";
-    } else if (typeof data === "object") {
-      return JSON.stringify(data);
-    }
-    return "undefined";
   }
 }

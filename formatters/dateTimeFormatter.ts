@@ -1,5 +1,40 @@
 import { DateTimeFormatter } from "../types.ts";
 
+/**
+ * A simple Date/Time formatter class, partly based on moment's date formatting
+ * syntax.  This class takes as in put a string which defines the formatting of
+ * the timestamp.  E.g.
+ * ```
+ * new SimpleDateTimeFormatter('HH:mm:ss:SSS YYYY-MM-DD');
+ * ```
+ * The formatting options are as per below.  Any characters not formatted are
+ * left as is.  Tokens are case sensitive.
+ * 
+ * |Token|Example|Value|
+ * |-----|-------|-----|
+ * |`hh` |`00..23`|2 digit hours (24 hour time)|
+ * |`h`  |`0..23`|1-2 digit hours (24 hour time)|
+ * |`HH` |`01..12`|2 digit hours (12 hour time)|
+ * |`H`  |`1..12`|1-2 digit hours (12 hour time|
+ * |`a`|`am` or `pm`|am/pm for use with 12 hour time|
+ * |`A`|`AM` or `PM`|AM/PM for use with 12 hour time|
+ * |`mm` |`00..59`|minutes|
+ * |`ss`|`00..59`|seconds|
+ * |`SSS`|`000..999`|3-digit milliseconds|
+ * |`SS`|`00..99`|2-digit milliseconds|
+ * |`S`|`0..9`|1-digit milliseconds|
+ * |`YYYY`|`2020`|4 digit year|
+ * |`YY`|`20`|2 digit year|
+ * |`DD`|`00..31`|2 digit day|
+ * |`D`|`0..31`|1-2 digit day|
+ * |`MMMM`|`January`|long form month|
+ * |`MMM`|`Jan`|short form month|
+ * |`MM`|`01..12`|2 digit month|
+ * |`M`|`1..12`|1-2 digit month|
+ * |`dddd`|`Tuesday`|long form day of week|
+ * |`ddd`|`Tue`|short form day of week|
+ * 
+ */
 export class SimpleDateTimeFormatter implements DateTimeFormatter {
   constructor(private format: string) {}
 
