@@ -18,7 +18,11 @@ export function asString(data: unknown): string {
   } else if (data instanceof Error) {
     return data.stack ? data.stack : "Undefined Error";
   } else if (typeof data === "object") {
-    return JSON.stringify(data);
+    try {
+      return JSON.stringify(data);
+    } catch (err) {
+      return "[Unable to JSON.stringify()]";
+    }
   }
   return "undefined";
 }

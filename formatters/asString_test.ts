@@ -31,3 +31,13 @@ test({
     );
   },
 });
+
+test({
+  name: "Test circular reference",
+  fn() {
+    const a: { [k: string]: any } = {};
+    a.name = "hello";
+    a.circ = a;
+    assertEquals(asString(a), "[Unable to JSON.stringify()]");
+  },
+});
