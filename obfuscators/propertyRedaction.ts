@@ -50,9 +50,9 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
 
   redact(obj: unknown, property: string): void {
     if (obj && typeof obj === "object") {
-      for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          const castObj = (obj as { [key: string]: any });
+      for (let key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          const castObj = (obj as { [key: string]: unknown });
           if (key === property) {
             castObj[key] = "[Redacted]";
           } else if (typeof castObj[key] === "object") {

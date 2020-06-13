@@ -35,7 +35,7 @@ test({
 test({
   name: "Test circular reference",
   fn() {
-    const a: { [k: string]: any } = {};
+    const a: { [k: string]: unknown } = {};
     a.name = "hello";
     a.circ = a;
     assertEquals(asString(a), "[Unable to JSON.stringify()]");
