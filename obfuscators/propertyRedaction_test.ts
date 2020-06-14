@@ -1,8 +1,6 @@
 import {
   test,
   assertEquals,
-  assertMatch,
-  assert,
 } from "../test_deps.ts";
 import { Level } from "../levels.ts";
 import { PropertyRedaction } from "./propertyRedaction.ts";
@@ -33,7 +31,7 @@ test({
   fn() {
     const lr = {
       msg: { a: 6, b: "hello" },
-      metadata: ["The metadata"],
+      metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
     };
@@ -70,7 +68,7 @@ test({
   name: "Test shallow metadata object redaction",
   fn() {
     const lr = {
-      msg: "hello",
+      msg: null,
       metadata: [{ a: 6, b: true }, "The metadata", { c: "hello", d: "world" }],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
@@ -99,10 +97,10 @@ test({
 });
 
 test({
-  name: "Test deep msg object redaction",
+  name: "Test deep metadata object redaction",
   fn() {
     const lr = {
-      msg: "hello",
+      msg: undefined,
       metadata: [
         { a: { b: { c: { d: "hello" } } }, e: true },
         { a: { b: { c: { d: "hello" } } }, e: true },
