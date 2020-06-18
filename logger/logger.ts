@@ -1,4 +1,4 @@
-import { Level, levelNameMap } from "./levels.ts";
+import { Level, nameToLevel } from "./levels.ts";
 import {
   Stream,
   FilterFn,
@@ -36,18 +36,18 @@ export class Logger {
     const argsMinLevel = this.getArgsMinLevel();
     if (
       argsMinLevel !== undefined &&
-      levelNameMap.get(argsMinLevel) !== undefined
+      nameToLevel(argsMinLevel) !== undefined
     ) {
-      this.#minLevel = levelNameMap.get(argsMinLevel)!;
+      this.#minLevel = nameToLevel(argsMinLevel)!;
       this.#meta.minLogLevelFrom = "command line arguments";
       this.#meta.minLogLevel = this.#minLevel;
     } else {
       // Set min log level for logger from env variable
       const envDefaultMinLevel = this.getEnvMinLevel();
       if (
-        envDefaultMinLevel && levelNameMap.get(envDefaultMinLevel) !== undefined
+        envDefaultMinLevel && nameToLevel(envDefaultMinLevel) !== undefined
       ) {
-        this.#minLevel = levelNameMap.get(envDefaultMinLevel)!;
+        this.#minLevel = nameToLevel(envDefaultMinLevel)!;
         this.#meta.minLogLevelFrom = "environment variable";
         this.#meta.minLogLevel = this.#minLevel;
       }

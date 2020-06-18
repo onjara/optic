@@ -1,5 +1,5 @@
 import { Formatter, LogRecord } from "../types.ts";
-import { levelMap } from "../logger/levels.ts";
+import { levelToName } from "../logger/levels.ts";
 
 type Fields = "msg" | "metadata" | "level" | "dateTime";
 export type ReplacerFn = (key: unknown, value: unknown) => string;
@@ -14,7 +14,7 @@ export class JsonFormatter implements Formatter<string> {
       if (field === "dateTime") {
         output += '"dateTime":' + JSON.stringify(logRecord.dateTime) + ",";
       } else if (field === "level") {
-        output += '"level":' + JSON.stringify(levelMap.get(logRecord.level)) +
+        output += '"level":' + JSON.stringify(levelToName(logRecord.level)) +
           ",";
       } else if (field === "msg") {
         output += '"msg":' + JSON.stringify(logRecord.msg) + ",";

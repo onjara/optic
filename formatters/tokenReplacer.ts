@@ -4,10 +4,10 @@ import {
   DateTimeFormatterFn,
   DateTimeFormatter,
 } from "../types.ts";
-import { levelMap, levelNameMap } from "../logger/levels.ts";
-import { colorRules } from "./color.ts";
 import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
 import { asString } from "./asString.ts";
+import { longestLevelName, levelToName } from "../logger/levels.ts";
+import { getColorForLevel } from "./color.ts";
 
 export class TokenReplacer implements Formatter<string> {
   #formatString = "{dateTime} {level} {msg} {metadata}";
@@ -19,11 +19,7 @@ export class TokenReplacer implements Formatter<string> {
 
   constructor(tokens?: string) {
     if (tokens) this.#formatString = tokens;
-    for (let key of levelNameMap.keys()) {
-      this.#levelPadding = key.length > this.#levelPadding
-        ? key.length
-        : this.#levelPadding;
-    }
+    this.#levelPadding = longestLevelName();
   }
 
   get formatString(): string {
@@ -69,7 +65,7 @@ export class TokenReplacer implements Formatter<string> {
     );
     formattedMsg = formattedMsg.replace(
       "{level}",
-      levelMap.get(logRecord.level)?.padEnd(this.#levelPadding, " ") ||
+      levelToName(logRecord.level)?.padEnd(this.#levelPadding, " ") ||
         "UNKNOWN",
     );
     formattedMsg = formattedMsg.replace("{msg}", asString(logRecord.msg));
@@ -84,7 +80,7 @@ export class TokenReplacer implements Formatter<string> {
     formattedMsg = formattedMsg.replace("{metadata}", metadataReplacement);
 
     if (this.#withColor && globalThis.Deno) {
-      const colorize = colorRules.get(logRecord.level);
+      const colorize = getColorForLevel(logRecord.level);
       formattedMsg = colorize ? colorize(formattedMsg) : formattedMsg;
     }
     return formattedMsg;

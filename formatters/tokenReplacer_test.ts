@@ -156,7 +156,7 @@ test({
     lr.level = 99;
     assertEquals(
       tr.format(lr),
-      "2020-06-17T02:24:00.000Z UNKNOWN Log Message The metadata",
+      "2020-06-17T02:24:00.000Z UNKNOWN  Log Message The metadata",
     );
   },
 });

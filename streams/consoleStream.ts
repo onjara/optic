@@ -1,7 +1,7 @@
 import { BaseStream } from "./baseStream.ts";
 import { TokenReplacer } from "../formatters/tokenReplacer.ts";
 import { LogMeta } from "../types.ts";
-import { levelMap } from "../logger/levels.ts";
+import { levelToName } from "../logger/levels.ts";
 
 export class ConsoleStream extends BaseStream {
   constructor() {
@@ -16,7 +16,7 @@ export class ConsoleStream extends BaseStream {
 
     console.log(
       "Default min log level set at:",
-      levelMap.get(meta.minLogLevel),
+      levelToName(meta.minLogLevel),
       "from",
       meta.minLogLevelFrom,
     );
