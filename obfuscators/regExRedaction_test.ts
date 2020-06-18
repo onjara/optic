@@ -2,7 +2,7 @@ import {
   test,
   assertEquals,
 } from "../test_deps.ts";
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 import { RegExRedaction } from "./regExRedaction.ts";
 import { LogRecord } from "../types.ts";
 

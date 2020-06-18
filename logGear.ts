@@ -1,4 +1,4 @@
-import { Logger } from "./logger.ts";
+import { Logger } from "./logger/logger.ts";
 
 export class LogGear {
   private constructor() {}

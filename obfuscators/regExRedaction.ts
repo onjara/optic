@@ -1,5 +1,5 @@
 import { Obfuscator, LogRecord, Stream } from "../types.ts";
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 
 /* For a given match, this function will return the string to replace the
  * match with.

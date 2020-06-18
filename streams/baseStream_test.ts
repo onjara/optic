@@ -5,7 +5,7 @@ import {
 } from "../test_deps.ts";
 import { BaseStream } from "./baseStream.ts";
 import { LogRecord, Formatter } from "../types.ts";
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 
 class MsgPassThrough implements Formatter<string> {
   format(lr: LogRecord): string {

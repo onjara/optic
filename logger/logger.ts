@@ -9,8 +9,8 @@ import {
   ObfuscatorFn,
   LogRecord,
   LogMeta,
-} from "./types.ts";
-import { ConsoleStream } from "./streams/consoleStream.ts";
+} from "../types.ts";
+import { ConsoleStream } from "../streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 
 class LogMetaImpl implements LogMeta {

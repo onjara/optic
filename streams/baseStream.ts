@@ -1,4 +1,4 @@
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 import { LogRecord, Stream, Formatter } from "../types.ts";
 
 export abstract class BaseStream implements Stream {

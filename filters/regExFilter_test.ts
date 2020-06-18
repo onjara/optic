@@ -2,7 +2,7 @@ import {
   test,
   assert,
 } from "../test_deps.ts";
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 import { RegExFilter } from "./regExFilter.ts";
 import { LogRecord } from "../types.ts";
 

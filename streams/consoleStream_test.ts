@@ -4,7 +4,7 @@ import {
   assert,
 } from "../test_deps.ts";
 import { ConsoleStream } from "./consoleStream.ts";
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 
 test({
   name: "Default ConsoleStream logs message to console",

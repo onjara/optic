@@ -1,5 +1,5 @@
 import { Formatter, LogRecord } from "../types.ts";
-import { levelMap } from "../levels.ts";
+import { levelMap } from "../logger/levels.ts";
 
 type Fields = "msg" | "metadata" | "level" | "dateTime";
 export type ReplacerFn = (key: unknown, value: unknown) => string;

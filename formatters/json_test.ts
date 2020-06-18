@@ -3,7 +3,7 @@ import {
   assertEquals,
   assertThrows,
 } from "../test_deps.ts";
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 import { JsonFormatter } from "./json.ts";
 import { PropertyRedaction } from "../obfuscators/propertyRedaction.ts";
 import { LogRecord } from "../types.ts";

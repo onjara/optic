@@ -1,4 +1,4 @@
-import { Level } from "./levels.ts";
+import { Level } from "./logger/levels.ts";
 
 export interface Stream {
   logHeader?(meta: LogMeta): void;

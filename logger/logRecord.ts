@@ -1,4 +1,4 @@
-import { LogRecord } from "./types.ts";
+import { LogRecord } from "../types.ts";
 import { Level } from "./levels.ts";
 
 export class ImmutableLogRecord implements LogRecord {

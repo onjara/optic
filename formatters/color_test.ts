@@ -2,7 +2,7 @@ import {
   test,
   assert,
 } from "../test_deps.ts";
-import { levelMap } from "../levels.ts";
+import { levelMap } from "../logger/levels.ts";
 import { colorRules } from "./color.ts";
 
 test({

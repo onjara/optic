@@ -1,7 +1,7 @@
 import { BaseStream } from "./baseStream.ts";
 import { TokenReplacer } from "../formatters/tokenReplacer.ts";
 import { LogMeta } from "../types.ts";
-import { levelMap } from "../levels.ts";
+import { levelMap } from "../logger/levels.ts";
 
 export class ConsoleStream extends BaseStream {
   constructor() {

@@ -3,7 +3,7 @@ import {
   Stream,
   LogRecord,
 } from "../types.ts";
-import { Level } from "../levels.ts";
+import { Level } from "../logger/levels.ts";
 
 export class PropertyRedaction implements Obfuscator {
   #redactionKey: string;

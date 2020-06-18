@@ -4,7 +4,7 @@ import {
   DateTimeFormatterFn,
   DateTimeFormatter,
 } from "../types.ts";
-import { levelMap, levelNameMap } from "../levels.ts";
+import { levelMap, levelNameMap } from "../logger/levels.ts";
 import { colorRules } from "./color.ts";
 import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
 import { asString } from "./asString.ts";
