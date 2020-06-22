@@ -30,7 +30,7 @@ export class Logger {
   #meta: LogMetaImpl = new LogMetaImpl();
 
   constructor() {
-    //TODO check permissions here for meta.unableToReadEnvVar once stable
+    //TODO check permissions here for meta.unableToReadEnvVar once stable and sync version available
 
     //Check environment variable and parameters for min log level
     const argsMinLevel = this.getArgsMinLevel();
@@ -60,6 +60,10 @@ export class Logger {
         if (stream.destroy) stream.destroy();
       }
     });
+  }
+
+  getMinLogLevel(): Level {
+    return this.#minLevel;
   }
 
   level(level: Level): Logger {
@@ -131,9 +135,9 @@ export class Logger {
     return this;
   }
 
-  getArgsMinLevel(): string | undefined {
-    for (let i = 0; i < Deno.args.length; i++) {
-      let arg = Deno.args[i];
+  private getArgsMinLevel(): string | undefined {
+    for (let i = 0; i < this.getArgs().length; i++) {
+      let arg = this.getArgs()[i];
       if (arg.startsWith("minLogLevel=")) {
         return arg.slice("minLogLevel=".length);
       }
@@ -141,9 +145,11 @@ export class Logger {
     return undefined;
   }
 
-  getEnvMinLevel(): string | undefined {
+  private getEnvMinLevel(): string | undefined {
     try {
-      return Deno.env.get("LOGGEAR_MIN_LEVEL");
+      // Deno.env requires --allow-env permissions.  Add check here if they are granted once this is stable,
+      // but for now just catch the no permission error.
+      return this.getEnv().get("LOGGEAR_MIN_LEVEL");
     } catch (err) {
       return undefined;
     }
@@ -175,7 +181,7 @@ export class Logger {
       const stream = this.#streams[i];
       let skip = false;
 
-      // Apply Filters
+      // Apply Filters.  First matching filter will skip rest of filters.
       for (let j = 0; j < this.#filters.length && !skip; j++) {
         if (this.#filters[j].shouldFilterOut(stream, logRecord)) {
           skip = true;
@@ -250,5 +256,14 @@ export class Logger {
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(level, msg, metadata);
+  }
+
+  protected getArgs(): string[] {
+    return Deno.args;
+    Deno.env;
+  }
+
+  protected getEnv(): { get(key: string): string | undefined } {
+    return Deno.env;
   }
 }
