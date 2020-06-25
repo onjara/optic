@@ -43,7 +43,7 @@ test({
   name: "Logger default level is DEBUG",
   fn() {
     assertEquals(
-      new Logger().addStream(new TestStream()).getMinLogLevel(),
+      new Logger().addStream(new TestStream()).minLogLevel(),
       Level.DEBUG,
     );
   },
@@ -58,7 +58,7 @@ test({
       }
     }();
     const testStream = new TestStream();
-    assertEquals(logger.addStream(testStream).getMinLogLevel(), Level.INFO);
+    assertEquals(logger.addStream(testStream).minLogLevel(), Level.INFO);
     assertEquals(testStream.meta?.minLogLevel, Level.INFO);
     assertEquals(testStream.meta?.minLogLevelFrom, "command line arguments");
   },
@@ -72,7 +72,7 @@ test({
         return ["minLogLevel=rubbish!"];
       }
     }();
-    assertEquals(logger.addStream(new TestStream()).getMinLogLevel(), 1);
+    assertEquals(logger.addStream(new TestStream()).minLogLevel(), 1);
   },
 });
 
@@ -89,7 +89,7 @@ test({
       }
     }();
     const testStream = new TestStream();
-    assertEquals(logger.addStream(testStream).getMinLogLevel(), Level.ERROR);
+    assertEquals(logger.addStream(testStream).minLogLevel(), Level.ERROR);
     assertEquals(testStream.meta?.minLogLevel, Level.ERROR);
     assertEquals(testStream.meta?.minLogLevelFrom, "environment variable");
   },
@@ -107,7 +107,7 @@ test({
         };
       }
     }();
-    assertEquals(logger.addStream(new TestStream()).getMinLogLevel(), 1);
+    assertEquals(logger.addStream(new TestStream()).minLogLevel(), 1);
   },
 });
 
@@ -127,7 +127,7 @@ test({
       }
     }();
     assertEquals(
-      logger.addStream(new TestStream()).getMinLogLevel(),
+      logger.addStream(new TestStream()).minLogLevel(),
       Level.INFO,
     );
   },
@@ -150,8 +150,8 @@ test({
   name: "Logger min level can be set directly",
   fn() {
     const testStream = new TestStream();
-    const logger = new Logger().addStream(testStream).level(Level.INFO);
-    assertEquals(logger.getMinLogLevel(), Level.INFO);
+    const logger = new Logger().addStream(testStream).withLevel(Level.INFO);
+    assertEquals(logger.minLogLevel(), Level.INFO);
     assertEquals(testStream.meta?.minLogLevel, Level.INFO);
     assertEquals(testStream.meta?.minLogLevelFrom, "logger.level()");
   },
@@ -182,7 +182,7 @@ test({
   name: "Min log level respected for new log messages",
   fn() {
     const testStream = new TestStream();
-    const logger = new Logger().addStream(testStream).level(Level.INFO);
+    const logger = new Logger().addStream(testStream).withLevel(Level.INFO);
     logger.debug("hello");
     // assert that 'handle' isn't called on stream
     assertEquals(

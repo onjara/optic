@@ -17,10 +17,14 @@ export abstract class BaseStream implements Stream {
     if (this.#minLevel > logRecord.level) return;
 
     const msg = this.format(logRecord);
-    return this.log(msg);
+    this.log(msg);
   }
 
-  minLogLevel(level: Level): this {
+  get minLogLevel(): number {
+    return this.#minLevel;
+  }
+
+  withMinLogLevel(level: Level): this {
     this.#minLevel = level;
     return this;
   }

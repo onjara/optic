@@ -197,7 +197,7 @@ export class SimpleDateTimeFormatter implements DateTimeFormatter {
     return formatted;
   }
 
-  toStringWithSignificantDigits(milli: number, sigFig: number) {
+  private toStringWithSignificantDigits(milli: number, sigFig: number) {
     return String(milli).padStart(3, "0").substr(0, sigFig);
   }
 }

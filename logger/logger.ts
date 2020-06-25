@@ -62,11 +62,11 @@ export class Logger {
     });
   }
 
-  getMinLogLevel(): Level {
+  minLogLevel(): Level {
     return this.#minLevel;
   }
 
-  level(level: Level): Logger {
+  withLevel(level: Level): Logger {
     this.#minLevel = level;
     this.#meta.minLogLevelFrom = "logger.level()";
     this.#meta.minLogLevel = this.#minLevel;

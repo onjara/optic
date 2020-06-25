@@ -56,7 +56,7 @@ test({
 test({
   name: "Stream with higher min log level than log record won't log message",
   fn() {
-    const baseStream = newBaseStream().minLogLevel(Level.INFO);
+    const baseStream = newBaseStream().withMinLogLevel(Level.INFO);
     baseStream.handle(logRec("hello", Level.DEBUG));
     assertEquals(baseStream.logs.length, 0);
   },

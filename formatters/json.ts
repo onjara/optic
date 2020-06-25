@@ -37,7 +37,7 @@ export class JsonFormatter implements Formatter<string> {
     return this;
   }
 
-  prettyPrintWithIndent(indent: number | string): this {
+  withPrettyPrintIndentation(indent: number | string): this {
     this.#indent = indent;
     return this;
   }

@@ -75,8 +75,8 @@ test({
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
     };
-    const jf = new JsonFormatter().prettyPrintWithIndent(2);
-    const jfStar = new JsonFormatter().prettyPrintWithIndent("**");
+    const jf = new JsonFormatter().withPrettyPrintIndentation(2);
+    const jfStar = new JsonFormatter().withPrettyPrintIndentation("**");
     const newLrA = new PropertyRedaction("ljh").obfuscate(
       { handle(lR: LogRecord): void {} },
       lr,
