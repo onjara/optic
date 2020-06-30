@@ -44,7 +44,7 @@ test({
   fn() {
     assertThrows(
       () => {
-        of(7).files().maxPeriodDate();
+        of(7).files().oldestRetentionDate();
       },
       Error,
       "Max Period Date is meaningless",
@@ -57,7 +57,7 @@ test({
   fn() {
     const d = new Date();
     d.setDate(d.getDate() - 7);
-    assertEquals(of(7).days().maxPeriodDate(), d);
+    assertEquals(of(7).days().oldestRetentionDate(), d);
   },
 });
 
@@ -66,7 +66,7 @@ test({
   fn() {
     const d = new Date();
     d.setHours(d.getHours() - 7);
-    assertEquals(of(7).hours().maxPeriodDate(), d);
+    assertEquals(of(7).hours().oldestRetentionDate(), d);
   },
 });
 
@@ -75,6 +75,6 @@ test({
   fn() {
     const d = new Date();
     d.setMinutes(d.getMinutes() - 7);
-    assertEquals(of(7).minutes().maxPeriodDate(), d);
+    assertEquals(of(7).minutes().oldestRetentionDate(), d);
   },
 });

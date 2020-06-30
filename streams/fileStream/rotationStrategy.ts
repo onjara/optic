@@ -2,18 +2,40 @@ import { LogFileInitStrategy, Periods } from "./types.ts";
 import { LogFileRetentionPolicy, of } from "./retentionPolicy.ts";
 
 export interface RotationStrategy {
+  /** 
+   * On logger initialization, initLogs will be called to clean up any old logs
+   * or other initialization required here.
+   */
   initLogs(filename: string, initStrategy: LogFileInitStrategy): void;
+
+  /**
+   * Given a log message, return true if the logs should rotate
+   */
   shouldRotate(logMessage: unknown): boolean;
+
+  /**
+   * Carry out a rotation of the logs
+   */
   rotate(filename: string, logMessage: unknown): void;
+
   withLogFileRetentionPolicy(
     logFileRetentionPolicy: LogFileRetentionPolicy,
   ): this;
 }
 
+/**
+ * 
+ * @param quantity number of files or day/hour/minute units to preserve log files
+ */
 export function every(quantity: number): OngoingRotationStrategy {
   return new OngoingRotationStrategy(quantity);
 }
 
+/**
+ * A rotation strategy based on byte size.  When the current log file grows 
+ * beyond `maxBytes`, this will trigger a rotation before the log message
+ * is written guaranteeing that no log file is larger than `maxBytes`
+ */
 class ByteRotationStrategy implements RotationStrategy {
   #maxBytes: number;
   #logFileRetentionPolicy: LogFileRetentionPolicy = of(7).files();
@@ -36,13 +58,16 @@ class ByteRotationStrategy implements RotationStrategy {
 
   initLogs(filename: string, initStrategy: LogFileInitStrategy): void {
     if (initStrategy === "append") {
+      // reuse existing log file, if it exists
       const fi = fileInfo(filename);
       this.#currentFileSize = fi ? fi.size : 0;
-    } /* overwrite or mustNotExist */ else {
+    } else {
+      /* overwrite or mustNotExist initStrategy */
       if (this.#logFileRetentionPolicy.type === "files") {
         for (let i = 1; i <= this.#logFileRetentionPolicy.quantity; i++) {
           // e.g. check (mustNotExist) or remove (overwrite) log.txt.1, log.txt.2
-          // ... up to log.txt.#maxArchivesStrategy.quantity
+          // ... up to log.txt.#maxArchivesStrategy.quantity.  Files above this
+          // are ignored for now.
           if (exists(filename + "." + i)) {
             if (initStrategy === "mustNotExist") {
               throw new Error(
@@ -54,22 +79,21 @@ class ByteRotationStrategy implements RotationStrategy {
             }
           }
         }
-      } /* dateTime strategy */ else {
+      } else {
+        /* dateTime retention policy */
         // get list of all files in directory
         const logFiles = getLogFilesInDir(
           filename,
-          this.#logFileRetentionPolicy.type === "days"
-            ? matchesDatePattern
-            : matchesDateTimePattern,
+          matchesFilePattern,
         );
         // Now remove log.txt.1, log.txt.2 ... up to max age (in days or hours)
-        for (let logFile in logFiles) {
-          const maxTimeAgo = this.#logFileRetentionPolicy.maxPeriodDate();
-          const fileInfo = Deno.statSync(logFile).birthtime;
-          if (fileInfo && fileInfo.getTime() >= maxTimeAgo.getTime()) {
+        for (let logFile of logFiles) {
+          const maxTimeAgo = this.#logFileRetentionPolicy.oldestRetentionDate();
+          const lastModified = fileInfo(logFile)?.mtime;
+          if (lastModified && lastModified.getTime() >= maxTimeAgo.getTime()) {
             if (initStrategy === "mustNotExist") {
               throw new Error(
-                "Found log file within defined maximum archive constraints which must not exist: " +
+                "Found log file within defined maximum log retention constraints which must not exist: " +
                   logFile,
               );
             } else {
@@ -84,7 +108,11 @@ class ByteRotationStrategy implements RotationStrategy {
   shouldRotate(encodedMessage: unknown): boolean {
     const msg: Uint8Array = encodedMessage as Uint8Array;
     const msgByteLength = msg.byteLength;
-    return (this.#currentFileSize + msgByteLength) > this.#maxBytes;
+    if ((this.#currentFileSize + msgByteLength) > this.#maxBytes) {
+      return true;
+    }
+    this.#currentFileSize += msgByteLength;
+    return false;
   }
 
   rotate(filename: string, logMessage: unknown): void {
@@ -93,15 +121,27 @@ class ByteRotationStrategy implements RotationStrategy {
     if (this.#logFileRetentionPolicy.type !== "files") {
       const logFiles = getLogFilesInDir(
         filename,
-        this.#logFileRetentionPolicy.type === "days"
-          ? matchesDatePattern
-          : matchesDateTimePattern,
+        matchesFilePattern,
       );
+      /* Given the log files, find the maximum extension that is within the
+       * oldest retention date.  Add 1 to this value to ensure it is rotated
+       * along with all other log files with a lower extension */
       maxFiles = 0;
-      for (let logFile in logFiles) {
+      for (let logFile of logFiles) {
         const matched = logFile.match(/.*\.([\d]+)/);
-        if (matched && matched[1]) {
-          maxFiles = +matched[1] > maxFiles ? +matched[1] : maxFiles;
+        if (matched?.[1]) {
+          const statInfo = Deno.statSync(logFile)?.mtime?.getTime();
+          if (
+            statInfo &&
+            statInfo >
+              this.#logFileRetentionPolicy.oldestRetentionDate().getTime()
+          ) {
+            // Add 1 to this extension value to ensure it is kept during rotation
+            maxFiles = +matched[1] > maxFiles ? +matched[1] + 1 : maxFiles;
+          } else {
+            // This log file is outside the oldest retention date, delete it
+            Deno.removeSync(logFile);
+          }
         }
       }
     }
@@ -201,6 +241,8 @@ function getLogFilesInDir(
 ): string[] {
   const matches: string[] = [];
 
+  // TODO replace below code with std/path/{posix,win32}/{basename,dirname}
+
   const dirAndFile = filename.match(/(.*)[\/\\](.*)/);
   const dir: string = dirAndFile == null ? "." : dirAndFile[1];
   const file: string = dirAndFile == null ? filename : dirAndFile[2];
@@ -212,7 +254,7 @@ function getLogFilesInDir(
         !dirEntry.isDirectory &&
         patternMatcher(dirEntry.name, regExSafeFilename)
       ) {
-        matches.push(join(dir, file));
+        matches.push(join(dir, dirEntry.name));
       }
     }
   } catch (err) {
@@ -225,7 +267,7 @@ function matchesFilePattern(
   dirEntryName: string,
   regExSafeFilename: string,
 ): boolean {
-  return dirEntryName.match(new RegExp(regExSafeFilename + "_\\d+$")) != null;
+  return dirEntryName.match(new RegExp(regExSafeFilename + "\.\\d+$")) != null;
 }
 
 function matchesDatePattern(

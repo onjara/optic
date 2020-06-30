@@ -42,7 +42,7 @@ export class LogFileRetentionPolicy {
     return this.#type;
   }
 
-  maxPeriodDate(): Date {
+  oldestRetentionDate(): Date {
     const d = new Date();
     if (this.#type === "files") {
       throw new Error(
