@@ -1,5 +1,9 @@
-import { Periods } from "./types.ts";
+import { Periods, LogFileRetentionPolicy } from "./types.ts";
 
+/**
+ * Used for building a LogFileRetentionPolicy
+ * @param quantity number of files or date/time units to retain logs for
+ */
 export function of(quantity: number): OngoingLogFileRetentionPolicy {
   return new OngoingLogFileRetentionPolicy(quantity);
 }
@@ -7,20 +11,20 @@ export function of(quantity: number): OngoingLogFileRetentionPolicy {
 class OngoingLogFileRetentionPolicy {
   constructor(private quantity: number) {}
   files(): LogFileRetentionPolicy {
-    return new LogFileRetentionPolicy(this.quantity, "files");
+    return new LogFileRetentionPolicyImpl(this.quantity, "files");
   }
   days(): LogFileRetentionPolicy {
-    return new LogFileRetentionPolicy(this.quantity, "days");
+    return new LogFileRetentionPolicyImpl(this.quantity, "days");
   }
   hours(): LogFileRetentionPolicy {
-    return new LogFileRetentionPolicy(this.quantity, "hours");
+    return new LogFileRetentionPolicyImpl(this.quantity, "hours");
   }
   minutes(): LogFileRetentionPolicy {
-    return new LogFileRetentionPolicy(this.quantity, "minutes");
+    return new LogFileRetentionPolicyImpl(this.quantity, "minutes");
   }
 }
 
-export class LogFileRetentionPolicy {
+export class LogFileRetentionPolicyImpl implements LogFileRetentionPolicy {
   #quantity: number;
   #type: "files" | Periods;
 

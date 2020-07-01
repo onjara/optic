@@ -1,31 +1,20 @@
-import { LogFileInitStrategy, Periods } from "./types.ts";
-import { LogFileRetentionPolicy, of } from "./retentionPolicy.ts";
-
-export interface RotationStrategy {
-  /** 
-   * On logger initialization, initLogs will be called to clean up any old logs
-   * or other initialization required here.
-   */
-  initLogs(filename: string, initStrategy: LogFileInitStrategy): void;
-
-  /**
-   * Given a log message, return true if the logs should rotate
-   */
-  shouldRotate(logMessage: unknown): boolean;
-
-  /**
-   * Carry out a rotation of the logs
-   */
-  rotate(filename: string, logMessage: unknown): void;
-
-  withLogFileRetentionPolicy(
-    logFileRetentionPolicy: LogFileRetentionPolicy,
-  ): this;
-}
+import {
+  LogFileInitStrategy,
+  Periods,
+  LogFileRetentionPolicy,
+  RotationStrategy,
+} from "./types.ts";
+import { of } from "./retentionPolicy.ts";
+import {
+  win32Dirname,
+  posixDirname,
+  win32Basename,
+  posixBasename,
+} from "./deps.ts";
 
 /**
- * 
- * @param quantity number of files or day/hour/minute units to preserve log files
+ * Used for building a RotationStrategy
+ * @param quantity number of files or day/hour/minute units before log rotation
  */
 export function every(quantity: number): OngoingRotationStrategy {
   return new OngoingRotationStrategy(quantity);
@@ -146,6 +135,7 @@ class ByteRotationStrategy implements RotationStrategy {
       }
     }
 
+    // Remove all e.g. logFile.log, logFile.log.1, logFile.log.2, ..., .maxFiles log files
     for (let i = maxFiles - 1; i >= 0; i--) {
       const source = filename + (i === 0 ? "" : "." + i);
       const dest = filename + "." + (i + 1);
@@ -235,31 +225,31 @@ function fileInfo(filePath: string): Deno.FileInfo | undefined {
   }
 }
 
+/**
+ * Given a file name, search in the directory for files beginning with the same
+ * file name and ending in the pattern supplied, returning the list of matched
+ * files
+ */
 function getLogFilesInDir(
   filename: string,
-  patternMatcher: (dirEntryName: string, regExSafeFilename: string) => boolean,
+  pattern: (dirEntryName: string, regExSafeFilename: string) => boolean,
 ): string[] {
   const matches: string[] = [];
 
-  // TODO replace below code with std/path/{posix,win32}/{basename,dirname}
+  const dir: string = Deno.build.os === "windows"
+    ? win32Dirname(filename)
+    : posixDirname(filename);
+  const file: string = Deno.build.os === "windows"
+    ? win32Basename(filename)
+    : posixBasename(filename);
+  const escapedFilename = escapeForRegExp(file);
 
-  const dirAndFile = filename.match(/(.*)[\/\\](.*)/);
-  const dir: string = dirAndFile == null ? "." : dirAndFile[1];
-  const file: string = dirAndFile == null ? filename : dirAndFile[2];
-  const regExSafeFilename = escapeForRegExp(file);
-
-  try {
-    for (const dirEntry of Deno.readDirSync(dir)) {
-      if (
-        !dirEntry.isDirectory &&
-        patternMatcher(dirEntry.name, regExSafeFilename)
-      ) {
-        matches.push(join(dir, dirEntry.name));
-      }
+  for (const dirEntry of Deno.readDirSync(dir)) {
+    if (!dirEntry.isDirectory && pattern(dirEntry.name, escapedFilename)) {
+      matches.push(join(dir, dirEntry.name));
     }
-  } catch (err) {
-    // TODO
   }
+
   return matches;
 }
 

@@ -2,10 +2,16 @@ import { BaseStream } from "../baseStream.ts";
 import { LogMeta, LogRecord } from "../../types.ts";
 import { TokenReplacer } from "../../formatters/tokenReplacer.ts";
 import { Level } from "../../logger/levels.ts";
-import { BufWriterSync } from "./fileStream_deps.ts";
-import { RotationStrategy } from "./rotationStrategy.ts";
-import { LogFileInitStrategy } from "./types.ts";
+import { LogFileInitStrategy, RotationStrategy } from "./types.ts";
+import { BufWriterSync } from "./deps.ts";
 
+/**
+ * A stream for log messages to go to a file.  You may also configure the following:
+ * * Max buffer size (default 8192 bytes)
+ * * Log file rotation strategy (default none)
+ * * Log file retention policy (default none)
+ * * Log file initialization strategy (default "append")
+ */
 export class FileStream extends BaseStream {
   #filename: string;
   #rotationStrategy: RotationStrategy | undefined = undefined;
@@ -96,6 +102,7 @@ export class FileStream extends BaseStream {
     this.#buffer.writeSync(this.#encoder.encode(msg + "\n"));
   }
 
+  /** Force a flush of the log buffer */
   flush(): void {
     if (this.#deferredLogQueue.length > 0) {
       this.processDeferredQueue();
@@ -105,11 +112,20 @@ export class FileStream extends BaseStream {
     }
   }
 
+  /** The strategy to use for rotating log files. Examples:
+   * ```typescript
+   * every(20000).bytes()
+   * every(7).days()
+   * every(12).hours()
+   * every(90).minutes()
+   * ```
+   */
   withLogFileRotation(strategy: RotationStrategy): this {
     this.#rotationStrategy = strategy;
     return this;
   }
 
+  /** The maximum size in bytes of the buffer storage before it is flushed. */
   withBufferSize(bytes: number): this {
     if (bytes < 0) {
       throw new Error("Buffer size cannot be negative");
@@ -118,6 +134,12 @@ export class FileStream extends BaseStream {
     return this;
   }
 
+  /** The strategy to take when initializing logs:
+   * * `"append"` - Reuse log file if it exists, create otherwise
+   * * `"overwrite"` - Always start with an empty log file, overwriting any existing one
+   * * `"mustNotExist"` - Always start with an empty log file, but throw an error if it
+   * already exists
+   */
   withLogFileInitMode(mode: LogFileInitStrategy): this {
     this.#logFileInitStrategy = mode;
     return this;
