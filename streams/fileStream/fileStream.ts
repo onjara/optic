@@ -28,6 +28,8 @@ export class FileStream extends BaseStream {
   }
 
   setup(): void {
+    super.setup();
+
     if (this.#rotationStrategy !== undefined) {
       this.#rotationStrategy.initLogs(
         this.#filename,
@@ -47,16 +49,19 @@ export class FileStream extends BaseStream {
   }
 
   destroy(): void {
+    super.destroy();
     this.flush();
     this.#logFile.close();
   }
 
   logHeader(meta: LogMeta): void {
-    // TODO
+    if (!this.outputHeader) return;
+    super.logHeader(meta);
   }
 
   logFooter(meta: LogMeta): void {
-    // TODO
+    if (!this.outputFooter) return;
+    super.logFooter(meta);
   }
 
   handle(logRecord: LogRecord): void {
@@ -99,7 +104,7 @@ export class FileStream extends BaseStream {
       );
       this.#buffer = new BufWriterSync(this.#logFile, this.#maxBufferSize);
     }
-    this.#buffer.writeSync(this.#encoder.encode(msg + "\n"));
+    this.#buffer.writeSync(encodedMsg);
   }
 
   /** Force a flush of the log buffer */

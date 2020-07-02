@@ -5,7 +5,7 @@ import { DateTimeFormatter } from "../types.ts";
  * syntax.  This class takes as in put a string which defines the formatting of
  * the timestamp.  E.g.
  * ```
- * new SimpleDateTimeFormatter('HH:mm:ss:SSS YYYY-MM-DD');
+ * new SimpleDateTimeFormatter('hh:mm:ss:SSS YYYY-MM-DD');
  * ```
  * The formatting options are as per below.  Any characters not formatted are
  * left as is.  Tokens are case sensitive.

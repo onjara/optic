@@ -9,6 +9,7 @@ import { asString } from "../formatters/asString.ts";
 export class RegExFilter implements Filter {
   #regEx: RegExp;
 
+  /** Records matching the supplied regEx will be filtered out */
   constructor(regEx: RegExp | string) {
     if (typeof regEx === "string") {
       this.#regEx = new RegExp(regEx);

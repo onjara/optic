@@ -2,9 +2,10 @@ import {
   test,
   assertEquals,
   assert,
+  assertStringContains,
 } from "../test_deps.ts";
 import { BaseStream } from "./baseStream.ts";
-import { LogRecord, Formatter } from "../types.ts";
+import { LogRecord, Formatter, LogMeta } from "../types.ts";
 import { Level } from "../logger/levels.ts";
 
 class MsgPassThrough implements Formatter<string> {
@@ -41,6 +42,15 @@ function logRec(msg: string, level: Level): LogRecord {
     dateTime: new Date(),
     metadata: [],
     level: level,
+  };
+}
+
+function logMeta(): LogMeta {
+  return {
+    hostname: "host",
+    sessionStarted: new Date(),
+    minLogLevel: Level.INFO,
+    minLogLevelFrom: "default",
   };
 }
 
@@ -111,5 +121,38 @@ test({
     assert(!baseStream.outputFooter);
     baseStream.withLogFooter(true); // explicitly set to true
     assert(baseStream.outputFooter);
+  },
+});
+
+test({
+  name: "Log header outputs header info",
+  fn() {
+    const baseStream = newBaseStream().withLogHeader(false);
+    baseStream.logHeader(logMeta());
+    assertEquals(baseStream.logs.length, 0);
+
+    baseStream.withLogHeader();
+    baseStream.logHeader(logMeta());
+    assertEquals(baseStream.logs.length, 2);
+    assertStringContains(baseStream.logs[0], "Logging session initialized");
+    assertStringContains(
+      baseStream.logs[1],
+      "Default min log level set at: INFO (from default)",
+    );
+  },
+});
+
+test({
+  name: "Log footer outputs header info",
+  fn() {
+    const baseStream = newBaseStream().withLogFooter(false);
+    baseStream.logFooter(logMeta());
+    assertEquals(baseStream.logs.length, 0);
+
+    baseStream.withLogFooter();
+    baseStream.logFooter(logMeta());
+    assertEquals(baseStream.logs.length, 2);
+    assertStringContains(baseStream.logs[0], "Logging session complete");
+    assertStringContains(baseStream.logs[1], "Log session duration");
   },
 });

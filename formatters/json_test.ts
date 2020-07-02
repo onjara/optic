@@ -7,6 +7,7 @@ import { Level } from "../logger/levels.ts";
 import { JsonFormatter } from "./json.ts";
 import { PropertyRedaction } from "../obfuscators/propertyRedaction.ts";
 import { LogRecord } from "../types.ts";
+import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
 
 test({
   name: "Test default JSON formatting",
@@ -88,6 +89,25 @@ test({
     assertEquals(
       jfStar.format(newLrA),
       '{\n**"dateTime": "2020-06-17T02:24:00.000Z",\n**"level": "DEBUG",\n**"msg": {\n****"a": 6,\n****"b": "hello"\n**},\n**"metadata": [\n****true,\n****null,\n****"there"\n**]\n}',
+    );
+  },
+});
+
+test({
+  name: "DateTimeFormatter is supported",
+  fn() {
+    const lr = {
+      msg: "hello",
+      metadata: [],
+      dateTime: new Date("2020-06-17T03:24:00"),
+      level: Level.DEBUG,
+    };
+    const jf = new JsonFormatter().withDateTimeFormatter(
+      new SimpleDateTimeFormatter("hh:mm dddd MMM D"),
+    );
+    assertEquals(
+      jf.format(lr),
+      '{\"dateTime\":\"03:24 Wednesday Jun 17\",\"level\":\"DEBUG\",\"msg\":\"hello\",\"metadata\":[]}',
     );
   },
 });

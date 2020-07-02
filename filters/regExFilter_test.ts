@@ -6,7 +6,7 @@ import { Level } from "../logger/levels.ts";
 import { RegExFilter } from "./regExFilter.ts";
 import { LogRecord } from "../types.ts";
 
-function lrMsg(msg: string) {
+function lrMsg(msg: unknown) {
   return {
     msg: msg,
     metadata: ["The metadata"],
@@ -31,6 +31,15 @@ const stream = {
 test({
   name: "Regular expressions work as expected for msg field",
   fn() {
+    assert(
+      !new RegExFilter("hello").shouldFilterOut(stream, lrMsg(null)),
+    );
+    assert(
+      !new RegExFilter("hello").shouldFilterOut(stream, lrMsg(undefined)),
+    );
+    assert(
+      new RegExFilter("hello").shouldFilterOut(stream, lrMsg("hello world")),
+    );
     assert(
       new RegExFilter("hello").shouldFilterOut(stream, lrMsg("hello world")),
     );

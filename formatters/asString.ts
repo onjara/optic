@@ -1,3 +1,10 @@
+/**
+ * Convert an unknown object into a string.  Special considerations are:
+ * * `function` - returns "[function]"
+ * * `Date` - returns the toISOString() date
+ * * `Error` - returns error stack trace or "[Error]" if there is none
+ * * `Object` - JSON.stringify() representation or "[Unable to JSON.stringify()] if an error occurs"
+ */
 export function asString(data: unknown): string {
   if (typeof data === "string") {
     return data;
@@ -12,11 +19,11 @@ export function asString(data: unknown): string {
   } else if (typeof data === "symbol") {
     return String(data);
   } else if (typeof data === "function") {
-    return "undefined";
+    return "[function]";
   } else if (data instanceof Date) {
     return data.toISOString();
   } else if (data instanceof Error) {
-    return data.stack ? data.stack : "Undefined Error";
+    return data.stack ? data.stack : "[Error]";
   } else if (typeof data === "object") {
     try {
       return JSON.stringify(data);

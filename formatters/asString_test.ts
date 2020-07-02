@@ -18,7 +18,7 @@ test({
     assertEquals(asString(null), "null");
     assertEquals(asString(undefined), "undefined");
     assertEquals(asString(Symbol("a")), "Symbol(a)");
-    assertEquals(asString(() => "a"), "undefined");
+    assertEquals(asString(() => "a"), "[function]");
     assertMatch(
       asString(new Date("2020-06-17T03:24:00")),
       /2020-06-1[6,7,8]T\d\d:\d\d:00.000Z/,

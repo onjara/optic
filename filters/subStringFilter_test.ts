@@ -1,10 +1,11 @@
 import {
   test,
   assert,
+  assertThrows,
 } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { LogRecord } from "../types.ts";
-import { BlocklistFilter } from "./blocklistFilter.ts";
+import { SubStringFilter } from "./subStringFilter.ts";
 
 function lrMsg(msg: unknown) {
   return {
@@ -31,29 +32,29 @@ test({
   name: "Test msg string filtering",
   fn() {
     assert(
-      new BlocklistFilter().blockRecordsContaining("a", "b").shouldFilterOut(
+      new SubStringFilter("a").shouldFilterOut(
         stream,
         lrMsg("a new world"),
       ),
     );
     assert(
-      new BlocklistFilter().blockRecordsContaining("hello world")
+      new SubStringFilter("hello world")
         .shouldFilterOut(stream, lrMsg("hello world")),
     );
     assert(
-      new BlocklistFilter().blockRecordsContaining("password").shouldFilterOut(
+      new SubStringFilter("password").shouldFilterOut(
         stream,
         lrMsg({ password: "abcd1234" }),
       ),
     );
     assert(
-      !new BlocklistFilter().blockRecordsContaining("a").shouldFilterOut(
+      !new SubStringFilter("a").shouldFilterOut(
         stream,
         lrMsg("hello world"),
       ),
     );
     assert(
-      !new BlocklistFilter().blockRecordsContaining("x").shouldFilterOut(
+      !new SubStringFilter("x").shouldFilterOut(
         stream,
         lrMsg({ a: 6 }),
       ),
@@ -65,35 +66,35 @@ test({
   name: "Metadata string filtering",
   fn() {
     assert(
-      new BlocklistFilter().blockRecordsContaining("a", "b").shouldFilterOut(
+      new SubStringFilter("a").shouldFilterOut(
         stream,
         lrMeta([[1, 2, "a new world"]]),
       ),
     );
     assert(
-      new BlocklistFilter().blockRecordsContaining("hello world")
+      new SubStringFilter("hello world")
         .shouldFilterOut(stream, lrMeta([true, { a: 6, b: "hello world" }])),
     );
     assert(
-      new BlocklistFilter().blockRecordsContaining("password").shouldFilterOut(
+      new SubStringFilter("password").shouldFilterOut(
         stream,
         lrMeta([true, { a: 6, b: "hello world", password: "abcd1234" }]),
       ),
     );
     assert(
-      !new BlocklistFilter().blockRecordsContaining("a").shouldFilterOut(
+      !new SubStringFilter("a").shouldFilterOut(
         stream,
         lrMeta(["hello world"]),
       ),
     );
     assert(
-      !new BlocklistFilter().blockRecordsContaining("x").shouldFilterOut(
+      !new SubStringFilter("x").shouldFilterOut(
         stream,
         lrMeta([{ a: 6 }]),
       ),
     );
     assert(
-      !new BlocklistFilter().blockRecordsContaining("a").shouldFilterOut(
+      !new SubStringFilter("a").shouldFilterOut(
         stream,
         lrMeta([]),
       ),
