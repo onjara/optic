@@ -1,13 +1,13 @@
 import {
   test,
   assertEquals,
-  assertMatch,
 } from "../test_deps.ts";
 import { Level, levelToName, nameToLevel } from "./levels.ts";
 
 test({
   name: "level map maps level enum to name",
   fn() {
+    assertEquals(levelToName(Level.TRACE), "TRACE");
     assertEquals(levelToName(Level.DEBUG), "DEBUG");
     assertEquals(levelToName(Level.INFO), "INFO");
     assertEquals(levelToName(Level.WARNING), "WARNING");
@@ -21,6 +21,7 @@ test({
 test({
   name: "level name map returns level for name",
   fn() {
+    assertEquals(nameToLevel("TRACE"), Level.TRACE);
     assertEquals(nameToLevel("DEBUG"), Level.DEBUG);
     assertEquals(nameToLevel("INFO"), Level.INFO);
     assertEquals(nameToLevel("WARNING"), Level.WARNING);

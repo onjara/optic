@@ -5,6 +5,11 @@ import {
 } from "../types.ts";
 import { Level } from "../logger/levels.ts";
 
+/**
+ * An obfuscator to obfuscate the entire value of any matched properties of any
+ * object in the `msg` or `metadata` log record fields.  This includes deep
+ * checking of objects. Redacted values are set to the string `[Redacted]`.
+ */
 export class PropertyRedaction implements Obfuscator {
   #redactionKey: string;
 

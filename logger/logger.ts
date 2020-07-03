@@ -32,26 +32,7 @@ export class Logger {
   constructor() {
     //TODO check permissions here for meta.unableToReadEnvVar once stable and sync version available
 
-    //Check environment variable and parameters for min log level
-    const argsMinLevel = this.getArgsMinLevel();
-    if (
-      argsMinLevel !== undefined &&
-      nameToLevel(argsMinLevel) !== undefined
-    ) {
-      this.#minLevel = nameToLevel(argsMinLevel)!;
-      this.#meta.minLogLevelFrom = "command line arguments";
-      this.#meta.minLogLevel = this.#minLevel;
-    } else {
-      // Set min log level for logger from env variable
-      const envDefaultMinLevel = this.getEnvMinLevel();
-      if (
-        envDefaultMinLevel && nameToLevel(envDefaultMinLevel) !== undefined
-      ) {
-        this.#minLevel = nameToLevel(envDefaultMinLevel)!;
-        this.#meta.minLogLevelFrom = "environment variable";
-        this.#meta.minLogLevel = this.#minLevel;
-      }
-    }
+    this.setMinLogLevel();
 
     // Append footers and destroy loggers on unload of module
     addEventListener("unload", () => {
@@ -62,10 +43,37 @@ export class Logger {
     });
   }
 
+  private setMinLogLevel() {
+    //Check environment variable and parameters for min log level
+    const argMinLevel = this.getArgsMinLevel();
+    if (argMinLevel !== undefined && nameToLevel(argMinLevel) !== undefined) {
+      //set min log level from module arguments
+      this.#minLevel = nameToLevel(argMinLevel)!;
+      this.#meta.minLogLevelFrom = "command line arguments";
+      this.#meta.minLogLevel = this.#minLevel;
+    } else {
+      // Set min log level from env variable
+      const envMinLevel = this.getEnvMinLevel();
+      if (envMinLevel && nameToLevel(envMinLevel) !== undefined) {
+        this.#minLevel = nameToLevel(envMinLevel)!;
+        this.#meta.minLogLevelFrom = "environment variable";
+        this.#meta.minLogLevel = this.#minLevel;
+      }
+    }
+  }
+
+  /**
+   * Returns the minimum log level required for a log record to be passed to
+   * each stream (which may still reject with a more restrictive min log level)
+   */
   minLogLevel(): Level {
     return this.#minLevel;
   }
 
+  /**
+   * Set the minimum log level required for the logger to process a log record.
+   * Log records with a lower level are not processed by anything.
+   */
   withLevel(level: Level): Logger {
     this.#minLevel = level;
     this.#meta.minLogLevelFrom = "logger.level()";
@@ -73,6 +81,10 @@ export class Logger {
     return this;
   }
 
+  /** 
+   * Add a stream to this logger. By default the logger comes with a console 
+   * stream.  Adding any additional streams removes this default stream.
+   */
   addStream(stream: Stream): Logger {
     if (!this.#streamAdded) {
       // remove the default console stream if adding specified ones
@@ -85,6 +97,7 @@ export class Logger {
     return this;
   }
 
+  /** Remove stream from the logger */
   removeStream(removeStream: Stream): Logger {
     this.#streams = this.#streams.filter((stream) => stream !== removeStream);
     if (removeStream.logFooter) removeStream.logFooter(this.#meta);
@@ -92,6 +105,10 @@ export class Logger {
     return this;
   }
 
+  /**
+   * Add a trigger to the logger.  A trigger is a hook to spy on log records
+   * being processed by the logger and potentially take action.
+   */
   addTrigger(trigger: Trigger | TriggerFn): Logger {
     if (typeof trigger === "function") {
       trigger = { check: trigger };
@@ -100,6 +117,10 @@ export class Logger {
     return this;
   }
 
+  /** 
+   * Remove trigger from the logger.  Once removed it will no longer spy on 
+   * log records passing through the logger.
+   */
   removeTrigger(triggerToRemove: Trigger): Logger {
     this.#triggers = this.#triggers.filter((trigger) =>
       trigger !== triggerToRemove
@@ -107,6 +128,10 @@ export class Logger {
     return this;
   }
 
+  /**
+   * Add a filter to the logger.  Filters examine each log record and will
+   * reject them from being processes if the filter condition is met.
+   */
   addFilter(filter: Filter | FilterFn): Logger {
     if (typeof filter === "function") {
       filter = { shouldFilterOut: filter };
@@ -115,11 +140,20 @@ export class Logger {
     return this;
   }
 
+  /**
+   * Remove filter from the logger.  Once removed, the filter will no longer
+   * examine any log records or reject them.
+   */
   removeFilter(filterToRemove: Filter): Logger {
     this.#filters = this.#filters.filter((filter) => filter !== filterToRemove);
     return this;
   }
 
+  /**
+   * Add an obfuscator to the logger.  Obfuscators will match parts of a log
+   * record and obfuscate them to prevent sensitive information from appearing
+   * in the logs. 
+   */
   addObfuscator(obfuscator: Obfuscator | ObfuscatorFn): Logger {
     if (typeof obfuscator === "function") {
       obfuscator = { obfuscate: obfuscator };
@@ -128,6 +162,10 @@ export class Logger {
     return this;
   }
 
+  /**
+   * Remove obfuscator from the logger.  Once removed, it will no longer examine
+   * any log records or obfuscate them.
+   */
   removeObfuscator(obfuscatorToRemove: Obfuscator): Logger {
     this.#obfuscators = this.#obfuscators.filter((obfuscator) =>
       obfuscator !== obfuscatorToRemove
@@ -199,6 +237,28 @@ export class Logger {
     return resolvedMsg;
   }
 
+  /**
+   * Trace is the lowest log level used for intimate tracing of flow through
+   * logic.
+   * 
+   * @param msg primary log message
+   * @param metadata supporting log message data
+   */
+  trace<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
+  trace<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
+  trace<T>(
+    msg: () => T | (T extends Function ? never : T),
+    ...metadata: unknown[]
+  ): T | undefined {
+    return this.logToStreams(Level.TRACE, msg, metadata);
+  }
+
+  /**
+   * Debug is a low log level used for tracking down issues
+   * 
+   * @param msg primary log message
+   * @param metadata supporting log message data
+   */
   debug<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
   debug<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
   debug<T>(
@@ -208,6 +268,12 @@ export class Logger {
     return this.logToStreams(Level.DEBUG, msg, metadata);
   }
 
+  /**
+   * Info is a mid/low log level used for recording informational messages
+   * 
+   * @param msg primary log message
+   * @param metadata supporting log message data
+   */
   info<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
   info<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
   info<T>(
@@ -217,6 +283,13 @@ export class Logger {
     return this.logToStreams(Level.INFO, msg, metadata);
   }
 
+  /**
+   * Warning is a mid log level used for recording situations that are unexpected
+   * or not quite right, but which are not necessarily causing issues
+   * 
+   * @param msg primary log message
+   * @param metadata supporting log message data
+   */
   warning<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
   warning<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
   warning<T>(
@@ -226,6 +299,13 @@ export class Logger {
     return this.logToStreams(Level.WARNING, msg, metadata);
   }
 
+  /**
+   * Error is a high log level used for recording situations where errors are
+   * occurring and causing issues
+   * 
+   * @param msg primary log message
+   * @param metadata supporting log message data
+   */
   error<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
   error<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
   error<T>(
@@ -235,6 +315,13 @@ export class Logger {
     return this.logToStreams(Level.ERROR, msg, metadata);
   }
 
+  /**
+   * Critical is the highest log level used for recording situations where the
+   * execution flow itself is at risk due to catastrophic failures
+   * 
+   * @param msg primary log message
+   * @param metadata supporting log message data
+   */
   critical<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
   critical<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
   critical<T>(
@@ -244,6 +331,13 @@ export class Logger {
     return this.logToStreams(Level.CRITICAL, msg, metadata);
   }
 
+  /**
+   * Log at any level, including custom levels.
+   * 
+   * @param level - a LogLevel
+   * @param msg primary log message
+   * @param metadata supporting log message data
+   */
   log<T>(level: Level, msg: () => T, ...metadata: unknown[]): T | undefined;
   log<T>(
     level: Level,

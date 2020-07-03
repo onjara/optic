@@ -364,6 +364,29 @@ test({
 });
 
 test({
+  name: "TRACE messages work as expected",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger().addStream(testStream);
+    const ignoredOutput = logger.trace("World");
+    assertEquals(ignoredOutput, "World");
+    assertEquals(testStream.functionsCalled, ["setup", "logHeader"]);
+    assertEquals(testStream.logRecords.length, 0);
+
+    const output = logger.withLevel(Level.TRACE).trace(() => "hello");
+    assertEquals(output, "hello");
+    assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
+    assertEquals(testStream.logRecords[0].msg, "hello");
+    assertEquals(testStream.logRecords[0].level, Level.TRACE);
+    assertEquals(testStream.logRecords[0].metadata, []);
+    assert(
+      new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
+        10,
+    );
+  },
+});
+
+test({
   name: "DEBUG messages work as expected",
   fn() {
     const testStream = new TestStream();

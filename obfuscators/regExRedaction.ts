@@ -6,6 +6,11 @@ import { Level } from "../logger/levels.ts";
  */
 export type Replacer = (match: string) => string;
 
+/**
+ * An obfuscator to replace regular expression matches with `*`s or a custom
+ * replacer function.  `msg` and `metadata` fields are checked against the
+ * supplied RegExp, having first been converted to strings if necessary.
+ */
 export class RegExRedaction implements Obfuscator {
   #regex: RegExp;
   #replacer: Replacer = (match: string): string => {
