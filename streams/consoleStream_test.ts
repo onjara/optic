@@ -38,6 +38,7 @@ test({
           level: Level.DEBUG,
           metadata: [],
           dateTime: new Date(),
+          logger: "default",
         },
       );
       assert(
@@ -67,6 +68,7 @@ test({
         sessionStarted: new Date(),
         minLogLevel: Level.DEBUG,
         minLogLevelFrom: "somewhere",
+        logger: "default",
       };
       cs.logHeader(lm);
       cs.logFooter(lm);

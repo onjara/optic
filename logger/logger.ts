@@ -18,9 +18,11 @@ class LogMetaImpl implements LogMeta {
   minLogLevelFrom: string = "default value";
   readonly sessionStarted = new Date();
   readonly hostname = "unavailable";
+  logger = "default";
 }
 
 export class Logger {
+  #name = "default";
   #minLevel: Level = Level.DEBUG;
   #streams: Stream[] = [new ConsoleStream()];
   #filters: Filter[] = [];
@@ -29,7 +31,11 @@ export class Logger {
   #streamAdded = false;
   #meta: LogMetaImpl = new LogMetaImpl();
 
-  constructor() {
+  constructor(name?: string) {
+    if (name) {
+      this.#name = name;
+      this.#meta.logger = name;
+    }
     //TODO check permissions here for meta.unableToReadEnvVar once stable and sync version available
 
     this.setMinLogLevel();
@@ -74,11 +80,15 @@ export class Logger {
    * Set the minimum log level required for the logger to process a log record.
    * Log records with a lower level are not processed by anything.
    */
-  withLevel(level: Level): Logger {
+  withLevel(level: Level): this {
     this.#minLevel = level;
     this.#meta.minLogLevelFrom = "logger.level()";
     this.#meta.minLogLevel = this.#minLevel;
     return this;
+  }
+
+  name(): string {
+    return this.#name;
   }
 
   /** 
@@ -207,6 +217,7 @@ export class Logger {
       resolvedMsg,
       metadata,
       level,
+      this.#name,
     );
 
     // Check triggers

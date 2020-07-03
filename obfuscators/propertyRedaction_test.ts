@@ -17,6 +17,7 @@ test({
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLr = new PropertyRedaction("x").obfuscate(noopStream, lr);
     assertEquals(newLr.msg, lr.msg);
@@ -34,6 +35,7 @@ test({
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
     const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);
@@ -51,6 +53,7 @@ test({
       metadata: ["The metadata"],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
     const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);
@@ -72,6 +75,7 @@ test({
       metadata: [{ a: 6, b: true }, "The metadata", { c: "hello", d: "world" }],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
     const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);
@@ -107,6 +111,7 @@ test({
       ],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
     const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);

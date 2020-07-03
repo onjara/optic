@@ -42,6 +42,7 @@ function logRec(msg: string, level: Level): LogRecord {
     dateTime: new Date(),
     metadata: [],
     level: level,
+    logger: "default",
   };
 }
 
@@ -51,6 +52,7 @@ function logMeta(): LogMeta {
     sessionStarted: new Date(),
     minLogLevel: Level.INFO,
     minLogLevelFrom: "default",
+    logger: "default",
   };
 }
 

@@ -37,6 +37,7 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   #dateTime: Date;
   readonly level: Level;
   #logRecord: LogRecord;
+  readonly logger: string;
 
   constructor(logRecord: LogRecord, regEx: RegExp, replacer: Replacer) {
     if (typeof logRecord.msg == "string") {
@@ -64,6 +65,7 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
     this.level = logRecord.level;
     this.#dateTime = logRecord.dateTime;
     this.#logRecord = logRecord;
+    this.logger = logRecord.logger;
   }
 
   matchAndReplace(str: string, regEx: RegExp, replacer: Replacer): string {

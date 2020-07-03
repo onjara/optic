@@ -13,6 +13,7 @@ const lr = {
   metadata: ["The metadata"],
   dateTime: new Date("2020-06-17T03:24:00"),
   level: Level.DEBUG,
+  logger: "default",
 };
 
 function getMsgLr(msg: unknown) {
@@ -21,6 +22,7 @@ function getMsgLr(msg: unknown) {
     metadata: ["The metadata"],
     dateTime: new Date("2020-06-17T03:24:00"),
     level: Level.DEBUG,
+    logger: "default",
   };
 }
 
@@ -30,6 +32,7 @@ function getMetadataLr(meta: unknown[]) {
     metadata: meta,
     dateTime: new Date("2020-06-17T03:24:00"),
     level: Level.DEBUG,
+    logger: "default",
   };
 }
 
@@ -157,6 +160,17 @@ test({
     assertEquals(
       tr.format(lr),
       "2020-06-17T02:24:00.000Z UNKNOWN  Log Message The metadata",
+    );
+  },
+});
+test({
+  name: "Logger name is a valid token",
+  fn() {
+    const tr = new TokenReplacer("{msg} {logger}");
+    lr.level = 99;
+    assertEquals(
+      tr.format(lr),
+      "Log Message default",
     );
   },
 });

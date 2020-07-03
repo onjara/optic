@@ -9,12 +9,14 @@ export class ImmutableLogRecord implements LogRecord {
   #metadata: unknown[];
   #dateTime: Date;
   readonly level: Level;
+  readonly logger: string;
 
-  constructor(msg: unknown, metadata: unknown[], level: Level) {
+  constructor(msg: unknown, metadata: unknown[], level: Level, name: string) {
     this.msg = msg;
     this.#metadata = [...metadata];
     this.level = level;
     this.#dateTime = new Date();
+    this.logger = name;
   }
   get metadata(): unknown[] {
     return [...this.#metadata];

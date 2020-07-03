@@ -1,7 +1,7 @@
 import { Formatter, LogRecord, DateTimeFormatter } from "../types.ts";
 import { levelToName } from "../logger/levels.ts";
 
-type Fields = "msg" | "metadata" | "level" | "dateTime";
+type Fields = "msg" | "metadata" | "level" | "dateTime" | "logger";
 export type ReplacerFn = (key: unknown, value: unknown) => string;
 
 /**
@@ -33,6 +33,8 @@ export class JsonFormatter implements Formatter<string> {
         output += '"msg":' + JSON.stringify(logRecord.msg) + ",";
       } else if (field === "metadata") {
         output += '"metadata":' + JSON.stringify(logRecord.metadata) + ",";
+      } else if (field === "logger") {
+        output += `"logger":"${logRecord.logger}",`;
       }
     }
     output = output.slice(0, -1) + "}";

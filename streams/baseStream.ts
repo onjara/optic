@@ -71,6 +71,7 @@ export abstract class BaseStream implements Stream {
       metadata: [],
       dateTime: new Date(),
       level: Level.INFO,
+      logger: meta.logger,
     };
     const minLogLevelRecord = {
       msg: "Default min log level set at: " + levelToName(meta.minLogLevel) +
@@ -78,6 +79,7 @@ export abstract class BaseStream implements Stream {
       metadata: [],
       dateTime: new Date(),
       level: Level.INFO,
+      logger: meta.logger,
     };
 
     this.log(this.format(loggingInitAtRecord));
@@ -92,6 +94,7 @@ export abstract class BaseStream implements Stream {
       metadata: [],
       dateTime: new Date(),
       level: Level.INFO,
+      logger: meta.logger,
     };
     const loggingDurationRecord = {
       msg: "Log session duration: " +
@@ -99,6 +102,7 @@ export abstract class BaseStream implements Stream {
       metadata: [],
       dateTime: new Date(),
       level: Level.INFO,
+      logger: meta.logger,
     };
 
     this.log(this.format(loggingCompletedAtRecord));

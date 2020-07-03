@@ -8,10 +8,16 @@ import { Level } from "./levels.ts";
 test({
   name: "LogRecord is immutable",
   fn() {
-    const ilr = new ImmutableLogRecord("msg", ["a", "b"], Level.DEBUG);
+    const ilr = new ImmutableLogRecord(
+      "msg",
+      ["a", "b"],
+      Level.DEBUG,
+      "myLogger",
+    );
     ilr.metadata[0] = "ddddddddddd";
     ilr.dateTime.setFullYear(1999);
     assertEquals(ilr.metadata, ["a", "b"]);
     assertEquals(ilr.dateTime.getFullYear, new Date().getFullYear);
+    assertEquals(ilr.logger, "myLogger");
   },
 });

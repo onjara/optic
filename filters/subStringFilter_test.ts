@@ -13,6 +13,7 @@ function lrMsg(msg: unknown) {
     metadata: [],
     dateTime: new Date("2020-06-17T03:24:00"),
     level: Level.DEBUG,
+    logger: "default",
   };
 }
 function lrMeta(data: unknown[]) {
@@ -21,6 +22,7 @@ function lrMeta(data: unknown[]) {
     metadata: data,
     dateTime: new Date("2020-06-17T03:24:00"),
     level: Level.DEBUG,
+    logger: "default",
   };
 }
 

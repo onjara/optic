@@ -325,6 +325,7 @@ test({
           metadata: logRecord.metadata,
           dateTime: logRecord.dateTime,
           level: logRecord.level,
+          logger: logRecord.logger,
         };
       }
     }
@@ -471,5 +472,15 @@ test({
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
         10,
     );
+  },
+});
+
+test({
+  name: "Logger can be named",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger("config").addStream(testStream);
+    assertEquals(logger.name(), "config");
+    assertEquals(testStream.meta?.logger, "config");
   },
 });

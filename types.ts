@@ -122,6 +122,8 @@ export interface LogRecord {
   readonly dateTime: Date;
   /** The log level for this event */
   readonly level: Level;
+  /** The name of the logger which created the log record */
+  readonly logger: string;
 }
 
 /**
@@ -137,4 +139,6 @@ export interface LogMeta {
   minLogLevel: Level;
   /** Where the min log level was sourced from */
   minLogLevelFrom: string;
+  /** The name of the logger for this metadata */
+  readonly logger: string;
 }

@@ -17,14 +17,11 @@ test({
       metadata: [true, undefined, "there"],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const jf = new JsonFormatter();
-    const newLrA = new PropertyRedaction("ljh").obfuscate(
-      { handle(lR: LogRecord): void {} },
-      lr,
-    );
     assertEquals(
-      jf.format(newLrA),
+      jf.format(lr),
       '{"dateTime":"2020-06-17T02:24:00.000Z","level":"DEBUG","msg":{"a":6,"b":"hello"},"metadata":[true,null,"there"]}',
     );
   },
@@ -38,12 +35,15 @@ test({
       metadata: [true, undefined, "there"],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const jfMsg = new JsonFormatter().withFields(["msg"]);
     const jfDateTime = new JsonFormatter().withFields(["dateTime"]);
     const jfLevel = new JsonFormatter().withFields(["level"]);
     const jfMetadata = new JsonFormatter().withFields(["metadata"]);
-    const jfMsgDateTime = new JsonFormatter().withFields(["dateTime", "msg"]);
+    const jfMsgDateTime = new JsonFormatter().withFields(
+      ["dateTime", "msg", "logger"],
+    );
     assertEquals(jfMsg.format(lr), '{"msg":{"a":6,"b":"hello"}}');
     assertEquals(
       jfDateTime.format(lr),
@@ -53,7 +53,7 @@ test({
     assertEquals(jfMetadata.format(lr), '{"metadata":[true,null,"there"]}');
     assertEquals(
       jfMsgDateTime.format(lr),
-      '{"dateTime":"2020-06-17T02:24:00.000Z","msg":{"a":6,"b":"hello"}}',
+      '{"dateTime":"2020-06-17T02:24:00.000Z","msg":{"a":6,"b":"hello"},"logger":"default"}',
     );
   },
 });
@@ -75,6 +75,7 @@ test({
       metadata: [true, undefined, "there"],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const jf = new JsonFormatter().withPrettyPrintIndentation(2);
     const jfStar = new JsonFormatter().withPrettyPrintIndentation("**");
@@ -101,6 +102,7 @@ test({
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const jf = new JsonFormatter().withDateTimeFormatter(
       new SimpleDateTimeFormatter("hh:mm dddd MMM D"),

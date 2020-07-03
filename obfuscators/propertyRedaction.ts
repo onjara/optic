@@ -28,6 +28,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
   #dateTime: Date;
   readonly level: Level;
   #logRecord: LogRecord;
+  readonly logger: string;
 
   constructor(logRecord: LogRecord, property: string) {
     if (typeof logRecord.msg === "object") {
@@ -51,6 +52,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
     this.level = logRecord.level;
     this.#dateTime = logRecord.dateTime;
     this.#logRecord = logRecord;
+    this.logger = logRecord.logger;
   }
 
   redact(obj: unknown, property: string): void {

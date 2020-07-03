@@ -13,11 +13,12 @@ import { getColorForLevel } from "./color.ts";
  * A formatter which allows you to use tokens in a string for place
  * substitutions of log record fields.  Tokens are wrapped in curly 
  * brackets, e.g. {msg}, and must correspond to one of `{dateTime}`, `{level}`,
- * `{msg}` or `{metadata}`.  Unrecognized tokens will be left unmodified.
+ * `{msg}`, `{metadata}` or `{logger}`.  Unrecognized tokens will be left
+ * unmodified.
  *
  * Examples:
  * ```
- * "[{dateTime}] {level} {msg} {metadata}"
+ * "[{dateTime}] {level} {msg} {metadata} LoggerName: {logger}"
  * "Date: {dateTime} Level: {level} Data: {msg} [{metadata}]"
  * ```
  */
@@ -122,6 +123,7 @@ export class TokenReplacer implements Formatter<string> {
       metadataReplacement = metadataReplacement.slice(0, -1);
     }
     formattedMsg = formattedMsg.replace("{metadata}", metadataReplacement);
+    formattedMsg = formattedMsg.replace("{logger}", logRecord.logger);
 
     if (this.#withColor && globalThis.Deno) {
       const colorize = getColorForLevel(logRecord.level);

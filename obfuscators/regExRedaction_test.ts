@@ -16,6 +16,7 @@ test({
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLr = new RegExRedaction(/123/).obfuscate(noopStream, lr);
     assertEquals(newLr.msg, lr.msg);
@@ -33,6 +34,7 @@ test({
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLr = new RegExRedaction(/123/).obfuscate(noopStream, lr);
     assertEquals(newLr.msg, "Log Message ***4, hello world");
@@ -53,6 +55,7 @@ test({
       metadata: ["Log Message 1234, hello world"],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLr = new RegExRedaction(/123/).obfuscate(noopStream, lr);
     assertEquals(newLr.metadata, ["Log Message ***4, hello world"]);
@@ -73,6 +76,7 @@ test({
       metadata: [{ a: true, b: undefined }],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLr = new RegExRedaction(/123/).obfuscate(noopStream, lr);
     assertEquals(newLr.msg, { a: "hello ***4", b: { c: "***4, there" } });
@@ -90,6 +94,7 @@ test({
       metadata: [{ a: "hello 1234", b: { c: "1234, there" } }, { d: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLr = new RegExRedaction(/123/).obfuscate(noopStream, lr);
     assertEquals(
@@ -113,6 +118,7 @@ test({
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
+      logger: "default",
     };
     const newLr = new RegExRedaction(
       /\d{2}-\d{2}-\d{4}/,
