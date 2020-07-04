@@ -110,3 +110,16 @@ test({
     );
   },
 });
+
+test({
+  name: "This filter can act as an illegal character filter",
+  fn() {
+    const ref = new RegExFilter(/[£%~`]+/);
+    assert(ref.shouldFilterOut(stream, lrMsg("£300.35")));
+    assert(ref.shouldFilterOut(stream, lrMsg("85% approved")));
+    assert(ref.shouldFilterOut(stream, lrMsg("Approx. ~30")));
+    assert(ref.shouldFilterOut(stream, lrMsg("`hello`")));
+    assert(!ref.shouldFilterOut(stream, lrMsg("#this is a test#")));
+    assert(!ref.shouldFilterOut(stream, lrMsg("*?/\|\\@,*^")));
+  },
+});
