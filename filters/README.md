@@ -46,7 +46,7 @@ class MyFilter implements Filter {
 
 ## Registering your filter
 
-Filters should be registered directly with the logger as follows:
+Filters are registered directly with the logger as follows:
 ```
 const myFilter = new MyFilter();
 const logger = new Logger().addFilter(myFilter);
@@ -59,14 +59,15 @@ Two filters are available in LogGear.
 ### Regular Expression Filter
 
 This filter takes in a regular expression.  If it matches, then the log record
-is filtered out.
+is filtered out.  The log record `msg` and `metadata` fields are first
+converted to a string if necessary before testing the regular expression.
 
 ```typescript
 // Filters out log records containing `%` or `&` in the message or metadata
 const regExFilter = new RegExFilter(/[%&]+/);
 logger.addFilter(regExFilter);
 logger.error("Oh no!");  // not filtered
-logger.error("Oh no & a problem occurred!");  // filtered out
+logger.error("Oh no!", "& another thing");  // filtered out
 ```
 
 ### Substring filter

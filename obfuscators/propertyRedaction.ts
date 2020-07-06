@@ -18,6 +18,8 @@ export class PropertyRedaction implements Obfuscator {
   }
 
   obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
+    // TODO search for matching property before cloning and obfuscating entire
+    // log record
     return new ObfuscatedPropertyLogRecord(logRecord, this.#redactionKey);
   }
 }
@@ -32,6 +34,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
 
   constructor(logRecord: LogRecord, property: string) {
     if (typeof logRecord.msg === "object") {
+      // clone the original object
       this.msg = JSON.parse(JSON.stringify(logRecord.msg));
       this.redact(this.msg, property);
     } else {
@@ -41,6 +44,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
     if (property === "metadata") {
       this.#metadata = ["[Redacted]"];
     } else {
+      // clone the original metadata
       this.#metadata = JSON.parse(JSON.stringify(logRecord.metadata));
       for (let i = 0; i < this.#metadata.length; i++) {
         if (typeof (this.#metadata[i]) === "object") {
@@ -49,9 +53,10 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
       }
     }
 
+    // these fields are not available for obfuscation
     this.level = logRecord.level;
     this.#dateTime = logRecord.dateTime;
-    this.#logRecord = logRecord;
+    this.#logRecord = logRecord; // retain a copy of the original log record
     this.logger = logRecord.logger;
   }
 
