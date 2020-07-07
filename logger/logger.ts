@@ -3,8 +3,8 @@ import {
   Stream,
   FilterFn,
   Filter,
-  TriggerFn,
-  Trigger,
+  MonitorFn,
+  Monitor,
   Obfuscator,
   ObfuscatorFn,
   LogRecord,
@@ -26,7 +26,7 @@ export class Logger {
   #minLevel: Level = Level.DEBUG;
   #streams: Stream[] = [new ConsoleStream()];
   #filters: Filter[] = [];
-  #triggers: Trigger[] = [];
+  #monitors: Monitor[] = [];
   #obfuscators: Obfuscator[] = [];
   #streamAdded = false;
   #meta: LogMetaImpl = new LogMetaImpl();
@@ -116,24 +116,24 @@ export class Logger {
   }
 
   /**
-   * Add a trigger to the logger.  A trigger is a hook to spy on log records
+   * Add a monitor to the logger.  A monitor is a hook to spy on log records
    * being processed by the logger and potentially take action.
    */
-  addTrigger(trigger: Trigger | TriggerFn): Logger {
-    if (typeof trigger === "function") {
-      trigger = { check: trigger };
+  addMonitor(monitor: Monitor | MonitorFn): Logger {
+    if (typeof monitor === "function") {
+      monitor = { check: monitor };
     }
-    this.#triggers.push(trigger);
+    this.#monitors.push(monitor);
     return this;
   }
 
   /** 
-   * Remove trigger from the logger.  Once removed it will no longer spy on 
+   * Remove monitor from the logger.  Once removed it will no longer spy on 
    * log records passing through the logger.
    */
-  removeTrigger(triggerToRemove: Trigger): Logger {
-    this.#triggers = this.#triggers.filter((trigger) =>
-      trigger !== triggerToRemove
+  removeMonitor(monitorToRemove: Monitor): Logger {
+    this.#monitors = this.#monitors.filter((monitor) =>
+      monitor !== monitorToRemove
     );
     return this;
   }
@@ -220,9 +220,9 @@ export class Logger {
       this.#name,
     );
 
-    // Check triggers
-    for (let i = 0; i < this.#triggers.length; i++) {
-      this.#triggers[i].check(logRecord);
+    // Check monitors
+    for (let i = 0; i < this.#monitors.length; i++) {
+      this.#monitors[i].check(logRecord);
     }
 
     // Process streams

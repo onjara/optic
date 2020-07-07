@@ -13,7 +13,7 @@ A highly extensible, configurable and easy to use logging framework for Deno.
 import { Logger } from "https://deno.land/x/log-gear/mod.ts";
 
 const logger = new Logger();
-logger.info("Hello world!");  // outputs "Hello world!" to the console
+logger.info("Hello world!");  // outputs "Hello world!" log record to the console
 ```
 # Streams
 
@@ -21,15 +21,18 @@ logger.info("Hello world!");  // outputs "Hello world!" to the console
 
 # Log formatting
 
-# Triggers
+# Monitors
+
+Monitors allow you to spy on log records that flow through your logger and take
+action
 
 # Obfuscation
 
 log-gear allows you to obfuscate log records sent to a stream, allowing a log
 record to be obfuscated in one stream but not another. Obfuscation will hide
 part of a log record, leaving the remainder untouched. Obfuscation takes place
-after triggers and also after log filtering but before the log record is sent
-to stream.
+after monitors and also after log filtering but before the log record is sent
+to a stream.
 
 Some use cases for obfuscation include:
 * Hiding sensitive data in your logs such as passwords or credit card details
@@ -54,7 +57,7 @@ necessary data obfuscated.  Example:
 ```typescript
 import { ObfuscatorFn } from "https://deno.land/x/log-gear/mod.ts";
 
-const ob: ObfuscatorFn = (stream: Stream, logRecord: LogRecord) => ({
+const ob: ObfuscatorFn = (stream: Stream, logRecord: LogRecord):LogRecord => ({
   msg: (logRecord.msg as string).startsWith("password:")
     ? "password: [Redacted]"
     : logRecord.msg,
@@ -157,13 +160,14 @@ RegEx|Test string|alphaNumericReplacer|nonWhitespaceReplacer
 
 Filters allows you to filter out log records from your streams.  A log record
 can be filtered out from one stream but not another.  Filters are processed
-after triggers, but before obfuscators or stream handling.  Upon handling a
+after monitors, but before obfuscators or stream handling.  Upon handling a
 log record, the logger will run filters once for each registered stream.
 
 Some use cases for filters include:
 * Preventing spam from filling up your logs
 * Removing log records which contain illegal characters
 * Blocking malicious log records
+* Directing certain log records to a different logger
 
 ## Constructing a filter
 

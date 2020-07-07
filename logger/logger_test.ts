@@ -9,7 +9,7 @@ import {
   Stream,
   LogRecord,
   LogMeta,
-  Trigger,
+  Monitor,
   Filter,
   Obfuscator,
 } from "../types.ts";
@@ -158,7 +158,7 @@ test({
 });
 
 test({
-  name: "Adding a stream will trigger stream setup and logHeader",
+  name: "Adding a stream will monitor stream setup and logHeader",
   fn() {
     const testStream = new TestStream();
     new Logger().addStream(testStream);
@@ -167,7 +167,7 @@ test({
 });
 
 test({
-  name: "Removing a stream will trigger logFooter and destroy",
+  name: "Removing a stream will monitor logFooter and destroy",
   fn() {
     const testStream = new TestStream();
     new Logger().addStream(testStream).removeStream(testStream);
@@ -211,29 +211,29 @@ test({
 });
 
 test({
-  name: "Triggers can be added and removed and fire on each log message",
+  name: "Monitors can be added and removed and fire on each log message",
   fn() {
-    class TestTrigger implements Trigger {
+    class TestMonitor implements Monitor {
       checkCount = 0;
       check(logRecord: LogRecord): void {
         this.checkCount++;
       }
     }
-    const testTrigger1 = new TestTrigger();
-    const testTrigger2 = new TestTrigger();
-    const logger = new Logger().addStream(new TestStream()).addTrigger(
-      testTrigger1,
-    ).addTrigger(testTrigger2);
-    assertEquals(testTrigger1.checkCount, 0);
-    assertEquals(testTrigger2.checkCount, 0);
-    logger.debug("test trigger fires after being added");
-    assertEquals(testTrigger1.checkCount, 1);
-    assertEquals(testTrigger2.checkCount, 1);
-    logger.removeTrigger(testTrigger1);
-    logger.removeTrigger(testTrigger2);
-    logger.debug("test trigger was removed");
-    assertEquals(testTrigger1.checkCount, 1);
-    assertEquals(testTrigger2.checkCount, 1);
+    const testMonitor1 = new TestMonitor();
+    const testMonitor2 = new TestMonitor();
+    const logger = new Logger().addStream(new TestStream()).addMonitor(
+      testMonitor1,
+    ).addMonitor(testMonitor2);
+    assertEquals(testMonitor1.checkCount, 0);
+    assertEquals(testMonitor2.checkCount, 0);
+    logger.debug("test monitor fires after being added");
+    assertEquals(testMonitor1.checkCount, 1);
+    assertEquals(testMonitor2.checkCount, 1);
+    logger.removeMonitor(testMonitor1);
+    logger.removeMonitor(testMonitor2);
+    logger.debug("test monitor was removed");
+    assertEquals(testMonitor1.checkCount, 1);
+    assertEquals(testMonitor2.checkCount, 1);
   },
 });
 

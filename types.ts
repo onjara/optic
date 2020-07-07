@@ -68,18 +68,18 @@ export interface DateTimeFormatter {
 }
 
 /**
- * Define a trigger.  Triggers spy on log records and do not interfere in any
- * way with the log process, but may take additional actions based on 
- * conditions met by the log record.
+ * Define a monitor.  Monitors spy on log records and do not interfere in any
+ * way with the log process. Monitors may take additional actions based on 
+ * conditions met by the log record, collect stats, etc..
  */
-export type TriggerFn = (logRecord: LogRecord) => void;
+export type MonitorFn = (logRecord: LogRecord) => void;
 
 /**
- * Interface for defining a class to spy on log records and then trigger 
- * additional actions based on conditions met by the log records
+ * Interface for defining a class to monitor log records and optionally take
+ * action
  */
-export interface Trigger {
-  check: TriggerFn;
+export interface Monitor {
+  check: MonitorFn;
 }
 
 /**
