@@ -232,9 +232,9 @@ test({
       logger: "default",
     };
     const newLr = new RegExReplacer(
-      /A.*Z/,
+      /A(.*)Z/,
       nonWhitespaceReplacer,
     ).obfuscate(noopStream, lr);
-    assertEquals(newLr.msg, "***********************************");
+    assertEquals(newLr.msg, "A*********************************Z");
   },
 });

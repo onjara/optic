@@ -14,7 +14,7 @@ export type Replacer = (fullMatch: string, ...args: unknown[]) => string;
 
 /**
  * A replace function which replaces all alpha-numeric characters with stars.
- * E.g. "£25.62" becomes "£**.**"
+ * E.g. a match of "£25.62" becomes "£**.**"
  * If the match has no groups, then the entire match is obfuscated. If the match
  * contains groups, then only the groups are obfuscated and non-group characters
  * in the full match are left untouched.
@@ -30,9 +30,9 @@ export function alphaNumericReplacer(
   } else { // e.g. groups, obfuscate only the groups
     let returnVal = fullMatch;
     for (let i = 0; i < args.length - 2; i++) {
-      const safeVal = args[i] as string;
+      const argValAsString = args[i] as string;
       returnVal = returnVal.replace(
-        safeVal,
+        argValAsString,
         (args[i] as string).replace(/[a-zA-Z0-9]/g, "*"),
       );
     }
@@ -42,7 +42,7 @@ export function alphaNumericReplacer(
 
 /**
  * A replace function which replaces all non white-space characters with stars.
- * E.g. "Amount: £35.25" becomes "******* ******"
+ * E.g. a match of "Amount: £35.25" becomes "******* ******"
  * If the match has no groups, then the entire match is obfuscated. If the match
  * contains groups, then only the groups are obfuscated and non-group characters
  * in the full match are left untouched.
@@ -58,8 +58,11 @@ export function nonWhitespaceReplacer(
   } else { // e.g. groups, obfuscate only the groups
     let returnVal = fullMatch;
     for (let i = 0; i < args.length - 2; i++) {
-      const safeVal = escapeForRegExp(args[i] as string);
-      returnVal = returnVal.replace(safeVal, safeVal.replace(/[^\s]/g, "*"));
+      const argValAsString = args[i] as string;
+      returnVal = returnVal.replace(
+        argValAsString,
+        argValAsString.replace(/[^\s]/g, "*"),
+      );
     }
     return returnVal;
   }

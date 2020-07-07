@@ -113,7 +113,8 @@ object is untouched, as obfuscation clones the object before obfuscation.
 ```typescript
 import { PropertyRedaction } from "https://deno.land/x/log-gear/mod.ts";
 
-const pr = new PropertyRedaction('password');
+logger.addObfuscator(new PropertyRedaction('password'));
+
 // This next record is untouched by the obfuscator (no `password` property)
 logger.info({user: "abc29002", dateOfBirth: "1966/02/33"});
 
@@ -123,7 +124,34 @@ logger.info({user: "abc29002", password: "s3cr3tpwd"});
 
 ### Regular expression redaction
 
-This obfuscator allows you to specify a regular expression.
+This obfuscator allows you to specify a regular expression and an optional
+replacer function.  The RegExReplacer will then go through the `msg` and 
+`metadata` fields looking for string values.  Anytime it finds one, it will
+run the Javascript `string.replace(regEx, replacer)` against it. For more details
+on this, see [String.replace()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+
+There are two included replacer functions. `alphaNumericReplacer` (the default) 
+will replace all letters and numbers with `*`'s.  `nonWhitespaceReplacer` will
+replace all non white space characters with `*`'s.  For both replacers, if the
+regular express does not use groups then then entire match is replaced, however
+if groups are used, only the groups are replaced.
+
+```typescript
+import { RegExReplacer, nonWhitespaceReplacer } from "https://deno.land/x/log-gear/mod.ts";
+
+logger.addObfuscator(new RegExReplacer(/£([\d]+\.[\d]{2})/));
+logger.addObfuscator(new RegExReplacer(/password: (.*)/, nonWhitespaceReplacer));
+
+logger.info("Amount: £122.51"); // becomes "Amount: £***.**"
+logger.info("password: MyS3cret! Pwd!"); // becomes "password: ********* ****"
+```
+
+RegEx and Replacer examples:
+
+RegEx|Test string|alphaNumericReplacer|nonWhitespaceReplacer
+-----|-----------|--------------------|---------------------
+/£([\d]+\.[\d]{2})/|£52.22|£**.**|£*****
+/\d{2}-\d{2}-\d{4}/|30-04-1954|**-**-****|**********
 
 # Filters
 
