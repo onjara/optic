@@ -23,9 +23,13 @@ logger.info("Hello world!");  // outputs "Hello world!" log record to the consol
 
 # Monitors
 
-Monitors allow you to spy on log records that flow through your logger and take
-action, collect stats or anything else you might want to do.  Monitors are run
-first, before any filtering, obfuscation or stream handling.
+Monitors allow you to spy on log records that flow through your logger.  Monitors
+are run first, before any filtering, obfuscation or stream handling. 
+
+Some use cases for monitors include:
+* Collect stats of your log records
+* Send alert if too many error records detected
+* Debugging aid - output certain records to the console (if not using the Console stream)
 
 ## Constructing a monitor
 
