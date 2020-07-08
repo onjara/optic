@@ -24,7 +24,56 @@ logger.info("Hello world!");  // outputs "Hello world!" log record to the consol
 # Monitors
 
 Monitors allow you to spy on log records that flow through your logger and take
-action
+action, collect stats or anything else you might want to do.  Monitors are run
+first, before any filtering, obfuscation or stream handling.
+
+## Constructing a monitor
+
+There are two ways to construct a monitor:
+
+### Monitor function
+
+This is a good choice for short and simple monitors.  Monitor functions must
+match the following type:
+```typescript
+export type MonitorFn = (logRecord: LogRecord) => void;
+```
+
+Example:
+```typescript
+import { MonitorFn } from "https://deno.land/x/log-gear/mod.ts";
+
+const mon:MonitorFn = (logRecord:LogRecord):void => {
+  if ((logRecord.msg as User).username === "jsmith") {
+    console.log("User jsmith spotted again");
+  }
+}
+```
+
+### Implement the Monitor interface
+
+The Monitor interface requires implementation of the `check` function which is
+of type `MonitorFn` as above.  This gives you the power of a class for more
+complex monitors.
+
+```typescript
+import { MonitorFn } from "https://deno.land/x/log-gear/mod.ts";
+
+class UserMonitor implements Monitor {
+  check(logRecord:LogRecord):void {
+    if ((logRecord.msg as User).username === "jsmith") {
+      console.log("User jsmith spotted again");
+    }
+  }
+}
+```
+
+## Registering Monitors
+
+Monitors are registered directly with the logger as follows:
+```typescript
+const logger = new Logger().addMonitor(new UserMonitor());
+```
 
 # Obfuscation
 
@@ -94,7 +143,7 @@ class PasswordObfuscator implements Obfuscator {
 }
 ```
 
-## Registering your obfuscator
+## Registering obfuscators
 
 Obfuscators are registered directly with the logger as follows:
 ```typescript
@@ -206,7 +255,7 @@ class MyFilter implements Filter {
 }
 ```
 
-## Registering your filter
+## Registering filters
 
 Filters are registered directly with the logger as follows:
 ```typescript
