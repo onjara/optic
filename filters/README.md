@@ -54,7 +54,7 @@ const logger = new Logger().addFilter(myFilter);
 
 ## Ready made filters
 
-Two filters are available in LogGear.
+Two filters are available in Optic.
 
 ### Regular Expression Filter
 

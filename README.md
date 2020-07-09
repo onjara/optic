@@ -3,14 +3,14 @@
 This project is not yet publicly released and is a work in progress.  Significant
 breaking changes are still underway.
 
-# log-gear
+# optic
 
 A highly extensible, configurable and easy to use logging framework for Deno. 
 
 # Quick start
 
 ```typescript
-import { Logger } from "https://deno.land/x/log-gear/mod.ts";
+import { Logger } from "https://deno.land/x/optic/mod.ts";
 
 const logger = new Logger();
 logger.info("Hello world!");  // outputs "Hello world!" log record to the console
@@ -21,6 +21,8 @@ logger.info("Hello world!");  // outputs "Hello world!" log record to the consol
 
 # Log formatting
 
+Optic allows you to format your logs however you wish
+
 # Monitors
 
 Monitors allow you to spy on log records that flow through your logger.  Monitors
@@ -29,7 +31,8 @@ are run first, before any filtering, obfuscation or stream handling.
 Some use cases for monitors include:
 * Collect stats of your log records
 * Send alert if too many error records detected
-* Debugging aid - output certain records to the console (if not using the Console stream)
+* Take automated action on specific error scenario
+* Debugging aid - e.g. output certain records to the console
 
 ## Constructing a monitor
 
@@ -45,7 +48,7 @@ export type MonitorFn = (logRecord: LogRecord) => void;
 
 Example:
 ```typescript
-import { MonitorFn } from "https://deno.land/x/log-gear/mod.ts";
+import { MonitorFn } from "https://deno.land/x/optic/mod.ts";
 
 const mon:MonitorFn = (logRecord:LogRecord):void => {
   if ((logRecord.msg as User).username === "jsmith") {
@@ -61,7 +64,7 @@ of type `MonitorFn` as above.  This gives you the power of a class for more
 complex monitors.
 
 ```typescript
-import { MonitorFn } from "https://deno.land/x/log-gear/mod.ts";
+import { MonitorFn } from "https://deno.land/x/optic/mod.ts";
 
 class UserMonitor implements Monitor {
   check(logRecord:LogRecord):void {
@@ -81,7 +84,7 @@ const logger = new Logger().addMonitor(new UserMonitor());
 
 # Obfuscation
 
-log-gear allows you to obfuscate log records sent to a stream, allowing a log
+optic allows you to obfuscate log records sent to a stream, allowing a log
 record to be obfuscated in one stream but not another. Obfuscation will hide
 part of a log record, leaving the remainder untouched. Obfuscation takes place
 after monitors and also after log filtering but before the log record is sent
@@ -108,7 +111,7 @@ log record if nothing is obfuscated, or a copy of the original with the
 necessary data obfuscated.  Example:
 
 ```typescript
-import { ObfuscatorFn } from "https://deno.land/x/log-gear/mod.ts";
+import { ObfuscatorFn } from "https://deno.land/x/optic/mod.ts";
 
 const ob: ObfuscatorFn = (stream: Stream, logRecord: LogRecord):LogRecord => ({
   msg: (logRecord.msg as string).startsWith("password:")
@@ -128,7 +131,7 @@ which is of type `ObfuscatorFn` as above.  This gives you the power of a class
 for more complex obfuscation.
 
 ```typescript
-import { Obfuscator, Stream, LogRecord } from "https://deno.land/x/log-gear/mod.ts";
+import { Obfuscator, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
 
 class PasswordObfuscator implements Obfuscator {
   obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
@@ -155,9 +158,9 @@ const passwordObfuscator = new PasswordObfuscator();
 const logger = new Logger().addObfuscator(passwordObfuscator);
 ```
 
-## log-gear obfuscators
+## optic obfuscators
 
-Two out of the box obfuscators are available in log-gear.
+Two out of the box obfuscators are available in optic.
 
 ### Property redaction obfuscator
 
@@ -167,7 +170,7 @@ replace the value of that property with the string `[Redacted]`.  The original
 object is untouched, as obfuscation clones the object before obfuscation.
 
 ```typescript
-import { PropertyRedaction } from "https://deno.land/x/log-gear/mod.ts";
+import { PropertyRedaction } from "https://deno.land/x/optic/mod.ts";
 
 logger.addObfuscator(new PropertyRedaction('password'));
 
@@ -193,7 +196,7 @@ regular express does not use groups then then entire match is replaced, however
 if groups are used, only the groups are replaced.
 
 ```typescript
-import { RegExReplacer, nonWhitespaceReplacer } from "https://deno.land/x/log-gear/mod.ts";
+import { RegExReplacer, nonWhitespaceReplacer } from "https://deno.land/x/optic/mod.ts";
 
 logger.addObfuscator(new RegExReplacer(/£([\d]+\.[\d]{2})/));
 logger.addObfuscator(new RegExReplacer(/password: (.*)/, nonWhitespaceReplacer));
@@ -237,7 +240,7 @@ export type FilterFn = (stream: Stream, logRecord: LogRecord) => boolean;
 The function takes in a stream and logRecord and returns true if the logRecord
 should be filtered out.  Example:
 ```typescript
-import { FilterFn, Stream, LogRecord } from "https://deno.land/x/log-gear/mod.ts";
+import { FilterFn, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
 const filter: FilterFn = (stream: Stream, logRecord: LogRecord) =>
   (logRecord.msg as string).includes("bad stuff");
 ```
@@ -250,7 +253,7 @@ more complex filtering, or perhaps you want to redirect filtered out logs to
 another logger and stream.
 
 ```typescript
-import { Filter, Stream, LogRecord } from "https://deno.land/x/log-gear/mod.ts";
+import { Filter, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
 
 class MyFilter implements Filter {
   shouldFilerOut(stream: Stream, logRecord: LogRecord): boolean {
@@ -267,9 +270,9 @@ const myFilter = new MyFilter();
 const logger = new Logger().addFilter(myFilter);
 ```
 
-## log-gear filters
+## optic filters
 
-Two out of the box filters are available in log-gear.
+Two out of the box filters are available in optic.
 
 ### Regular Expression Filter
 
@@ -278,7 +281,7 @@ is filtered out.  The log record `msg` and `metadata` fields are first
 converted to a string if necessary before testing the regular expression.
 
 ```typescript
-import { RegExFilter } from "https://deno.land/x/log-gear/mod.ts";
+import { RegExFilter } from "https://deno.land/x/optic/mod.ts";
 
 // Filters out log records containing `%` or `&` in the message or metadata
 const regExFilter = new RegExFilter(/[%&]+/);
@@ -294,7 +297,7 @@ either the log record `msg` or `metadata` fields (converting them to string
 first if required), then this log record is filtered out.  Example:
 
 ```typescript
-import { SubStringFilter } from "https://deno.land/x/log-gear/mod.ts";
+import { SubStringFilter } from "https://deno.land/x/optic/mod.ts";
 
 const subStringFilter = new SubStringFilter("user1234");
 logger.addFilter(subStringFilter);

@@ -197,7 +197,7 @@ export class Logger {
     try {
       // Deno.env requires --allow-env permissions.  Add check here if they are granted once this is stable,
       // but for now just catch the no permission error.
-      return this.getEnv().get("LOGGEAR_MIN_LEVEL");
+      return this.getEnv().get("OPTIC_MIN_LEVEL");
     } catch (err) {
       return undefined;
     }

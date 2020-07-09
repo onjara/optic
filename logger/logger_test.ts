@@ -83,7 +83,7 @@ test({
       protected getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
-            return key === "LOGGEAR_MIN_LEVEL" ? "ERROR" : undefined;
+            return key === "OPTIC_MIN_LEVEL" ? "ERROR" : undefined;
           },
         };
       }
@@ -102,7 +102,7 @@ test({
       protected getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
-            return key === "LOGGEAR_MIN_LEVEL" ? "Rubbish!" : undefined;
+            return key === "OPTIC_MIN_LEVEL" ? "Rubbish!" : undefined;
           },
         };
       }
@@ -118,7 +118,7 @@ test({
       protected getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
-            return key === "LOGGEAR_MIN_LEVEL" ? "ERROR" : undefined;
+            return key === "OPTIC_MIN_LEVEL" ? "ERROR" : undefined;
           },
         };
       }

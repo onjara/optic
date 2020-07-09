@@ -1,6 +1,6 @@
 import { Logger } from "./logger/logger.ts";
 
-export class LogGear {
+export class Optic {
   private constructor() {}
 
   static newLogger(): Logger {
