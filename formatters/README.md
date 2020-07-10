@@ -40,6 +40,12 @@ logger.info("hello world");
 // Outputs in color to console: 22:09:54 2020-07-10 Level: [INFO      ] Msg: hello world
 ```
 
+* `withDateTimeFormat` is described in more detail below.
+* `withLevelPadding` allows you to pad the level name to allow the message to start at the same 
+column in the console (as different levels have different lengths).
+* `withColor` allows you to specify if the formatter output should be wrapped in color
+based on the log level
+
 ### JSON formatter
 
 This formatter will take a log record and construct a structured JSON formatted
@@ -76,12 +82,12 @@ logger.info("Hello world");
 }
 ```
 
-
 ### DateTimeFormatter
 
 More of a sub-formatter, this formatter is used within other formatters to 
 output the date and time with a custom specification.  This class takes as input
-a string which defines the formatting of the timestamp using tokens.
+a string which defines the formatting of the timestamp using tokens.  The output
+date/time string is constructed from the local date/time.
 
 E.g.
 ```typescript
