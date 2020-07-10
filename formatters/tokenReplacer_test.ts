@@ -58,7 +58,7 @@ test({
 test({
   name: "DateTimeFormat defaults to ISO string",
   fn() {
-    const output = new TokenReplacer("{dateTime}").format(lr);
+    const output = new TokenReplacer().withFormat("{dateTime}").format(lr);
     assertMatch(output, /2020-06-1[6,7,8]T\d\d:\d\d:00.000Z/);
   },
 });
@@ -66,14 +66,15 @@ test({
 test({
   name: "You can set your own DateTimeFormatter class, fn or string",
   fn() {
-    let output = new TokenReplacer("{dateTime}").withDateTimeFormat("YYYY")
+    let output = new TokenReplacer().withFormat("{dateTime}")
+      .withDateTimeFormat("YYYY")
       .format(lr);
     assertEquals(output, "2020");
-    output = new TokenReplacer("{dateTime}").withDateTimeFormat((d: Date) =>
-      "from fn"
-    ).format(lr);
+    output = new TokenReplacer().withFormat("{dateTime}").withDateTimeFormat((
+      d: Date,
+    ) => "from fn").format(lr);
     assertEquals(output, "from fn");
-    output = new TokenReplacer("{dateTime}").withDateTimeFormat(
+    output = new TokenReplacer().withFormat("{dateTime}").withDateTimeFormat(
       { formatDateTime: (d: Date) => "from class" },
     ).format(lr);
     assertEquals(output, "from class");
@@ -92,7 +93,7 @@ test({
 test({
   name: "Levels are properly formatted",
   fn() {
-    const tr = new TokenReplacer("{level}");
+    const tr = new TokenReplacer().withFormat("{level}");
     lr.level = Level.DEBUG;
     assertEquals(tr.format(lr), "DEBUG   ");
     lr.level = Level.INFO;
@@ -109,7 +110,7 @@ test({
 test({
   name: "Msg is properly formatted, no matter what type",
   fn() {
-    const tr = new TokenReplacer("{msg}");
+    const tr = new TokenReplacer().withFormat("{msg}");
     const err = new Error();
     assertEquals(tr.format(getMsgLr(null)), "null");
     assertEquals(tr.format(getMsgLr(undefined)), "undefined");
@@ -128,7 +129,7 @@ test({
 test({
   name: "Metadata is properly formatted for 0, 1 and many cases",
   fn() {
-    const tr = new TokenReplacer("{metadata}");
+    const tr = new TokenReplacer().withFormat("{metadata}");
     const err = new Error();
     assertEquals(tr.format(getMetadataLr([])), "");
     assertEquals(tr.format(getMetadataLr([true])), "true");
@@ -166,7 +167,7 @@ test({
 test({
   name: "Logger name is a valid token",
   fn() {
-    const tr = new TokenReplacer("{msg} {logger}");
+    const tr = new TokenReplacer().withFormat("{msg} {logger}");
     lr.level = 99;
     assertEquals(
       tr.format(lr),

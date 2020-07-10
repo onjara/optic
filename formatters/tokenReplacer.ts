@@ -4,7 +4,7 @@ import {
   DateTimeFormatterFn,
   DateTimeFormatter,
 } from "../types.ts";
-import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
+import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 import { asString } from "./asString.ts";
 import { longestLevelName, levelToName } from "../logger/levels.ts";
 import { getColorForLevel } from "./color.ts";
@@ -30,10 +30,7 @@ export class TokenReplacer implements Formatter<string> {
     formatDateTime: (date: Date) => date.toISOString(),
   };
 
-  /** If no tokens are supplied, the default format of 
-   * `"{dateTime} {level} {msg} {metadata}"` is used */
-  constructor(tokens?: string) {
-    if (tokens) this.#formatString = tokens;
+  constructor() {
     this.#levelPadding = longestLevelName();
   }
 
@@ -71,6 +68,19 @@ export class TokenReplacer implements Formatter<string> {
   }
 
   /**
+   * Set the format to be used by constructing a string with tokens.  Tokens
+   * are fields from a log record surrounded in curly brackets.  Available 
+   * fields are: `{dateTime}`, `{level}`, `{msg}`, `{metadata}` or `{logger}`.
+   * Default format is `"{dateTime} {level} {msg} {metadata}"`
+   * 
+   * @param tokenString 
+   */
+  withFormat(tokenString: string): this {
+    this.#formatString = tokenString;
+    return this;
+  }
+
+  /**
    * Allows the ability of the formatter to apply custom formatting to the 
    * log message date/time.
    * 
@@ -92,7 +102,9 @@ export class TokenReplacer implements Formatter<string> {
 
   /**
    * For environments which support colored output, this allows you to turn on
-   * and off color formatting of logs. Default is false;
+   * and off color formatting of logs. Default is false.  Color affects an
+   * entire log message string.  The color used is defined by the colorRules
+   * map.
    * 
    * @param on If true or unspecified, logs will be output in color
    */

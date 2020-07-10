@@ -1,5 +1,11 @@
-import { Formatter, LogRecord, DateTimeFormatter } from "../types.ts";
+import {
+  Formatter,
+  LogRecord,
+  DateTimeFormatter,
+  DateTimeFormatterFn,
+} from "../types.ts";
 import { levelToName } from "../logger/levels.ts";
+import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
 type Fields = "msg" | "metadata" | "level" | "dateTime" | "logger";
 export type ReplacerFn = (key: unknown, value: unknown) => string;
@@ -66,8 +72,15 @@ export class JsonFormatter implements Formatter<string> {
     return this;
   }
 
-  withDateTimeFormatter(formatter: DateTimeFormatter): this {
-    this.#dateTimeFormatter = formatter;
+  withDateTimeFormat(
+    dtf: DateTimeFormatterFn | DateTimeFormatter | string,
+  ): this {
+    if (typeof dtf === "string") {
+      dtf = new SimpleDateTimeFormatter(dtf);
+    } else if (typeof dtf === "function") {
+      dtf = { formatDateTime: dtf };
+    }
+    this.#dateTimeFormatter = dtf;
     return this;
   }
 }

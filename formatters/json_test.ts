@@ -7,7 +7,7 @@ import { Level } from "../logger/levels.ts";
 import { JsonFormatter } from "./json.ts";
 import { PropertyRedaction } from "../obfuscators/propertyRedaction.ts";
 import { LogRecord } from "../types.ts";
-import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
+import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
 test({
   name: "Test default JSON formatting",
@@ -104,7 +104,7 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const jf = new JsonFormatter().withDateTimeFormatter(
+    const jf = new JsonFormatter().withDateTimeFormat(
       new SimpleDateTimeFormatter("hh:mm dddd MMM D"),
     );
     assertEquals(

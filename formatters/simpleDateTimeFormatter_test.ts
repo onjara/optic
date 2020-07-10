@@ -2,7 +2,7 @@ import {
   test,
   assertEquals,
 } from "../test_deps.ts";
-import { SimpleDateTimeFormatter } from "./dateTimeFormatter.ts";
+import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
 function assertDtf(format: string, date: Date, expectedOutput: string) {
   const dtf = new SimpleDateTimeFormatter(format);
