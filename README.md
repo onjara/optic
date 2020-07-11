@@ -1,7 +1,7 @@
 # NOTE
 
-This project is not yet publicly released and is a work in progress.  Significant
-breaking changes are still underway.
+This project is not yet ready for public release and is a work in progress. 
+Significant breaking changes are still underway.
 
 # Optic
 
@@ -10,10 +10,10 @@ A highly extensible, configurable and easy to use logging framework for Deno.
 ## Quick start
 
 ```typescript
-import { Logger } from "https://deno.land/x/optic/mod.ts";
+import { Optic } from "https://deno.land/x/optic/mod.ts";
 
-const logger = new Logger();
-logger.info("Hello world!");  // outputs "Hello world!" log record to the console
+const logger = Optic.logger();
+logger.info("Hello world!");  // outputs log record to the console
 ```
 ## Streams
 
@@ -48,7 +48,7 @@ logger.addStream(
     )
 );
 ```
-See [TokenReplacer](./formatters#tokenreplacer-formatter) for full details.
+See [TokenReplacer documentation](./formatters#tokenreplacer-formatter) for full details.
 
 #### JSON formatter
 
@@ -67,19 +67,18 @@ logger.addStream(
     ),
 );
 ```
-See [JSON formatter](./formatters#json-formatter) for full details.
+See [JSON formatter documentation](./formatters#json-formatter) for full details.
 
 #### DateTimeFormatter
 
-A formatter within a formatter, this allows you to provide a custom format for
-your date/time fields.  Example:
+A formatter to be used within other formatters, this allows you to provide a
+custom format for your date/time fields.  Example:
 
 ```typescript
 logger.addStream(
   new ConsoleStream()
     .withFormat(
-      new JsonFormatter()
-        .withDateTimeFormat("hh:mm:ss YYYY-MM-DD")
+      new JsonFormatter().withDateTimeFormat("hh:mm:ss YYYY-MM-DD")
     )
 );
 ```
@@ -91,7 +90,7 @@ You can also easily supply your own custom formatter by implementing the
 `Formatter` interface.  See [Using your own custom formatter](formatters#using-your-own-custom-formatter)
 for full details.
 
-# Monitors
+## Monitors
 
 Monitors allow you to spy on log records that flow through your logger.  Monitors
 are run first, before any filtering, obfuscation or stream handling. 
@@ -102,11 +101,11 @@ Some use cases for monitors include:
 * Take automated action on specific error scenario
 * Debugging aid - e.g. output certain records to the console
 
-## Constructing a monitor
+### Constructing a monitor
 
 There are two ways to construct a monitor:
 
-### Monitor function
+#### Monitor function
 
 This is a good choice for short and simple monitors.  Monitor functions must
 match the following type:
@@ -125,7 +124,7 @@ const mon:MonitorFn = (logRecord:LogRecord):void => {
 }
 ```
 
-### Implement the Monitor interface
+#### Implement the Monitor interface
 
 The Monitor interface requires implementation of the `check` function which is
 of type `MonitorFn` as above.  This gives you the power of a class for more
@@ -143,16 +142,16 @@ class UserMonitor implements Monitor {
 }
 ```
 
-## Registering Monitors
+### Registering Monitors
 
 Monitors are registered directly with the logger as follows:
 ```typescript
-const logger = new Logger().addMonitor(new UserMonitor());
+const logger = Optic.logger().addMonitor(new UserMonitor());
 ```
 
-# Obfuscation
+## Obfuscation
 
-optic allows you to obfuscate log records sent to a stream, allowing a log
+Optic allows you to obfuscate log records sent to a stream, allowing a log
 record to be obfuscated in one stream but not another. Obfuscation will hide
 part of a log record, leaving the remainder untouched. Obfuscation takes place
 after monitors and also after log filtering but before the log record is sent
@@ -162,11 +161,11 @@ Some use cases for obfuscation include:
 * Hiding sensitive data in your logs such as passwords or credit card details
 * Complying with data protection laws
 
-## Constructing an obfuscator
+### Constructing an obfuscator
 
 There are two ways to construct an obfuscator.
 
-### Obfuscation function
+#### Obfuscation function
 
 This is a good choice for short and simple obfuscators.  Obfuscator functions
 must match the following type:
@@ -218,17 +217,17 @@ class PasswordObfuscator implements Obfuscator {
 }
 ```
 
-## Registering obfuscators
+### Registering obfuscators
 
 Obfuscators are registered directly with the logger as follows:
 ```typescript
 const passwordObfuscator = new PasswordObfuscator();
-const logger = new Logger().addObfuscator(passwordObfuscator);
+const logger = Optic.logger().addObfuscator(passwordObfuscator);
 ```
 
-## optic obfuscators
+### Optic obfuscators
 
-Two out of the box obfuscators are available in optic.
+Two out of the box obfuscators are available in Optic.
 
 ### Property redaction obfuscator
 
@@ -280,7 +279,7 @@ RegEx|Test string|alphaNumericReplacer|nonWhitespaceReplacer
 /£([\d]+\.[\d]{2})/|£52.22|£**.**|£*****
 /\d{2}-\d{2}-\d{4}/|30-04-1954| \*\*-\*\*-\*\*\*\* |**********
 
-# Filters
+## Filters
 
 Filters allows you to filter out log records from your streams.  A log record
 can be filtered out from one stream but not another.  Filters are processed
@@ -293,11 +292,11 @@ Some use cases for filters include:
 * Blocking malicious log records
 * Directing certain log records to a different logger
 
-## Constructing a filter
+### Constructing a filter
 
 There are two ways to construct a filter.
 
-### Filter function
+#### Filter function
 
 This is a good choice for short and simple filters.  Filter functions must match
 the following type:
@@ -313,7 +312,7 @@ const filter: FilterFn = (stream: Stream, logRecord: LogRecord) =>
   (logRecord.msg as string).includes("bad stuff");
 ```
 
-### Implement the Filter interface
+#### Implement the Filter interface
 
 The Filter interface requires you to implement the `shouldFilterOut` function,
 which is of type `FilterFn` as above.  This gives you the power of a class for
@@ -330,19 +329,19 @@ class MyFilter implements Filter {
 }
 ```
 
-## Registering filters
+### Registering filters
 
 Filters are registered directly with the logger as follows:
 ```typescript
 const myFilter = new MyFilter();
-const logger = new Logger().addFilter(myFilter);
+const logger = Optic.logger().addFilter(myFilter);
 ```
 
-## optic filters
+### Optic filters
 
-Two out of the box filters are available in optic.
+Two out of the box filters are available in Optic.
 
-### Regular Expression Filter
+#### Regular Expression Filter
 
 This filter takes in a regular expression.  If it matches, then the log record
 is filtered out.  The log record `msg` and `metadata` fields are first
@@ -358,7 +357,7 @@ logger.error("Oh no!");  // not filtered
 logger.error("Oh no!", "& another thing");  // filtered out
 ```
 
-### Substring filter
+#### Substring filter
 
 This filter takes in a string.  If this string is found to be a substring of
 either the log record `msg` or `metadata` fields (converting them to string

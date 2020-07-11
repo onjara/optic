@@ -10,9 +10,10 @@ Three out of the box formatters are available.
 
 ### TokenReplacer formatter
 
-This formatter allows you to construct a custom string using tokens as
+This formatter allows you to transform a log record to string using tokens as
 placeholders for the various log record fields.  When formatting a log record
-the tokens are replaced by values of the log record fields.
+the tokens are replaced by values of the log record fields.  Any unrecognized
+tokens (as well as other text) are left unmodified.
 
 Available tokens are:
 * `{msg}` - The log record message
@@ -21,7 +22,7 @@ Available tokens are:
 * `{level}` - The log level of the log record
 * `{logger}` - The name of this logger
 
-The constructed token template is then passed to the constructor.
+The constructed token template is then passed to the `withFormat` function.
 
 Complete example using `TokenReplacer`:
 ```typescript
@@ -40,11 +41,17 @@ logger.info("hello world");
 // Outputs in color to console: 22:09:54 2020-07-10 Level: [INFO      ] Msg: hello world
 ```
 
-* `withDateTimeFormat` is described in more detail below.
+* `withDateTimeFormat` allows for custom date/time formats and is described in more detail below.
 * `withLevelPadding` allows you to pad the level name to allow the message to start at the same 
 column in the console (as different levels have different lengths).
 * `withColor` allows you to specify if the formatter output should be wrapped in color
 based on the log level
+
+The defaults for this formatter are:
+* Format is `"{dateTime} {level} {msg} {metadata}"`
+* No color
+* Optimal padding
+* UTC date/time format. Example: `2020-07-11T20:16:34.477Z`
 
 ### JSON formatter
 
@@ -82,16 +89,22 @@ logger.info("Hello world");
 }
 ```
 
+The defaults for this formatter are:
+* Fields of `["dateTime", "level", "msg", "metadata"]`
+* UTC date/time format.  Example: `2020-07-11T20:16:34.477Z`
+* No pretty printing
+
 ### DateTimeFormatter
 
-More of a sub-formatter, this formatter is used within other formatters to 
-output the date and time with a custom specification.  This class takes as input
-a string which defines the formatting of the timestamp using tokens.  The output
-date/time string is constructed from the local date/time.
+This is a formatter to be used by other formatters to output the date and time
+with a custom specification.  An input string defines the formatting of the
+timestamp using pre-defined tokens.  The output date/time string is constructed
+from the local date/time.
 
-E.g.
+E.g. to use as a standalone class
 ```typescript
-new SimpleDateTimeFormatter('hh:mm:ss:SSS YYYY-MM-DD');
+const dtf = new SimpleDateTimeFormatter('hh:mm:ss:SSS YYYY-MM-DD');
+const dateTime = dtf.formatDateTime(new Date());
 ```
 The formatting tokens are as per below.  Any characters not formatted are left
 as is.  Tokens are case sensitive.

@@ -8,7 +8,6 @@ import { levelToName } from "../logger/levels.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
 type Fields = "msg" | "metadata" | "level" | "dateTime" | "logger";
-export type ReplacerFn = (key: unknown, value: unknown) => string;
 
 /**
  * A formatter to output the log record in json format.  You may optionally
