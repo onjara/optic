@@ -191,7 +191,7 @@ const ob: ObfuscatorFn = (stream: Stream, logRecord: LogRecord):LogRecord => ({
 });
 ```
 
-### Implement the Obfuscator interface
+#### Implement the Obfuscator interface
 
 The Obfuscator interface requires implementation of the `obfuscate` function,
 which is of type `ObfuscatorFn` as above.  This gives you the power of a class
@@ -229,7 +229,7 @@ const logger = Optic.logger().addObfuscator(passwordObfuscator);
 
 Two out of the box obfuscators are available in Optic.
 
-### Property redaction obfuscator
+#### Property redaction obfuscator
 
 This obfuscator allows you to specify a single object property name which if found
 in the `msg` or `metadata` log record fields (using deep object searching), will
@@ -248,7 +248,7 @@ logger.info({user: "abc29002", dateOfBirth: "1966/02/33"});
 logger.info({user: "abc29002", password: "s3cr3tpwd"});
 ```
 
-### Regular expression redaction
+#### Regular expression redaction
 
 This obfuscator allows you to specify a regular expression and an optional
 replacer function.  The RegExReplacer will then go through the `msg` and 
