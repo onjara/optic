@@ -29,9 +29,27 @@ can either be the default logger, or a named logger.  Each logger instance will
 be stored in the state and reused if that logger is requested again.
 
 ```typescript
+// Using the default logger
 const defaultLogger = Optic.logger();
+
+// Using a named logger
 const configLogger = Optic.logger("config");
+
+// Reusing existing loggers
+const exactSameDefaultLogger = Optic.logger();
+const exactSameConfigLogger = Optic.logger("config");
 ```
+
+### Logging an event
+
+You can log an event through any of the level functions on the logger, supplying
+a `msg` (of any type) and one or more `metadata` items.  E.g.
+```typescript
+logger.info("File loaded", "exa_113.txt", 1223, true);
+```
+In this example, `"File loaded"` is the log record message (primary data), with
+supporting data of the file name (`"exa_113.txt"`), size (`1223`) and readonly
+attribute (`true`) supplied.
 
 ### Log levels
 
@@ -61,8 +79,8 @@ all the relevant info on the event.  Fields captured in the `LogRecord` are:
 
 Field|Description
 -----|-----------
-msg| The primary content of the log event
-metadata| Supporting data, in one or more additional data items
+msg| The primary content of the log event of any type
+metadata| Supporting data, in one or more additional data items of any type
 dateTime| When the log record was created
 level| The log level of the event
 logger| The name of the logger which generated the event
@@ -70,7 +88,8 @@ logger| The name of the logger which generated the event
 ### Minimum log level
 
 Each logger can be configured to log at a minimum level (the default level is
-`DEBUG`). You can programmatically get the logging level at any time with:
+`DEBUG`). Log events with a level lower than the minimum level are discarded with
+no action taken. You can programmatically get the logging level at any time with:
 ```typescript
 const minLogLevel: Level = logger.minLogLevel();
 ```
@@ -127,10 +146,10 @@ actions undertaken
 All log statements return the value of the `msg` field, allowing more concise 
 coding.  E.g.
 ```typescript
-const user = logger.info(getUser());
+const user: User = logger.info(getUser());
 
 // is equivalent to:
-const user = getUser();
+const user: User = getUser();
 logger.info(user);
 ```
 
@@ -142,7 +161,7 @@ anyway.  By supplying a function argument to the log event `msg` field, this
 will defer resolution of the value of this function until after determining if
 the log event should be recorded.  Example:
 ```typescript
-const value = logger.info(() => { expensiveObjectCreation()});
+const value = logger.info(() => { return expensiveObjectCreation() });
 ```
 Here, `expensiveObjectCreation()` won't be called unless the logger is allowed
 to log info messages.  `value`, in this example, will be set to the return value of 
