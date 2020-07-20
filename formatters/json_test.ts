@@ -15,7 +15,7 @@ test({
     const lr = {
       msg: { a: 6, b: "hello" },
       metadata: [true, undefined, "there"],
-      dateTime: new Date("2020-06-17T03:24:00"),
+      dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
       level: Level.DEBUG,
       logger: "default",
     };
@@ -33,7 +33,7 @@ test({
     const lr = {
       msg: { a: 6, b: "hello" },
       metadata: [true, undefined, "there"],
-      dateTime: new Date("2020-06-17T03:24:00"),
+      dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
       level: Level.DEBUG,
       logger: "default",
     };
@@ -73,7 +73,7 @@ test({
     const lr = {
       msg: { a: 6, b: "hello" },
       metadata: [true, undefined, "there"],
-      dateTime: new Date("2020-06-17T03:24:00"),
+      dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
       level: Level.DEBUG,
       logger: "default",
     };
@@ -100,7 +100,7 @@ test({
     const lr = {
       msg: "hello",
       metadata: [],
-      dateTime: new Date("2020-06-17T03:24:00"),
+      dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
       level: Level.DEBUG,
       logger: "default",
     };
