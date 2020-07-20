@@ -11,7 +11,7 @@ import { gray } from "../deps.ts";
 const lr = {
   msg: "Log Message",
   metadata: ["The metadata"],
-  dateTime: new Date("2020-06-17T03:24:00"),
+  dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
   level: Level.DEBUG,
   logger: "default",
 };
@@ -20,7 +20,7 @@ function getMsgLr(msg: unknown) {
   return {
     msg: msg,
     metadata: ["The metadata"],
-    dateTime: new Date("2020-06-17T03:24:00"),
+    dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
     level: Level.DEBUG,
     logger: "default",
   };
@@ -30,7 +30,7 @@ function getMetadataLr(meta: unknown[]) {
   return {
     msg: "The msg",
     metadata: meta,
-    dateTime: new Date("2020-06-17T03:24:00"),
+    dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
     level: Level.DEBUG,
     logger: "default",
   };
@@ -161,6 +161,7 @@ test({
     assertEquals(
       tr.format(lr),
       "2020-06-17T02:24:00.000Z UNKNOWN  Log Message The metadata",
+      //      dateTime: new Date("2020-06-17T03:24:00"),
     );
   },
 });

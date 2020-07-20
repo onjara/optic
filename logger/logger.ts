@@ -15,7 +15,7 @@ import { ImmutableLogRecord } from "./logRecord.ts";
 
 class LogMetaImpl implements LogMeta {
   minLogLevel: Level = Level.DEBUG;
-  minLogLevelFrom: string = "default value";
+  minLogLevelFrom = "default value";
   readonly sessionStarted = new Date();
   readonly hostname = "unavailable";
   logger = "default";
