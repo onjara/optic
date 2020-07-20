@@ -5,6 +5,9 @@ Significant breaking changes are still underway.
 
 # Optic
 
+[![optic ci](https://github.com/onjara/optic/workflows/ci/badge.svg)](https://github.com/onjara/optic)
+[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/deno.land/x/optic/mod.ts)
+
 A highly extensible, configurable and easy to use logging framework for Deno. 
 
 ## Quick start
