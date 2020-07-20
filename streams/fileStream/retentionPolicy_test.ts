@@ -47,7 +47,7 @@ test({
         of(7).files().oldestRetentionDate();
       },
       Error,
-      "Max Period Date is meaningless",
+      "Oldest Retention Date is meaningless for retention strategy of 'files'",
     );
   },
 });

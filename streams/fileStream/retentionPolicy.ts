@@ -50,7 +50,7 @@ export class LogFileRetentionPolicyImpl implements LogFileRetentionPolicy {
     const d = new Date();
     if (this.#type === "files") {
       throw new Error(
-        "Max Period Date is meaningless for archive strategy of files",
+        "Oldest Retention Date is meaningless for retention strategy of 'files'",
       );
     }
     if (this.#type === "days") d.setDate(d.getDate() - this.#quantity);

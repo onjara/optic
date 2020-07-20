@@ -17,6 +17,75 @@ logger.info("Hello world!");  // outputs log record to the console
 ```
 ## Streams
 
+Streams in Optic control the flow of log messages from a module logging statement
+to an endpoint defined by the stream (e.g. console, file system, etc.).  A logger
+can have one or more streams and the same log message will be handled by all
+registered streams.
+
+`ConsoleStream` is the default stream in a logger.  Once any stream is added to
+the logger, the default stream is removed.  If console logging is still desired
+you can explicitly add the `ConsoleStream` again.
+
+### Optics streams
+
+There are two out of the box streams available.
+
+#### Console stream
+
+A basic stream which outputs log messages to the console.
+
+```typescript
+const consoleStream = new ConsoleStream()
+  .withMinLogLevel(Level.DEBUG)
+  .withLogHeader(true)
+  .withLogFooter(true)
+  .withFormat(
+    new TokenReplacer()
+      .withColor()
+      .withDateTimeFormat("YYYY.MM.DD hh:mm:ss:SSS")
+  );
+
+logger.addStream(consoleStream);
+```
+
+#### File stream
+
+A stream which outputs log messages to the file system.
+
+```typescript
+const fileStream = new FileStream("./logFile.txt")
+  .withMinLogLevel(Level.WARNING)
+  .withFormat(new JsonFormatter())
+  .withBufferSize(30000)
+  .withLogFileInitMode("append")
+  .withLogFileRotation(
+    every(2000000).bytes().withLogFileRetentionPolicy(of(7).days()),
+  )
+  .withLogHeader(true)
+  .withLogFooter(true);
+
+logger.addStream(fileStream);
+```
+
+See [FileStream documentation](./streams/fileStream) for full details.
+
+### Defining a custom stream
+
+You can build your own stream by creating a class which implements the [`Stream`](./types.ts)
+interface.  The `handle` function is the only requirement which defines what
+your stream should do with a log record.  
+
+Basic example:
+```typescript
+class SimpleStream implements Stream {
+  handle(logRecord: LogRecord) {
+    console.log(logRecord.msg);
+  }
+}
+
+logger.addStream(new SimpleStream());
+```
+
 ## Logging
 
 All logging in Optic is done through a logger instance, which provides the 
@@ -43,7 +112,7 @@ const exactSameConfigLogger = Optic.logger("config");
 ### Logging an event
 
 You can log an event through any of the level functions on the logger, supplying
-a `msg` (of any type) and one or more `metadata` items.  E.g.
+a `msg` (of any type) and one or more optional `metadata` items.  E.g.
 ```typescript
 logger.info("File loaded", "exa_113.txt", 1223, true);
 ```
