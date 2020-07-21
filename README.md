@@ -57,6 +57,155 @@ log.debug(() => { throw new Error("I'm not thrown"); }); // debug < warning, so 
 log.error(() => { return "1234"; }); // logs "1234"
 ```
 
+## Logging
+
+All logging in Optic is done through a logger instance, which provides the 
+interface and framework for all logging activity.
+
+### Creating a logger
+
+Before you can log anything you must first get an instance of a logger.  This
+can either be the default logger, or a named logger.  Each logger instance will
+be stored in the state and reused if that logger is requested again.
+
+```typescript
+// Using the default logger
+const defaultLogger = Optic.logger();
+
+// Using a named logger
+const configLogger = Optic.logger("config");
+
+// Reusing existing loggers
+const exactSameDefaultLogger = Optic.logger();
+const exactSameConfigLogger = Optic.logger("config");
+```
+
+### Logging an event
+
+You can log an event through any of the level functions on the logger, supplying
+a `msg` (of any type) and one or more optional `metadata` items.  E.g.
+```typescript
+logger.info("File loaded", "exa_113.txt", 1223, true);
+```
+In this example, `"File loaded"` is the log record message (primary data), with
+supporting metadata of the file name (`"exa_113.txt"`), size (`1223`) and
+readonly attribute (`true`) supplied.
+
+### Log levels
+
+Optic supports the following logging levels out of the box:
+* Trace
+* Debug
+* Info
+* Warning
+* Error
+* Critical
+
+These may be used directly via the logger, e.g.
+```typescript
+logger.trace("Some trace info");
+logger.error("Oops, something went wrong");
+```
+
+Or through the use of the Level enum, e.g.
+```typescript
+logger.log(Level.INFO, "Here some info");
+```
+
+### Log Records
+
+Each log event (e.g. `logger.info("hello world")`) generates a `LogRecord` with
+all the relevant info on the event.  Fields captured in the `LogRecord` are:
+
+Field|Description
+-----|-----------
+msg| The primary content of the log event of any type
+metadata| Supporting data, in one or more additional data items of any type
+dateTime| When the log record was created
+level| The log level of the event
+logger| The name of the logger which generated the event
+
+### Minimum log level
+
+Each logger can be configured to log at a minimum level (the default level is
+`DEBUG`). Log events with a level lower than the minimum level are discarded with
+no action taken. There are 3 ways in which you can configure a logger to log at a 
+minimum level:
+
+#### Programmatically
+
+Within the code, this can be set at any time and takes highest precedence of
+any method:
+```typescript
+logger.withLevel(Level.WARNING);
+```
+
+#### Environment variable
+
+Through the use of an environment variable `OPTIC_MIN_LEVEL` you can set the
+minimum log level of any logger.  This method takes lowest priority and will be
+overridden if set programmatically or supplied via a command line argument. The
+values for this variable are any of the logging levels in uppercase, e.g. `INFO`.
+
+**NOTE** for this method to work you MUST supply `--allow-env` to the Deno
+command line process.  E.g.:
+```shell
+OPTIC_MIN_LEVEL=ERROR deno run --allow-env my-module.ts
+```
+
+#### Command line argument
+
+You may also set the value of the minimum log level via a command line 
+argument, `minLogLevel`.  Minimum log levels set this way apply to all loggers
+unless overridden by programmatically setting a new level.  Example:
+```shell
+deno run my-module.ts minLogLevel=ERROR
+```
+The value of the argument is any valid log level in uppercase
+
+### Logging lifecycle
+
+Logging events will undergo the following lifecycle:
+* If the minimum log level requirement is not met, the msg is returned with no
+actions undertaken
+* Resolve the msg function value if using deferred logging (see below)
+* Run each registered monitor against the log record
+* For each stream
+  * Run each registered filter
+  * Run each registered obfuscator against the log record (if not filtered)
+  * Pass log record to stream for handling (if not filtered)
+* Return msg value (or resolved msg value in deferred logging)
+
+### In-line logging
+
+All log statements return the value of the `msg` field, allowing more concise 
+coding.  E.g.
+```typescript
+const user: User = logger.info(getUser());
+
+// is equivalent to:
+const user: User = getUser();
+logger.info(user);
+```
+
+### Deferred logging
+
+Deferred logging is used when you have expensive objects to create or 
+calculate for logging purposes, but don't want to incur the cost if the log
+message won't be handled anyway.  By supplying a function argument to the log
+event `msg` field, this will defer resolution of the value of this function
+until after determining if the log event should be recorded.  The resolved value
+is then set as the `msg` field in the LogRecord.
+
+Example:
+```typescript
+const value = logger.info(() => { return expensiveObjectCreation() });
+```
+Here, `expensiveObjectCreation()` won't be called unless the logger is allowed
+to log info messages.  `value`, in this example, will be set to the return value of 
+`expensiveObjectCreation()` if the logger logged the message or `undefined` if
+it did not log it.
+
 ## Streams
 
 Streams in Optic control the flow of log records from a module logging statement
@@ -129,157 +278,8 @@ class SimpleStream implements Stream {
 
 logger.addStream(new SimpleStream());
 ```
-
-## Logging
-
-All logging in Optic is done through a logger instance, which provides the 
-interface and framework for all logging activity.
-
-### Creating a logger
-
-Before you can log anything you must first get an instance of a logger.  This
-can either be the default logger, or a named logger.  Each logger instance will
-be stored in the state and reused if that logger is requested again.
-
-```typescript
-// Using the default logger
-const defaultLogger = Optic.logger();
-
-// Using a named logger
-const configLogger = Optic.logger("config");
-
-// Reusing existing loggers
-const exactSameDefaultLogger = Optic.logger();
-const exactSameConfigLogger = Optic.logger("config");
-```
-
-### Logging an event
-
-You can log an event through any of the level functions on the logger, supplying
-a `msg` (of any type) and one or more optional `metadata` items.  E.g.
-```typescript
-logger.info("File loaded", "exa_113.txt", 1223, true);
-```
-In this example, `"File loaded"` is the log record message (primary data), with
-supporting data of the file name (`"exa_113.txt"`), size (`1223`) and readonly
-attribute (`true`) supplied.
-
-### Log levels
-
-Optic supports the following logging levels out of the box:
-* Trace
-* Debug
-* Info
-* Warning
-* Error
-* Critical
-
-These may be used directly via the logger, e.g.
-```typescript
-logger.trace("Some trace info");
-logger.error("Oops, something went wrong");
-```
-
-Or through the use of the Level enum, e.g.
-```typescript
-logger.log(Level.INFO, "Here some info");
-```
-
-### Log Records
-
-Each log event (e.g. `logger.info("hello world")`) generates a `LogRecord` with
-all the relevant info on the event.  Fields captured in the `LogRecord` are:
-
-Field|Description
------|-----------
-msg| The primary content of the log event of any type
-metadata| Supporting data, in one or more additional data items of any type
-dateTime| When the log record was created
-level| The log level of the event
-logger| The name of the logger which generated the event
-
-### Minimum log level
-
-Each logger can be configured to log at a minimum level (the default level is
-`DEBUG`). Log events with a level lower than the minimum level are discarded with
-no action taken. You can programmatically get the logging level at any time with:
-```typescript
-const minLogLevel: Level = logger.minLogLevel();
-```
-
-There are 3 ways in which you can configure a logger to log at a 
-minimum level:
-
-#### Programmatically
-
-Within the code, this can be set at any time and takes highest precedence of
-any method:
-```typescript
-logger.withLevel(Level.WARNING);
-```
-
-#### Environment variable
-
-Through the use of an environment variable `OPTIC_MIN_LEVEL` you can set the
-minimum log level of any logger.  This method takes lowest priority and will be
-overridden if set programmatically or supplied via a command line argument. The
-values for this variable are any of the logging levels in uppercase, e.g. `INFO`.
-
-**NOTE** for this method to work you MUST supply `--allow-env` to the Deno
-command line process.  E.g.:
-```shell
-OPTIC_MIN_LEVEL=ERROR deno run --allow-env my-module.ts
-```
-
-#### Command line argument
-
-You may also set the value of the minimum log level via a command line 
-argument, `minLogLevel`.  Minimum log levels set this way apply to all loggers
-unless overridden by programmatically setting a new level.  Example:
-```shell
-deno run my-module.ts minLogLevel=ERROR
-```
-The value of the argument is any valid log level in uppercase
-
-### Logging lifecycle
-
-Logging events will undergo the following lifecycle:
-* If the minimum log level requirement is not met, the msg is returned with no
-actions undertaken
-* Resolve the msg function value if using deferred logging (see below)
-* Run each registered monitor against the log record
-* For each stream
-  * Run each registered filter
-  * Run each registered obfuscator against the log record (if not filtered)
-  * Pass log record to stream for handling (if not filtered)
-* Return msg value (or resolved msg value in deferred logging)
-
-### In-line logging
-
-All log statements return the value of the `msg` field, allowing more concise 
-coding.  E.g.
-```typescript
-const user: User = logger.info(getUser());
-
-// is equivalent to:
-const user: User = getUser();
-logger.info(user);
-```
-
-### Deferred logging
-
-Deferred logging is used when you have expensive objects to create for logging
-purposes, but don't want to incur the cost if the log message won't be handled
-anyway.  By supplying a function argument to the log event `msg` field, this
-will defer resolution of the value of this function until after determining if
-the log event should be recorded.  Example:
-```typescript
-const value = logger.info(() => { return expensiveObjectCreation() });
-```
-Here, `expensiveObjectCreation()` won't be called unless the logger is allowed
-to log info messages.  `value`, in this example, will be set to the return value of 
-`expensiveObjectCreation()` if the logger logged the message or `undefined` if
-it did not log it.
+Streams can also take logging metadata in `logHeader()` and `logFooter()`
+functions, and also can expose `setup()` and `destroy()` functions.
 
 ## Log formatting
 
