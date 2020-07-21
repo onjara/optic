@@ -80,9 +80,9 @@ export class Logger {
    * Set the minimum log level required for the logger to process a log record.
    * Log records with a lower level are not processed by anything.
    */
-  withLevel(level: Level): this {
+  withMinLogLevel(level: Level): this {
     this.#minLevel = level;
-    this.#meta.minLogLevelFrom = "logger.level()";
+    this.#meta.minLogLevelFrom = "withMinLogLevel()";
     this.#meta.minLogLevel = this.#minLevel;
     return this;
   }

@@ -12,22 +12,60 @@ A powerful, highly extensible and easy to use logging framework for Deno.
 
 ## Quick start
 
+### Simple example
 ```typescript
 import { Optic } from "https://deno.land/x/optic/mod.ts";
 
 const logger = Optic.logger();
 logger.info("Hello world!");  // outputs log record to the console
 ```
+
+### Complete example
+```typescript
+import { FileStream, every, of } from "../streams/fileStream/mod.ts";
+import { Level, JsonFormatter, Optic, Stream, LogRecord, PropertyRedaction } from "../mod.ts";
+
+// Configure the output file stream
+const fileStream = new FileStream("logFile.txt")
+  .withMinLogLevel(Level.WARNING)
+  .withFormat(
+    new JsonFormatter()
+    .withPrettyPrintIndentation(2)
+    .withDateTimeFormat("YYYY.MM.DD hh:mm:ss:SSS")
+  )
+  .withBufferSize(10000)
+  .withLogFileInitMode("append")
+  .withLogFileRotation(
+    every(200000).bytes().withLogFileRetentionPolicy(of(7).days()),
+  )
+  .withLogHeader(true)
+  .withLogFooter(true);
+
+// Configure the logger
+const log = Optic.logger()
+  .withMinLogLevel(Level.WARNING)
+  .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
+  .addObfuscator(new PropertyRedaction("password"))
+  .addStream(fileStream);
+
+log.info("Level too low. This won't be logged");
+const logVal: string = log.critical("Hello world", 12, true, {name: "Poe"}); // logs all data, returns "Hello world"
+log.warning("spam"); // "spam" records are filtered out
+log.warning({user: "jsmith", password: "secret_password"}); // logs { "user": "jsmith", "password": "[Redacted]" }
+log.debug(() => { throw new Error("I'm not thrown"); }); // debug < warning, so no error as function isn't evaluated
+log.error(() => { return "1234"; }); // logs "1234"
+```
+
 ## Streams
 
-Streams in Optic control the flow of log messages from a module logging statement
+Streams in Optic control the flow of log records from a module logging statement
 to an endpoint defined by the stream (e.g. console, file system, etc.).  A logger
 can have one or more streams and the same log message will be handled by all
-registered streams.
+registered streams (unless filtered from that stream).
 
 `ConsoleStream` is the default stream in a logger.  Once any stream is added to
-the logger, the default stream is removed.  If console logging is still desired
-you can explicitly add the `ConsoleStream` again.
+the logger, this default stream is removed.  If console logging is still desired
+as an additional stream, you should explicitly add the `ConsoleStream`.
 
 ### Optics streams
 

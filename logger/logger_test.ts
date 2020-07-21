@@ -150,10 +150,12 @@ test({
   name: "Logger min level can be set directly",
   fn() {
     const testStream = new TestStream();
-    const logger = new Logger().addStream(testStream).withLevel(Level.INFO);
+    const logger = new Logger().addStream(testStream).withMinLogLevel(
+      Level.INFO,
+    );
     assertEquals(logger.minLogLevel(), Level.INFO);
     assertEquals(testStream.meta?.minLogLevel, Level.INFO);
-    assertEquals(testStream.meta?.minLogLevelFrom, "logger.level()");
+    assertEquals(testStream.meta?.minLogLevelFrom, "withMinLogLevel()");
   },
 });
 
@@ -182,7 +184,9 @@ test({
   name: "Min log level respected for new log messages",
   fn() {
     const testStream = new TestStream();
-    const logger = new Logger().addStream(testStream).withLevel(Level.INFO);
+    const logger = new Logger().addStream(testStream).withMinLogLevel(
+      Level.INFO,
+    );
     logger.debug("hello");
     // assert that 'handle' isn't called on stream
     assertEquals(
@@ -374,7 +378,7 @@ test({
     assertEquals(testStream.functionsCalled, ["setup", "logHeader"]);
     assertEquals(testStream.logRecords.length, 0);
 
-    const output = logger.withLevel(Level.TRACE).trace(() => "hello");
+    const output = logger.withMinLogLevel(Level.TRACE).trace(() => "hello");
     assertEquals(output, "hello");
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, "hello");

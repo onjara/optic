@@ -1,0 +1,45 @@
+{
+  "dateTime": "2020.07.21 23:12:54:807",
+  "level": "INFO",
+  "msg": "Logging session initialized",
+  "metadata": []
+}
+{
+  "dateTime": "2020.07.21 23:12:54:807",
+  "level": "INFO",
+  "msg": "Default min log level set at: WARNING (from withMinLoglevel())",
+  "metadata": []
+}
+{
+  "dateTime": "2020.07.21 23:12:54:808",
+  "level": "CRITICAL",
+  "msg": "Hello world",
+  "metadata": []
+}
+{
+  "dateTime": "2020.07.21 23:12:54:808",
+  "level": "WARNING",
+  "msg": {
+    "user": "jsmith",
+    "password": "[Redacted]"
+  },
+  "metadata": []
+}
+{
+  "dateTime": "2020.07.21 23:12:54:809",
+  "level": "ERROR",
+  "msg": "1234",
+  "metadata": []
+}
+{
+  "dateTime": "2020.07.21 23:12:54:810",
+  "level": "INFO",
+  "msg": "Logging session complete",
+  "metadata": []
+}
+{
+  "dateTime": "2020.07.21 23:12:54:810",
+  "level": "INFO",
+  "msg": "Log session duration: 4ms",
+  "metadata": []
+}
