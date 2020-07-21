@@ -22,8 +22,9 @@ logger.info("Hello world!");  // outputs log record to the console
 
 ### Complete example
 ```typescript
-import { FileStream, every, of } from "../streams/fileStream/mod.ts";
-import { Level, JsonFormatter, Optic, Stream, LogRecord, PropertyRedaction } from "../mod.ts";
+import { FileStream, every, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
+import { Level, JsonFormatter, Optic, Stream, LogRecord, PropertyRedaction } 
+  from "https://deno.land/x/optic/mod.ts";
 
 // Configure the output file stream
 const fileStream = new FileStream("logFile.txt")
@@ -88,6 +89,7 @@ const consoleStream = new ConsoleStream()
 
 logger.addStream(consoleStream);
 ```
+See [Formatting](#log-formatting) for further detail on formatting your logs.
 
 #### File stream
 
@@ -109,6 +111,7 @@ logger.addStream(fileStream);
 ```
 
 See [FileStream documentation](./streams/fileStream) for full details.
+See also [Formatting](#log-formatting) for further detail on formatting your logs.
 
 ### Defining a custom stream
 
