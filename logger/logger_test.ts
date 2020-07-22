@@ -39,6 +39,45 @@ class TestStream implements Stream {
   }
 }
 
+class TestMonitor implements Monitor {
+  functionsCalled: string[] = [];
+  check(logRecord: LogRecord) {
+    this.functionsCalled.push("check");
+  }
+  setup() {
+    this.functionsCalled.push("setup");
+  }
+  destroy() {
+    this.functionsCalled.push("destroy");
+  }
+}
+class TestFilter implements Filter {
+  functionsCalled: string[] = [];
+  shouldFilterOut(stream: Stream, logRecord: LogRecord): boolean {
+    this.functionsCalled.push("shouldFilterOut");
+    return false;
+  }
+  setup() {
+    this.functionsCalled.push("setup");
+  }
+  destroy() {
+    this.functionsCalled.push("destroy");
+  }
+}
+class TestObfuscator implements Obfuscator {
+  functionsCalled: string[] = [];
+  obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
+    this.functionsCalled.push("obfuscate");
+    return logRecord;
+  }
+  setup() {
+    this.functionsCalled.push("setup");
+  }
+  destroy() {
+    this.functionsCalled.push("destroy");
+  }
+}
+
 test({
   name: "Logger default level is DEBUG",
   fn() {
@@ -134,15 +173,25 @@ test({
 });
 
 test({
-  name: "Unload even is registered and will log footers and destroy streams",
+  name:
+    "Unload event is registered and will log footers and destroy streams, monitors, filters and obfuscators",
   fn() {
     const testStream = new TestStream();
-    new Logger().addStream(testStream);
+    const testMonitor = new TestMonitor();
+    const testFilter = new TestFilter();
+    const testObfuscator = new TestObfuscator();
+
+    new Logger().addStream(testStream).addMonitor(testMonitor).addFilter(
+      testFilter,
+    ).addObfuscator(testObfuscator);
     dispatchEvent(new Event("unload"));
     assertEquals(
       testStream.functionsCalled,
       ["setup", "logHeader", "logFooter", "destroy"],
     );
+    assertEquals(testMonitor.functionsCalled, ["setup", "destroy"]);
+    assertEquals(testFilter.functionsCalled, ["setup", "destroy"]);
+    assertEquals(testObfuscator.functionsCalled, ["setup", "destroy"]);
   },
 });
 
@@ -160,7 +209,7 @@ test({
 });
 
 test({
-  name: "Adding a stream will monitor stream setup and logHeader",
+  name: "Adding a stream will trigger stream setup and logHeader",
   fn() {
     const testStream = new TestStream();
     new Logger().addStream(testStream);
@@ -169,7 +218,7 @@ test({
 });
 
 test({
-  name: "Removing a stream will monitor logFooter and destroy",
+  name: "Removing a stream will trigger logFooter and destroy",
   fn() {
     const testStream = new TestStream();
     new Logger().addStream(testStream).removeStream(testStream);
@@ -238,6 +287,37 @@ test({
     logger.debug("test monitor was removed");
     assertEquals(testMonitor1.checkCount, 1);
     assertEquals(testMonitor2.checkCount, 1);
+  },
+});
+
+test({
+  name: "Monitors call destroy() on removal",
+  fn() {
+    const testMonitor = new TestMonitor();
+    new Logger().addStream(new TestStream()).addMonitor(testMonitor)
+      .removeMonitor(testMonitor);
+    assertEquals(testMonitor.functionsCalled, ["setup", "destroy"]);
+  },
+});
+
+test({
+  name: "Filters call destroy() on removal",
+  fn() {
+    const testFilter = new TestFilter();
+    new Logger().addStream(new TestStream()).addFilter(testFilter).removeFilter(
+      testFilter,
+    );
+    assertEquals(testFilter.functionsCalled, ["setup", "destroy"]);
+  },
+});
+
+test({
+  name: "Obfuscators call destroy() on removal",
+  fn() {
+    const testObfuscator = new TestObfuscator();
+    new Logger().addStream(new TestStream()).addObfuscator(testObfuscator)
+      .removeObfuscator(testObfuscator);
+    assertEquals(testObfuscator.functionsCalled, ["setup", "destroy"]);
   },
 });
 

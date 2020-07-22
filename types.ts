@@ -80,6 +80,19 @@ export type MonitorFn = (logRecord: LogRecord) => void;
  */
 export interface Monitor {
   check: MonitorFn;
+
+  /**
+   * Optional.  Provides the opportunity for the monitor to perform any required
+   * setup.  This function is called when the monitor is added to the logger.
+   */
+  setup?(): void;
+
+  /**
+   * Optional.  Provides the opportunity for the monitor to perform any required
+   * teardown.  This function is called when the monitor is removed from the 
+   * logger or the module exits
+   */
+  destroy?(): void;
 }
 
 /**
@@ -94,6 +107,19 @@ export type FilterFn = (stream: Stream, logRecord: LogRecord) => boolean;
  */
 export interface Filter {
   shouldFilterOut: FilterFn;
+
+  /**
+   * Optional.  Provides the opportunity for the filter to perform any required
+   * setup.  This function is called when the filter is added to the logger.
+   */
+  setup?(): void;
+
+  /**
+   * Optional.  Provides the opportunity for the filter to perform any required
+   * teardown.  This function is called when the filter is removed from the 
+   * logger or the module exits
+   */
+  destroy?(): void;
 }
 
 /**
@@ -108,6 +134,19 @@ export type ObfuscatorFn = (stream: Stream, logRecord: LogRecord) => LogRecord;
  */
 export interface Obfuscator {
   obfuscate: ObfuscatorFn;
+
+  /**
+   * Optional.  Provides the opportunity for the obfuscator to perform any required
+   * setup.  This function is called when the obfuscator is added to the logger.
+   */
+  setup?(): void;
+
+  /**
+   * Optional.  Provides the opportunity for the obfuscator to perform any required
+   * teardown.  This function is called when the obfuscator is removed from the 
+   * logger or the module exits
+   */
+  destroy?(): void;
 }
 
 /**

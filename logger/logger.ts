@@ -46,6 +46,15 @@ export class Logger {
         if (stream.logFooter) stream.logFooter(this.#meta);
         if (stream.destroy) stream.destroy();
       }
+      for (const monitor of this.#monitors) {
+        if (monitor.destroy) monitor.destroy();
+      }
+      for (const filter of this.#filters) {
+        if (filter.destroy) filter.destroy();
+      }
+      for (const obfuscator of this.#obfuscators) {
+        if (obfuscator.destroy) obfuscator.destroy();
+      }
     });
   }
 
@@ -123,6 +132,7 @@ export class Logger {
     if (typeof monitor === "function") {
       monitor = { check: monitor };
     }
+    if (monitor.setup) monitor.setup();
     this.#monitors.push(monitor);
     return this;
   }
@@ -135,6 +145,7 @@ export class Logger {
     this.#monitors = this.#monitors.filter((monitor) =>
       monitor !== monitorToRemove
     );
+    if (monitorToRemove.destroy) monitorToRemove.destroy();
     return this;
   }
 
@@ -146,6 +157,7 @@ export class Logger {
     if (typeof filter === "function") {
       filter = { shouldFilterOut: filter };
     }
+    if (filter.setup) filter.setup();
     this.#filters.push(filter);
     return this;
   }
@@ -156,6 +168,7 @@ export class Logger {
    */
   removeFilter(filterToRemove: Filter): Logger {
     this.#filters = this.#filters.filter((filter) => filter !== filterToRemove);
+    if (filterToRemove.destroy) filterToRemove.destroy();
     return this;
   }
 
@@ -168,6 +181,7 @@ export class Logger {
     if (typeof obfuscator === "function") {
       obfuscator = { obfuscate: obfuscator };
     }
+    if (obfuscator.setup) obfuscator.setup();
     this.#obfuscators.push(obfuscator);
     return this;
   }
@@ -180,6 +194,7 @@ export class Logger {
     this.#obfuscators = this.#obfuscators.filter((obfuscator) =>
       obfuscator !== obfuscatorToRemove
     );
+    if (obfuscatorToRemove.destroy) obfuscatorToRemove.destroy();
     return this;
   }
 
