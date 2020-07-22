@@ -10,6 +10,15 @@ Significant breaking changes are still underway.
 
 A powerful, highly extensible and easy to use logging framework for Deno. 
 
+## At a glance
+* Highly extensible - build your own streams, filters, obfuscators, monitors, formatters and more
+* Easy to use fluid interface
+* Deferred log message resolution for greater performance
+* Log anything
+* Filters - keep your logs clean
+* Obfuscators - hide sensitive data
+* Monitors - watch your logs and take action
+
 ## Quick start
 
 ### Simple example
@@ -49,11 +58,22 @@ const log = Optic.logger()
   .addObfuscator(new PropertyRedaction("password"))
   .addStream(fileStream);
 
+// "info" is lower than configured min log level of "warning"
 log.info("Level too low. This won't be logged");
-const logVal: string = log.critical("Hello world", 12, true, {name: "Poe"}); // logs all data, returns "Hello world"
-log.warning("spam"); // "spam" records are filtered out
-log.warning({user: "jsmith", password: "secret_password"}); // logs { "user": "jsmith", "password": "[Redacted]" }
-log.debug(() => { throw new Error("I'm not thrown"); }); // debug < warning, so no error as function isn't evaluated
+
+// logs "Hello World" and supporting metadata, returns "Hello world"
+const logVal: string = log.critical("Hello world", 12, true, {name: "Poe"}); 
+
+// Records with `msg` of "spam" records are filtered out
+log.warning("spam");
+
+// logs `msg` as { "user": "jsmith", "password": "[Redacted]" }
+log.warning({user: "jsmith", password: "secret_password"});
+
+// debug < min log level, so function isn't evaluated and error not thrown
+log.debug(() => { throw new Error("I'm not thrown"); }); 
+
+// error > min log level, so function is evaluated and `msg` is set to "1234"
 log.error(() => { return "1234"; }); // logs "1234"
 ```
 
