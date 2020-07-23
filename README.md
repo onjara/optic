@@ -59,7 +59,7 @@ log.info("Level too low. This won't be logged");
 // logs "Hello World" and supporting metadata, returns "Hello world"
 const logVal: string = log.critical("Hello world", 12, true, {name: "Poe"}); 
 
-// Records with `msg` of "spam" records are filtered out
+// Log records with `msg` of "spam" are filtered out
 log.warning("spam");
 
 // logs `msg` as { "user": "jsmith", "password": "[Redacted]" }
