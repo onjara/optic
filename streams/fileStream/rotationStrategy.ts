@@ -11,6 +11,7 @@ import {
   win32Basename,
   posixBasename,
 } from "./deps.ts";
+import { ValidationError, IllegalStateError } from "../../types.ts";
 
 /**
  * Used for building a RotationStrategy
@@ -32,7 +33,7 @@ class ByteRotationStrategy implements RotationStrategy {
 
   constructor(maxBytes: number) {
     if (maxBytes < 1) {
-      throw new Error("Max bytes cannot be less than 1");
+      throw new ValidationError("Max bytes cannot be less than 1");
     }
     this.#maxBytes = maxBytes;
   }
@@ -59,7 +60,7 @@ class ByteRotationStrategy implements RotationStrategy {
           // are ignored for now.
           if (exists(filename + "." + i)) {
             if (initStrategy === "mustNotExist") {
-              throw new Error(
+              throw new IllegalStateError(
                 "Found existing log file which must not exist: " + filename +
                   "." + i,
               );
@@ -81,7 +82,7 @@ class ByteRotationStrategy implements RotationStrategy {
           const lastModified = fileInfo(logFile)?.mtime;
           if (lastModified && lastModified.getTime() >= maxTimeAgo.getTime()) {
             if (initStrategy === "mustNotExist") {
-              throw new Error(
+              throw new IllegalStateError(
                 "Found log file within defined maximum log retention constraints which must not exist: " +
                   logFile,
               );
@@ -164,7 +165,9 @@ class DateTimeRotationStrategy implements RotationStrategy {
 
   constructor(interval: number, period: Periods) {
     if (interval < 1) {
-      throw new Error("DateTime rotation interval cannot be less than 1");
+      throw new ValidationError(
+        "DateTime rotation interval cannot be less than 1",
+      );
     }
     this.#interval = interval;
     this.#period = period;

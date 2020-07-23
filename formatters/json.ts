@@ -3,6 +3,7 @@ import {
   LogRecord,
   DateTimeFormatter,
   DateTimeFormatterFn,
+  ValidationError,
 } from "../types.ts";
 import { levelToName } from "../logger/levels.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
@@ -55,7 +56,7 @@ export class JsonFormatter implements Formatter<string> {
    */
   withFields(fields: Fields[]): this {
     if (fields.length === 0) {
-      throw new Error("JsonFormatter fields cannot be empty");
+      throw new ValidationError("JsonFormatter fields cannot be empty");
     }
     this.#fields = fields;
     return this;

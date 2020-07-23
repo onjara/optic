@@ -1,5 +1,5 @@
 import { BaseStream } from "../baseStream.ts";
-import { LogMeta, LogRecord } from "../../types.ts";
+import { LogMeta, LogRecord, ValidationError } from "../../types.ts";
 import { TokenReplacer } from "../../formatters/tokenReplacer.ts";
 import { Level } from "../../logger/levels.ts";
 import { LogFileInitStrategy, RotationStrategy } from "./types.ts";
@@ -133,7 +133,7 @@ export class FileStream extends BaseStream {
   /** The maximum size in bytes of the buffer storage before it is flushed. */
   withBufferSize(bytes: number): this {
     if (bytes < 0) {
-      throw new Error("Buffer size cannot be negative");
+      throw new ValidationError("Buffer size cannot be negative");
     }
     this.#maxBufferSize = bytes;
     return this;

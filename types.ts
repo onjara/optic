@@ -181,3 +181,17 @@ export interface LogMeta {
   /** The name of the logger for this metadata */
   readonly logger: string;
 }
+
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+export class IllegalStateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "IllegalStateError";
+  }
+}

@@ -6,6 +6,7 @@ import {
 } from "../../test_deps.ts";
 import { every } from "./rotationStrategy.ts";
 import { of } from "./retentionPolicy.ts";
+import { ValidationError, IllegalStateError } from "../../types.ts";
 
 const LOG_FILE = "./test_log.file";
 const encoder = new TextEncoder();
@@ -63,7 +64,7 @@ test({
       () => {
         every(0).bytes();
       },
-      Error,
+      ValidationError,
       "Max bytes cannot be less than 1",
     );
   },
@@ -119,7 +120,7 @@ test({
       () => {
         rs.initLogs(LOG_FILE, "mustNotExist");
       },
-      Error,
+      IllegalStateError,
       "Found existing log file which must not exist",
     );
     Deno.removeSync(LOG_FILE + ".7");
@@ -255,7 +256,7 @@ test({
       () => {
         rs.initLogs(LOG_FILE, "mustNotExist");
       },
-      Error,
+      IllegalStateError,
       "Found log file within defined maximum log retention constraints",
     );
 

@@ -4,6 +4,7 @@ import {
   assertThrows,
 } from "../../test_deps.ts";
 import { of } from "./retentionPolicy.ts";
+import { ValidationError, IllegalStateError } from "../../types.ts";
 
 test({
   name: "Negative file count throws Error",
@@ -12,7 +13,7 @@ test({
       () => {
         of(-1).files();
       },
-      Error,
+      ValidationError,
       "Invalid quantity",
     );
   },
@@ -25,7 +26,7 @@ test({
       () => {
         of(-1).days();
       },
-      Error,
+      ValidationError,
       "Invalid quantity",
     );
   },
@@ -46,7 +47,7 @@ test({
       () => {
         of(7).files().oldestRetentionDate();
       },
-      Error,
+      IllegalStateError,
       "Oldest Retention Date is meaningless for retention strategy of 'files'",
     );
   },

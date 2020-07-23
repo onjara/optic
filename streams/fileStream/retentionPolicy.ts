@@ -1,4 +1,5 @@
 import { Periods, LogFileRetentionPolicy } from "./types.ts";
+import { ValidationError, IllegalStateError } from "../../types.ts";
 
 /**
  * Used for building a LogFileRetentionPolicy
@@ -32,7 +33,7 @@ export class LogFileRetentionPolicyImpl implements LogFileRetentionPolicy {
     if (
       (quantity < 0 && type == "files") || (quantity < 1 && type != "files")
     ) {
-      throw new Error("Invalid quantity for maximum archive count");
+      throw new ValidationError("Invalid quantity for maximum archive count");
     }
     this.#quantity = quantity;
     this.#type = type;
@@ -49,7 +50,7 @@ export class LogFileRetentionPolicyImpl implements LogFileRetentionPolicy {
   oldestRetentionDate(): Date {
     const d = new Date();
     if (this.#type === "files") {
-      throw new Error(
+      throw new IllegalStateError(
         "Oldest Retention Date is meaningless for retention strategy of 'files'",
       );
     }

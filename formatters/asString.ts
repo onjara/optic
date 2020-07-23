@@ -23,7 +23,7 @@ export function asString(data: unknown): string {
   } else if (data instanceof Date) {
     return data.toISOString();
   } else if (data instanceof Error) {
-    return data.stack ? data.stack : "[Error]";
+    return data.stack ? data.stack : "[" + data.name + "]";
   } else if (typeof data === "object") {
     try {
       return JSON.stringify(data);
