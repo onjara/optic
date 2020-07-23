@@ -1,8 +1,3 @@
-# NOTE
-
-This project is not yet ready for public release and is a work in progress. 
-Significant breaking changes are still underway.
-
 # Optic
 
 [![ci](https://github.com/onjara/optic/workflows/ci/badge.svg)](https://github.com/onjara/optic)
