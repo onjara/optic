@@ -1,5 +1,6 @@
 import { Obfuscator, LogRecord, Stream } from "../types.ts";
 import { Level } from "../logger/levels.ts";
+import { clone } from "./deepClone.ts";
 
 /**
  * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter 
@@ -109,18 +110,19 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   constructor(logRecord: LogRecord, regEx: RegExp, replacer: Replacer) {
     if (typeof logRecord.msg == "string") {
       this.msg = logRecord.msg.replace(regEx, replacer);
-    } else if (typeof logRecord.msg === "object") {
-      this.msg = JSON.parse(JSON.stringify(logRecord.msg));
+    } else if (this.isObjectButNotError(logRecord.msg)) {
+      this.msg = clone(logRecord.msg);
       this.redact(this.msg, regEx, replacer);
     } else {
       this.msg = logRecord.msg;
     }
 
-    this.#metadata = JSON.parse(JSON.stringify(logRecord.metadata));
+    this.#metadata = clone(logRecord.metadata);
+
     for (let i = 0; i < this.#metadata.length; i++) {
-      if (typeof (this.#metadata[i]) === "object") {
+      if (this.isObjectButNotError(this.#metadata[i])) {
         this.redact(this.#metadata[i], regEx, replacer);
-      } else if (typeof (this.#metadata[i] === "string")) {
+      } else if (typeof this.#metadata[i] === "string") {
         this.#metadata[i] = (this.#metadata[i] as string).replace(
           regEx,
           replacer,
@@ -135,8 +137,8 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   }
 
   redact(obj: unknown, regEx: RegExp, replacer: Replacer): void {
-    if (obj && typeof obj === "object") {
-      for (let key in obj) {
+    if (this.isObjectButNotError(obj)) {
+      for (let key in (obj as Object)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (typeof castObj[key] === "string") {
@@ -158,5 +160,9 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   }
   get logRecord(): LogRecord {
     return this.#logRecord;
+  }
+
+  private isObjectButNotError(obj: unknown): boolean {
+    return obj && typeof obj === "object" && !(obj instanceof Error);
   }
 }

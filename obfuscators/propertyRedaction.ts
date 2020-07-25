@@ -4,6 +4,7 @@ import {
   LogRecord,
 } from "../types.ts";
 import { Level } from "../logger/levels.ts";
+import { clone } from "./deepClone.ts";
 
 /**
  * An obfuscator to obfuscate the entire value of any matched properties of any
@@ -33,9 +34,9 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
   readonly logger: string;
 
   constructor(logRecord: LogRecord, property: string) {
-    if (typeof logRecord.msg === "object") {
+    if (this.isObjectButNotError(logRecord.msg)) {
       // clone the original object
-      this.msg = JSON.parse(JSON.stringify(logRecord.msg));
+      this.msg = clone(logRecord.msg);
       this.redact(this.msg, property);
     } else {
       this.msg = logRecord.msg;
@@ -45,9 +46,9 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
       this.#metadata = ["[Redacted]"];
     } else {
       // clone the original metadata
-      this.#metadata = JSON.parse(JSON.stringify(logRecord.metadata));
+      this.#metadata = clone(logRecord.metadata);
       for (let i = 0; i < this.#metadata.length; i++) {
-        if (typeof (this.#metadata[i]) === "object") {
+        if (this.isObjectButNotError(this.#metadata[i])) {
           this.redact(this.#metadata[i], property);
         }
       }
@@ -61,8 +62,8 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
   }
 
   redact(obj: unknown, property: string): void {
-    if (obj && typeof obj === "object") {
-      for (let key in obj) {
+    if (this.isObjectButNotError(obj)) {
+      for (let key in (obj as Object)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (key === property) {
@@ -73,6 +74,10 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
         }
       }
     }
+  }
+
+  private isObjectButNotError(obj: unknown): boolean {
+    return obj && typeof obj === "object" && !(obj instanceof Error);
   }
 
   get dateTime(): Date {

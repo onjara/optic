@@ -20,6 +20,8 @@ export class JsonFormatter implements Formatter<string> {
   #indent: number | string = 0;
   #dateTimeFormatter: DateTimeFormatter | undefined = undefined;
 
+  // TODO find a better way than JSON.stringify everywhere
+
   format(logRecord: LogRecord): string {
     let output = "{";
     for (let field of this.#fields) {

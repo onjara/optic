@@ -1,5 +1,6 @@
 import {
   test,
+  assert,
   assertEquals,
 } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
@@ -8,6 +9,27 @@ import { LogRecord } from "../types.ts";
 
 const noopStream = { handle(lr: LogRecord): void {} };
 const REDACTED = "[Redacted]";
+
+test({
+  name:
+    "Errors are preserved when transforming into ObfuscatedPropertyLogRecord",
+  fn() {
+    const err = new Error("oops");
+    const lr = {
+      msg: err,
+      metadata: [{ a: true, b: "hello" }],
+      dateTime: new Date("2020-06-17T03:24:00"),
+      level: Level.DEBUG,
+      logger: "default",
+    };
+    const newLr = new PropertyRedaction("x").obfuscate(noopStream, lr);
+    assert(newLr.msg instanceof Error);
+    assertEquals(
+      (newLr.msg as Error).stack?.slice(0, 50),
+      err.stack?.slice(0, 50),
+    );
+  },
+});
 
 test({
   name: "Non matching redaction results in same object values",
