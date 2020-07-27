@@ -42,10 +42,7 @@ test({
       logger: "default",
     };
     const newLr = new PropertyRedaction("x").obfuscate(noopStream, lr);
-    assertEquals(newLr.msg, lr.msg);
-    assertEquals(newLr.metadata, lr.metadata);
-    assertEquals(newLr.dateTime, lr.dateTime);
-    assertEquals(newLr.level, lr.level);
+    assert(lr === newLr);
   },
 });
 
@@ -90,11 +87,32 @@ test({
 });
 
 test({
+  name: "Test msg as Array redaction",
+  fn() {
+    const sym = Symbol("abc");
+    const lr = {
+      msg: [{ a: "hello" }, { e: true }, 1234, sym],
+      metadata: ["The metadata"],
+      dateTime: new Date("2020-06-17T03:24:00"),
+      level: Level.DEBUG,
+      logger: "default",
+    };
+    const newLrA = new PropertyRedaction("e").obfuscate(noopStream, lr);
+    assertEquals(newLrA.msg, [{ a: "hello" }, { e: REDACTED }, 1234, sym]);
+  },
+});
+
+test({
   name: "Test shallow metadata object redaction",
   fn() {
     const lr = {
       msg: null,
-      metadata: [{ a: 6, b: true }, "The metadata", { c: "hello", d: "world" }],
+      metadata: [
+        { a: 6, b: true },
+        "The metadata",
+        { c: "hello", d: "world" },
+        1,
+      ],
       dateTime: new Date("2020-06-17T03:24:00"),
       level: Level.DEBUG,
       logger: "default",
@@ -105,19 +123,19 @@ test({
     const newLrD = new PropertyRedaction("d").obfuscate(noopStream, lr);
     assertEquals(
       newLrA.metadata,
-      [{ a: REDACTED, b: true }, "The metadata", { c: "hello", d: "world" }],
+      [{ a: REDACTED, b: true }, "The metadata", { c: "hello", d: "world" }, 1],
     );
     assertEquals(
       newLrB.metadata,
-      [{ a: 6, b: REDACTED }, "The metadata", { c: "hello", d: "world" }],
+      [{ a: 6, b: REDACTED }, "The metadata", { c: "hello", d: "world" }, 1],
     );
     assertEquals(
       newLrC.metadata,
-      [{ a: 6, b: true }, "The metadata", { c: REDACTED, d: "world" }],
+      [{ a: 6, b: true }, "The metadata", { c: REDACTED, d: "world" }, 1],
     );
     assertEquals(
       newLrD.metadata,
-      [{ a: 6, b: true }, "The metadata", { c: "hello", d: REDACTED }],
+      [{ a: 6, b: true }, "The metadata", { c: "hello", d: REDACTED }, 1],
     );
   },
 });

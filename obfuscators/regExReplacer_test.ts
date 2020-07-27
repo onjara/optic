@@ -37,6 +37,24 @@ test({
 });
 
 test({
+  name: "Test redaction in arrays",
+  fn() {
+    const sym = Symbol("abc");
+    const lr = {
+      msg: ["hello", 123, "world", sym],
+      metadata: [{ a: true, b: "hello" }, "metaHello", sym],
+      dateTime: new Date("2020-06-17T03:24:00"),
+      level: Level.DEBUG,
+      logger: "default",
+    };
+    const newLr = new RegExReplacer(/world/).obfuscate(noopStream, lr);
+    const newLr2 = new RegExReplacer(/meta/).obfuscate(noopStream, lr);
+    assertEquals(newLr.msg, ["hello", 123, "*****", sym]);
+    assertEquals(newLr2.metadata, [{ a: true, b: "hello" }, "****Hello", sym]);
+  },
+});
+
+test({
   name: "Non matching redaction results in same object values",
   fn() {
     const lr = {
@@ -47,10 +65,7 @@ test({
       logger: "default",
     };
     const newLr = new RegExReplacer(/123/).obfuscate(noopStream, lr);
-    assertEquals(newLr.msg, lr.msg);
-    assertEquals(newLr.metadata, lr.metadata);
-    assertEquals(newLr.dateTime, lr.dateTime);
-    assertEquals(newLr.level, lr.level);
+    assert(lr === newLr);
   },
 });
 
@@ -226,7 +241,7 @@ test({
 });
 
 test({
-  name: "nonWhitespaceReplacer works as expected",
+  name: "RegEx redaction: nonWhitespaceReplacer works as expected",
   fn() {
     const lr = {
       msg: "Date of birth: 30-04-1977",
@@ -250,7 +265,7 @@ test({
 });
 
 test({
-  name: "Test unusual characters",
+  name: "RegEx redaction: unusual characters",
   fn() {
     const lr = {
       msg: `A¬!"£$%^&*()_-+=]}[{#~'@;:/?.>,<\|'Z`,
@@ -264,5 +279,26 @@ test({
       nonWhitespaceReplacer,
     ).obfuscate(noopStream, lr);
     assertEquals(newLr.msg, "A*********************************Z");
+  },
+});
+
+test({
+  name: "RegEx redaction: Nested class redaction",
+  fn() {
+    class A {
+      name = "hello world";
+    }
+    class B {
+      a = new A();
+    }
+    const lr = {
+      msg: new B(),
+      metadata: [],
+      dateTime: new Date("2020-06-17T03:24:00"),
+      level: Level.DEBUG,
+      logger: "default",
+    };
+    const newLr = new RegExReplacer(/ell/).obfuscate(noopStream, lr);
+    assertEquals((newLr.msg as B).a.name, "h***o world");
   },
 });

@@ -91,11 +91,61 @@ export class RegExReplacer implements Obfuscator {
   }
 
   obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
-    return new ObfuscatedViaRegExLogRecord(
-      logRecord,
-      this.#regex,
-      this.#replacer,
-    );
+    let shouldRedactMsg = false;
+    let shouldRedactMeta = false;
+
+    if (!shouldRedactMsg) {
+      shouldRedactMsg = this.shouldRedact(
+        logRecord.msg,
+        this.#regex,
+        this.#replacer,
+      );
+    }
+
+    if (!shouldRedactMsg) {
+      shouldRedactMeta = this.shouldRedact(
+        logRecord.metadata,
+        this.#regex,
+        this.#replacer,
+      );
+    }
+
+    if (shouldRedactMsg || shouldRedactMeta) {
+      return new ObfuscatedViaRegExLogRecord(
+        logRecord,
+        this.#regex,
+        this.#replacer,
+      );
+    }
+    return logRecord;
+  }
+
+  shouldRedact(obj: unknown, regEx: RegExp, replacer: Replacer): boolean {
+    if (isObjectButNotArray(obj)) {
+      for (let key in (obj as Object)) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          const castObj = (obj as { [key: string]: unknown });
+          if (typeof castObj[key] === "string") {
+            if ((castObj[key] as string).match(regEx)) {
+              return true;
+            }
+          } else if (typeof castObj[key] === "object") {
+            return this.shouldRedact(castObj[key], regEx, replacer);
+          }
+        }
+      }
+    } else if (Array.isArray(obj)) {
+      for (let i = 0; i < obj.length; i++) {
+        if (this.shouldRedact(obj[i], regEx, replacer)) {
+          return true;
+        }
+      }
+    } else if (typeof obj === "string") {
+      if (obj.match(regEx)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
@@ -110,23 +160,21 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   constructor(logRecord: LogRecord, regEx: RegExp, replacer: Replacer) {
     if (typeof logRecord.msg == "string") {
       this.msg = logRecord.msg.replace(regEx, replacer);
-    } else if (this.isObjectButNotError(logRecord.msg)) {
+    } else {
       this.msg = clone(logRecord.msg);
       this.redact(this.msg, regEx, replacer);
-    } else {
-      this.msg = logRecord.msg;
     }
 
     this.#metadata = clone(logRecord.metadata);
 
     for (let i = 0; i < this.#metadata.length; i++) {
-      if (this.isObjectButNotError(this.#metadata[i])) {
-        this.redact(this.#metadata[i], regEx, replacer);
-      } else if (typeof this.#metadata[i] === "string") {
+      if (typeof this.#metadata[i] === "string") {
         this.#metadata[i] = (this.#metadata[i] as string).replace(
           regEx,
           replacer,
         );
+      } else {
+        this.redact(this.#metadata[i], regEx, replacer);
       }
     }
 
@@ -137,7 +185,7 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   }
 
   redact(obj: unknown, regEx: RegExp, replacer: Replacer): void {
-    if (this.isObjectButNotError(obj)) {
+    if (isObjectButNotArray(obj)) {
       for (let key in (obj as Object)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
@@ -146,6 +194,14 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
           } else if (typeof castObj[key] === "object") {
             this.redact(castObj[key], regEx, replacer);
           }
+        }
+      }
+    } else if (Array.isArray(obj)) {
+      for (let i = 0; i < obj.length; i++) {
+        if (typeof obj[i] === "string") {
+          obj[i] = obj[i].replace(regEx, replacer);
+        } else {
+          this.redact(obj[i], regEx, replacer);
         }
       }
     }
@@ -161,8 +217,8 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   get logRecord(): LogRecord {
     return this.#logRecord;
   }
+}
 
-  private isObjectButNotError(obj: unknown): boolean {
-    return obj && typeof obj === "object" && !(obj instanceof Error);
-  }
+function isObjectButNotArray(obj: unknown): boolean {
+  return obj && typeof obj === "object" && !Array.isArray(obj);
 }

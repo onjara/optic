@@ -19,9 +19,47 @@ export class PropertyRedaction implements Obfuscator {
   }
 
   obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
-    // TODO search for matching property before cloning and obfuscating entire
-    // log record
-    return new ObfuscatedPropertyLogRecord(logRecord, this.#redactionKey);
+    let shouldRedactMsg = false;
+    let shouldRedactMeta = this.#redactionKey === "metadata";
+
+    if (!shouldRedactMsg) {
+      shouldRedactMsg = this.shouldRedact(logRecord.msg, this.#redactionKey);
+    }
+
+    if (!shouldRedactMsg) {
+      shouldRedactMeta = this.shouldRedact(
+        logRecord.metadata,
+        this.#redactionKey,
+      );
+    }
+
+    if (shouldRedactMsg || shouldRedactMeta) {
+      return new ObfuscatedPropertyLogRecord(logRecord, this.#redactionKey);
+    }
+
+    return logRecord;
+  }
+
+  shouldRedact(obj: unknown, property: string): boolean {
+    if (isObjectButNotErrorNorArray(obj)) {
+      for (let key in (obj as Object)) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          const castObj = (obj as { [key: string]: unknown });
+          if (key === property) {
+            return true;
+          } else if (typeof castObj[key] === "object") {
+            return this.shouldRedact(castObj[key], property);
+          }
+        }
+      }
+    } else if (Array.isArray(obj)) {
+      for (let i = 0; i < obj.length; i++) {
+        if (this.shouldRedact(obj[i], property)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
 
@@ -34,24 +72,16 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
   readonly logger: string;
 
   constructor(logRecord: LogRecord, property: string) {
-    if (this.isObjectButNotError(logRecord.msg)) {
-      // clone the original object
-      this.msg = clone(logRecord.msg);
-      this.redact(this.msg, property);
-    } else {
-      this.msg = logRecord.msg;
-    }
+    // clone the original object
+    this.msg = clone(logRecord.msg);
+    this.redact(this.msg, property);
 
     if (property === "metadata") {
       this.#metadata = ["[Redacted]"];
     } else {
       // clone the original metadata
       this.#metadata = clone(logRecord.metadata);
-      for (let i = 0; i < this.#metadata.length; i++) {
-        if (this.isObjectButNotError(this.#metadata[i])) {
-          this.redact(this.#metadata[i], property);
-        }
-      }
+      this.redact(this.#metadata, property);
     }
 
     // these fields are not available for obfuscation
@@ -62,7 +92,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
   }
 
   redact(obj: unknown, property: string): void {
-    if (this.isObjectButNotError(obj)) {
+    if (isObjectButNotErrorNorArray(obj)) {
       for (let key in (obj as Object)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
@@ -73,11 +103,11 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
           }
         }
       }
+    } else if (Array.isArray(obj)) {
+      for (let i = 0; i < obj.length; i++) {
+        this.redact(obj[i], property);
+      }
     }
-  }
-
-  private isObjectButNotError(obj: unknown): boolean {
-    return obj && typeof obj === "object" && !(obj instanceof Error);
   }
 
   get dateTime(): Date {
@@ -90,4 +120,9 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
   get logRecord(): LogRecord {
     return this.#logRecord;
   }
+}
+
+function isObjectButNotErrorNorArray(obj: unknown): boolean {
+  return obj && typeof obj === "object" && !(obj instanceof Error) &&
+    !Array.isArray(obj);
 }
