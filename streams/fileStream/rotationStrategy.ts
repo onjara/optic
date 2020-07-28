@@ -113,7 +113,7 @@ class ByteRotationStrategy implements RotationStrategy {
         filename,
         matchesFilePattern,
       );
-      console.log("\n", "LogFiles: ", logFiles);
+
       /* Given the log files, find the maximum extension that is within the
        * oldest retention date.  Add 1 to this value to ensure it is rotated
        * along with all other log files with a lower extension */
@@ -122,19 +122,13 @@ class ByteRotationStrategy implements RotationStrategy {
         const matched = logFile.match(/.*\.([\d]+)/);
         if (matched?.[1]) {
           const statInfo = Deno.statSync(logFile)?.mtime?.getTime();
-          console.log(
-            logFile,
-            statInfo,
-            this.#logFileRetentionPolicy.oldestRetentionDate().getTime(),
-          );
           if (
             statInfo &&
             statInfo >
               this.#logFileRetentionPolicy.oldestRetentionDate().getTime()
           ) {
             // Add 1 to this extension value to ensure it is kept during rotation
-            maxFiles = +matched[1] > maxFiles ? +matched[1] + 1 : maxFiles;
-            console.log("maxfiles", maxFiles, "matched", matched[1]);
+            maxFiles = +matched[1] >= maxFiles ? +matched[1] + 1 : maxFiles;
           } else {
             // This log file is outside the oldest retention date, delete it
             Deno.removeSync(logFile);
@@ -149,7 +143,6 @@ class ByteRotationStrategy implements RotationStrategy {
       const dest = filename + "." + (i + 1);
 
       if (exists(source)) {
-        console.log("Renaming ", source, " to ", dest);
         Deno.renameSync(source, dest);
       }
     }

@@ -351,8 +351,7 @@ test({
 
     const rs = every(15).bytes().withLogFileRetentionPolicy(of(3).days());
     rs.rotate(LOG_FILE, encoder.encode("hello"));
-    assert(!exists(LOG_FILE + ".5")); // deleted as too old
-
+    
     assertEquals(rs.currentFileSize, 5);
     assert(!exists(LOG_FILE)); // recreated in Stream, not here
     assert(exists(LOG_FILE + ".1"));
@@ -363,7 +362,8 @@ test({
     assertEquals(readFile(LOG_FILE + ".3"), "2");
     assert(exists(LOG_FILE + ".4"));
     assertEquals(readFile(LOG_FILE + ".4"), "3");
-    assert(!exists(LOG_FILE + ".6")); // check '5' wasn't rotated
+    assert(!exists(LOG_FILE + ".5")); // deleted as too old...
+    assert(!exists(LOG_FILE + ".6")); // ... and check it wasn't rotated either
 
     Deno.removeSync(LOG_FILE + ".1");
     Deno.removeSync(LOG_FILE + ".2");
