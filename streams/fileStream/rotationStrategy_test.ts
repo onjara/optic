@@ -361,9 +361,7 @@ test({
     assertEquals(readFile(LOG_FILE + ".2"), "1");
     assert(exists(LOG_FILE + ".3"));
     assertEquals(readFile(LOG_FILE + ".3"), "2");
-    console.log("\nbefore");
     assert(exists(LOG_FILE + ".4"));
-    console.log("after");
     assertEquals(readFile(LOG_FILE + ".4"), "3");
     assert(!exists(LOG_FILE + ".6")); // check '5' wasn't rotated
 
