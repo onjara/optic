@@ -7,6 +7,7 @@ import {
 import { BaseStream } from "./baseStream.ts";
 import { LogRecord, Formatter, LogMeta } from "../types.ts";
 import { Level } from "../logger/levels.ts";
+import { PropertyRedaction, SubStringFilter, Logger } from "../mod.ts";
 
 class MsgPassThrough implements Formatter<string> {
   format(lr: LogRecord): string {
@@ -21,13 +22,13 @@ class AlternativeMsgPassThrough implements Formatter<string> {
 }
 
 class TestStream extends BaseStream {
-  logs: string[] = [];
+  logs: unknown[] = [];
 
   constructor() {
     super(new MsgPassThrough());
   }
 
-  log(msg: string): void {
+  log(msg: unknown): void {
     this.logs.push(msg);
   }
 }
@@ -53,6 +54,10 @@ function logMeta(): LogMeta {
     minLogLevel: Level.INFO,
     minLogLevelFrom: "default",
     logger: "default",
+    streamStats: new Map(),
+    filters: 0,
+    obfuscators: 0,
+    monitors: 0,
   };
 }
 
@@ -135,11 +140,10 @@ test({
 
     baseStream.withLogHeader();
     baseStream.logHeader(logMeta());
-    assertEquals(baseStream.logs.length, 2);
-    assertStringContains(baseStream.logs[0], "Logging session initialized");
+    assertEquals(baseStream.logs.length, 1);
     assertStringContains(
-      baseStream.logs[1],
-      "Default min log level set at: INFO (from default)",
+      (baseStream.logs[0] as string),
+      "Logging session initialized",
     );
   },
 });
@@ -148,13 +152,59 @@ test({
   name: "Log footer outputs header info",
   fn() {
     const baseStream = newBaseStream().withLogFooter(false);
-    baseStream.logFooter(logMeta());
+    const meta = logMeta();
+    meta.streamStats.set(
+      baseStream,
+      { handled: new Map<number, number>(), filtered: 0, obfuscated: 0 },
+    );
+    baseStream.logFooter(meta);
     assertEquals(baseStream.logs.length, 0);
 
     baseStream.withLogFooter();
-    baseStream.logFooter(logMeta());
-    assertEquals(baseStream.logs.length, 2);
-    assertStringContains(baseStream.logs[0], "Logging session complete");
-    assertStringContains(baseStream.logs[1], "Log session duration");
+    baseStream.logFooter(meta);
+    assertEquals(baseStream.logs.length, 1);
+    assertStringContains(
+      (baseStream.logs[0] as string),
+      "Logging session complete.  Duration",
+    );
+  },
+});
+
+test({
+  name: "Log footer complex variants",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger("config").addStream(testStream)
+      .withMinLogLevel(Level.INFO)
+      .addObfuscator(new PropertyRedaction("z"))
+      .addFilter(new SubStringFilter("def"))
+      .addMonitor((logRecord: LogRecord) => {});
+    logger.error("abc");
+    logger.error("abc");
+    logger.error("abc");
+    logger.warning("abc");
+    logger.warning("abc");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.info("abc");
+    logger.info({ z: "abc" });
+    logger.info({ z: "abc" });
+    logger.removeStream(testStream);
+
+    assertEquals(
+      testStream.logs[testStream.logs.length - 4],
+      "Filters registered: 1 Obfuscators registered: 1 Monitors registered: 1 ",
+    );
+    assertEquals(
+      testStream.logs[testStream.logs.length - 3],
+      "Records filtered: 5 Records obfuscated: 2 ",
+    );
+    assertEquals(
+      testStream.logs[testStream.logs.length - 2],
+      "Log count => ERROR: 3, WARNING: 2, INFO: 3",
+    );
   },
 });

@@ -66,46 +66,76 @@ export abstract class BaseStream implements Stream {
   logHeader(meta: LogMeta): void {
     if (!this.outputHeader) return;
 
-    const loggingInitAtRecord = {
-      msg: "Logging session initialized", /* on host Deno.hostname() */
-      metadata: [],
-      dateTime: new Date(),
-      level: Level.INFO,
-      logger: meta.logger,
-    };
-    const minLogLevelRecord = {
-      msg: "Default min log level set at: " + levelToName(meta.minLogLevel) +
-        " (from " + meta.minLogLevelFrom + ")",
-      metadata: [],
-      dateTime: new Date(),
-      level: Level.INFO,
-      logger: meta.logger,
-    };
+    const minLogLevel = meta.minLogLevelFrom === "default"
+      ? ""
+      : "Initial logger min log level: " + levelToName(meta.minLogLevel) +
+        " (" + meta.minLogLevelFrom + ")";
+    const loggingInitAtRecord = this.metaLogRecord(
+      meta,
+      "Logging session initialized. " +
+        minLogLevel, /* on host Deno.hostname() */
+    );
 
     this.log(this.format(loggingInitAtRecord));
-    this.log(this.format(minLogLevelRecord));
   }
 
   logFooter(meta: LogMeta): void {
     if (!this.outputFooter) return;
 
-    const loggingCompletedAtRecord = {
-      msg: "Logging session complete",
-      metadata: [],
-      dateTime: new Date(),
-      level: Level.INFO,
-      logger: meta.logger,
-    };
-    const loggingDurationRecord = {
-      msg: "Log session duration: " +
+    const loggingCompletedAtRecord = this.metaLogRecord(
+      meta,
+      "Logging session complete.  Duration: " +
         (new Date().getTime() - this.#started.getTime()) + "ms",
-      metadata: [],
-      dateTime: new Date(),
-      level: Level.INFO,
-      logger: meta.logger,
-    };
+    );
+
+    let registered = "";
+    registered += meta.filters > 0
+      ? "Filters registered: " + meta.filters + " "
+      : "";
+    registered += meta.obfuscators > 0
+      ? "Obfuscators registered: " + meta.obfuscators + " "
+      : "";
+    registered += meta.monitors > 0
+      ? "Monitors registered: " + meta.monitors + " "
+      : "";
+
+    let stats = "";
+    stats += meta.streamStats.get(this)!.filtered > 0
+      ? "Records filtered: " + meta.streamStats.get(this)!.filtered + " "
+      : "";
+    stats += meta.streamStats.get(this)!.obfuscated > 0
+      ? "Records obfuscated: " + meta.streamStats.get(this)!.obfuscated + " "
+      : "";
+
+    let levelStats = "";
+    const handledMap = meta.streamStats.get(this)!.handled;
+    levelStats = Array.from(handledMap.keys()).map((k) =>
+      levelToName(k) + ": " + handledMap.get(k)
+    ).join(", ");
+    if (levelStats != "") {
+      levelStats = "Log count => " + levelStats;
+    }
+
+    if (registered != "") {
+      this.log(this.format(this.metaLogRecord(meta, registered)));
+    }
+    if (stats != "") {
+      this.log(this.format(this.metaLogRecord(meta, stats)));
+    }
+    if (levelStats != "") {
+      this.log(this.format(this.metaLogRecord(meta, levelStats)));
+    }
 
     this.log(this.format(loggingCompletedAtRecord));
-    this.log(this.format(loggingDurationRecord));
+  }
+
+  private metaLogRecord(meta: LogMeta, msg: string): LogRecord {
+    return {
+      msg: msg,
+      metadata: [],
+      dateTime: new Date(),
+      level: Level.INFO,
+      logger: meta.logger,
+    };
   }
 }

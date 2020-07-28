@@ -13,6 +13,8 @@ import {
   Filter,
   Obfuscator,
 } from "../types.ts";
+import { PropertyRedaction } from "../obfuscators/propertyRedaction.ts";
+import { SubStringFilter } from "../filters/subStringFilter.ts";
 
 class TestStream implements Stream {
   functionsCalled: string[] = [];
@@ -99,7 +101,10 @@ test({
     const testStream = new TestStream();
     assertEquals(logger.addStream(testStream).minLogLevel(), Level.INFO);
     assertEquals(testStream.meta?.minLogLevel, Level.INFO);
-    assertEquals(testStream.meta?.minLogLevelFrom, "command line arguments");
+    assertEquals(
+      testStream.meta?.minLogLevelFrom,
+      "from command line argument",
+    );
   },
 });
 
@@ -130,7 +135,7 @@ test({
     const testStream = new TestStream();
     assertEquals(logger.addStream(testStream).minLogLevel(), Level.ERROR);
     assertEquals(testStream.meta?.minLogLevel, Level.ERROR);
-    assertEquals(testStream.meta?.minLogLevelFrom, "environment variable");
+    assertEquals(testStream.meta?.minLogLevelFrom, "from environment variable");
   },
 });
 
@@ -204,7 +209,7 @@ test({
     );
     assertEquals(logger.minLogLevel(), Level.INFO);
     assertEquals(testStream.meta?.minLogLevel, Level.INFO);
-    assertEquals(testStream.meta?.minLogLevelFrom, "withMinLogLevel()");
+    assertEquals(testStream.meta?.minLogLevelFrom, "programmatically set");
   },
 });
 
@@ -382,6 +387,8 @@ test({
     );
     assertEquals(filter1.filterCount, 4);
     assertEquals(filter2.filterCount, 3);
+    assertEquals(testStream1.meta?.streamStats.get(testStream1)?.filtered, 1);
+    assertEquals(testStream2.meta?.streamStats.get(testStream2)?.filtered, 0);
   },
 });
 
@@ -403,14 +410,15 @@ test({
         ) {
           this.replacements++;
           msg = msg.replace("obfuscate", "*********");
+          return {
+            msg: msg,
+            metadata: logRecord.metadata,
+            dateTime: logRecord.dateTime,
+            level: logRecord.level,
+            logger: logRecord.logger,
+          };
         }
-        return {
-          msg: msg,
-          metadata: logRecord.metadata,
-          dateTime: logRecord.dateTime,
-          level: logRecord.level,
-          logger: logRecord.logger,
-        };
+        return logRecord;
       }
     }
     const ob1 = new TestObfuscator();
@@ -445,6 +453,9 @@ test({
     assertEquals(ob2.replacements, 0);
     assertEquals(testStream1.logRecords[2].msg, "hello obfuscated");
     assertEquals(testStream2.logRecords[2].msg, "hello obfuscated");
+
+    assertEquals(testStream1.meta?.streamStats.get(testStream1)?.obfuscated, 1);
+    assertEquals(testStream2.meta?.streamStats.get(testStream2)?.obfuscated, 0);
   },
 });
 
@@ -566,5 +577,50 @@ test({
     const logger = new Logger("config").addStream(testStream);
     assertEquals(logger.name(), "config");
     assertEquals(testStream.meta?.logger, "config");
+  },
+});
+
+test({
+  name: "Meta data as expected",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger("config").addStream(testStream)
+      .withMinLogLevel(Level.INFO)
+      .addObfuscator(new PropertyRedaction("z"))
+      .addFilter(new SubStringFilter("def"))
+      .addMonitor((logRecord: LogRecord) => {});
+    logger.error("abc");
+    logger.error("abc");
+    logger.error("abc");
+    logger.warning("abc");
+    logger.warning("abc");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.warning("abcdef");
+    logger.info("abc");
+    logger.info({ z: "abc" });
+    logger.info({ z: "abc" });
+    const meta = testStream.meta;
+    assertEquals(meta?.filters, 1);
+    assertEquals(meta?.hostname, "unavailable");
+    assertEquals(meta?.logger, "config");
+    assertEquals(meta?.minLogLevel, Level.INFO);
+    assertEquals(meta?.minLogLevelFrom, "programmatically set");
+    assertEquals(meta?.monitors, 1);
+    assertEquals(meta?.obfuscators, 1);
+    assert(new Date().getTime() - meta?.sessionStarted.getTime()! < 100);
+    assertEquals(meta?.streamStats.get(testStream)?.filtered, 5);
+    assertEquals(meta?.streamStats.get(testStream)?.obfuscated, 2);
+    assertEquals(
+      meta?.streamStats.get(testStream)?.handled.get(Level.ERROR),
+      3,
+    );
+    assertEquals(
+      meta?.streamStats.get(testStream)?.handled.get(Level.WARNING),
+      2,
+    );
+    assertEquals(meta?.streamStats.get(testStream)?.handled.get(Level.INFO), 3);
   },
 });

@@ -70,6 +70,11 @@ test({
         minLogLevel: Level.DEBUG,
         minLogLevelFrom: "somewhere",
         logger: "default",
+        streamStats: new Map(),
+        filters: 0,
+        obfuscators: 0,
+        monitors: 0,
+        logsHandled: 0,
       };
       cs.logHeader(lm);
       cs.logFooter(lm);

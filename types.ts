@@ -180,6 +180,17 @@ export interface LogMeta {
   minLogLevelFrom: string;
   /** The name of the logger for this metadata */
   readonly logger: string;
+  /** Count of handled (Map of Level -> count), filtered and obfuscated records by stream */
+  readonly streamStats: Map<
+    Stream,
+    { handled: Map<number, number>; filtered: number; obfuscated: number }
+  >;
+  /** Number of filters added.  (Removed filters do not subtract from this total) */
+  readonly filters: number;
+  /** Number of obfuscators added.  (Removed obfuscators do not subtract from this total) */
+  readonly obfuscators: number;
+  /** Number of monitors added.  (Removed monitors do not subtract from this total) */
+  readonly monitors: number;
 }
 
 export class ValidationError extends Error {

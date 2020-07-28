@@ -15,10 +15,17 @@ import { ImmutableLogRecord } from "./logRecord.ts";
 
 class LogMetaImpl implements LogMeta {
   minLogLevel: Level = Level.DEBUG;
-  minLogLevelFrom = "default value";
+  minLogLevelFrom = "default";
   readonly sessionStarted = new Date();
   readonly hostname = "unavailable";
   logger = "default";
+  filters = 0;
+  obfuscators = 0;
+  monitors = 0;
+  streamStats: Map<
+    Stream,
+    { handled: Map<number, number>; filtered: number; obfuscated: number }
+  > = new Map();
 }
 
 export class Logger {
@@ -64,14 +71,14 @@ export class Logger {
     if (argMinLevel !== undefined && nameToLevel(argMinLevel) !== undefined) {
       //set min log level from module arguments
       this.#minLevel = nameToLevel(argMinLevel)!;
-      this.#meta.minLogLevelFrom = "command line arguments";
+      this.#meta.minLogLevelFrom = "from command line argument";
       this.#meta.minLogLevel = this.#minLevel;
     } else {
       // Set min log level from env variable
       const envMinLevel = this.getEnvMinLevel();
       if (envMinLevel && nameToLevel(envMinLevel) !== undefined) {
         this.#minLevel = nameToLevel(envMinLevel)!;
-        this.#meta.minLogLevelFrom = "environment variable";
+        this.#meta.minLogLevelFrom = "from environment variable";
         this.#meta.minLogLevel = this.#minLevel;
       }
     }
@@ -91,7 +98,7 @@ export class Logger {
    */
   withMinLogLevel(level: Level): this {
     this.#minLevel = level;
-    this.#meta.minLogLevelFrom = "withMinLogLevel()";
+    this.#meta.minLogLevelFrom = "programmatically set";
     this.#meta.minLogLevel = this.#minLevel;
     return this;
   }
@@ -113,6 +120,10 @@ export class Logger {
     this.#streams.push(stream);
     if (stream.setup) stream.setup();
     if (stream.logHeader) stream.logHeader(this.#meta);
+    this.#meta.streamStats.set(
+      stream,
+      { handled: new Map<number, number>(), filtered: 0, obfuscated: 0 },
+    );
     return this;
   }
 
@@ -134,6 +145,7 @@ export class Logger {
     }
     if (monitor.setup) monitor.setup();
     this.#monitors.push(monitor);
+    this.#meta.monitors++;
     return this;
   }
 
@@ -159,6 +171,7 @@ export class Logger {
     }
     if (filter.setup) filter.setup();
     this.#filters.push(filter);
+    this.#meta.filters++;
     return this;
   }
 
@@ -183,6 +196,7 @@ export class Logger {
     }
     if (obfuscator.setup) obfuscator.setup();
     this.#obfuscators.push(obfuscator);
+    this.#meta.obfuscators++;
     return this;
   }
 
@@ -246,21 +260,44 @@ export class Logger {
       let skip = false;
 
       // Apply Filters.  First matching filter will skip rest of filters.
-      for (let j = 0; j < this.#filters.length && !skip; j++) {
+      for (let j = 0; !skip && j < this.#filters.length; j++) {
         if (this.#filters[j].shouldFilterOut(stream, logRecord)) {
           skip = true;
+          this.#meta.streamStats.get(stream)!.filtered++;
         }
       }
 
-      // Apply obfuscators
-      for (let j = 0; j < this.#obfuscators.length && !skip; j++) {
-        logRecord = this.#obfuscators[j].obfuscate(stream, logRecord);
+      if (this.#obfuscators.length > 0) {
+        // Apply obfuscators
+        for (let j = 0; !skip && j < this.#obfuscators.length; j++) {
+          let thisLogRecord = logRecord;
+          thisLogRecord = this.#obfuscators[j].obfuscate(stream, thisLogRecord);
+          if (logRecord !== thisLogRecord) {
+            logRecord = thisLogRecord;
+            this.#meta.streamStats.get(stream)!.obfuscated++;
+          }
+        }
+        if (!skip) {
+          stream.handle(logRecord);
+          this.registerStreamHandlingOfLogRecord(stream, level);
+        }
+      } else if (!skip) {
+        stream.handle(logRecord);
+        this.registerStreamHandlingOfLogRecord(stream, level);
       }
-
-      if (!skip) stream.handle(logRecord);
     }
 
     return resolvedMsg;
+  }
+
+  registerStreamHandlingOfLogRecord(stream: Stream, level: number): void {
+    if (!this.#meta.streamStats.get(stream)!.handled.has(level)) {
+      this.#meta.streamStats.get(stream)!.handled.set(level, 0);
+    }
+    this.#meta.streamStats.get(stream)!.handled.set(
+      level,
+      this.#meta.streamStats.get(stream)!.handled.get(level)! + 1,
+    );
   }
 
   /**
