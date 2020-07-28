@@ -347,10 +347,11 @@ test({
     await setMTime(LOG_FILE + ".1", daysAgo(1));
     await setMTime(LOG_FILE + ".2", daysAgo(2));
     await setMTime(LOG_FILE + ".3", daysAgo(3));
-    await setMTime(LOG_FILE + ".5", daysAgo(4));
+    await setMTime(LOG_FILE + ".5", daysAgo(5));
 
     const rs = every(15).bytes().withLogFileRetentionPolicy(of(3).days());
     rs.rotate(LOG_FILE, encoder.encode("hello"));
+    assert(!exists(LOG_FILE + ".5")); // deleted as too old
 
     assertEquals(rs.currentFileSize, 5);
     assert(!exists(LOG_FILE)); // recreated in Stream, not here
@@ -360,10 +361,11 @@ test({
     assertEquals(readFile(LOG_FILE + ".2"), "1");
     assert(exists(LOG_FILE + ".3"));
     assertEquals(readFile(LOG_FILE + ".3"), "2");
+    console.log("\nbefore");
     assert(exists(LOG_FILE + ".4"));
+    console.log("after");
     assertEquals(readFile(LOG_FILE + ".4"), "3");
-    assert(!exists(LOG_FILE + ".5")); // deleted as too old ...
-    assert(!exists(LOG_FILE + ".6")); // ... and it wasn't rotated either
+    assert(!exists(LOG_FILE + ".6")); // check '5' wasn't rotated
 
     Deno.removeSync(LOG_FILE + ".1");
     Deno.removeSync(LOG_FILE + ".2");
