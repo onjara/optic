@@ -351,7 +351,7 @@ test({
 
     const rs = every(15).bytes().withLogFileRetentionPolicy(of(3).days());
     rs.rotate(LOG_FILE, encoder.encode("hello"));
-    
+
     assertEquals(rs.currentFileSize, 5);
     assert(!exists(LOG_FILE)); // recreated in Stream, not here
     assert(exists(LOG_FILE + ".1"));
