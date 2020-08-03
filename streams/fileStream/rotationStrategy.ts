@@ -158,11 +158,16 @@ class ByteRotationStrategy implements RotationStrategy {
   }
 }
 
+/**
+ * A rotation strategy based on date/time. For each log record write to the log
+ * file, if the timestamp of the record falls outside the defined rotation
+ * interval period, then the log files are rotated.
+ */
 class DateTimeRotationStrategy implements RotationStrategy {
   #interval: number;
   #period: Periods;
   #useUTCTime = false;
-  #logFileRetentionPolicy: LogFileRetentionPolicy = of(7).files();
+  #logFileRetentionPolicy: LogFileRetentionPolicy = of(7).days();
 
   constructor(interval: number, period: Periods) {
     if (interval < 1) {
@@ -174,10 +179,16 @@ class DateTimeRotationStrategy implements RotationStrategy {
     this.#period = period;
   }
 
-  initLogs(filename: string, initStrategy: LogFileInitStrategy): void {}
+  initLogs(filename: string, initStrategy: LogFileInitStrategy): void {
+    // append - rotate first if outside timeframe
+    // overwrite - delete log files within interval period
+    // mustNotExist - check for log files within interval period
+  }
+
   shouldRotate(formattedMessage: unknown): boolean {
     return false;
   }
+
   rotate(filename: string): void {}
 
   withUTCTime(): this {

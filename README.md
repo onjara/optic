@@ -8,8 +8,8 @@ A powerful, highly extensible and easy to use logging framework for Deno.
 ## At a glance
 * Highly extensible - build your own streams, filters, obfuscators, monitors, formatters and more
 * Easy to use fluid interface
-* Deferred log message resolution for greater performance
 * Log anything
+* Deferred log message resolution for greater performance
 * Filters - keep your logs clean
 * Obfuscators - hide sensitive data
 * Monitors - watch your logs and take action
