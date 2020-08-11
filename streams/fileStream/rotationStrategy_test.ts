@@ -58,7 +58,7 @@ function readFile(file: string): string {
 }
 
 test({
-  name: "ByteRotationStrategy: bytes cannot be less than 1",
+  name: "FileSizeRotationStrategy: bytes cannot be less than 1",
   fn() {
     assertThrows(
       () => {
@@ -71,7 +71,7 @@ test({
 });
 
 test({
-  name: "ByteRotationStrategy: You can query max bytes",
+  name: "FileSizeRotationStrategy: You can query max bytes",
   fn() {
     assertEquals(every(100).bytes().maxBytes, 100);
   },
@@ -79,7 +79,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: init append will set current file size to log file size for existing log file",
+    "FileSizeRotationStrategy: init append will set current file size to log file size for existing log file",
   async fn() {
     await createFile(LOG_FILE);
     const rs = every(100).bytes();
@@ -91,7 +91,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: init append will set current file size to 0 for new log file",
+    "FileSizeRotationStrategy: init append will set current file size to 0 for new log file",
   fn() {
     const rs = every(100).bytes();
     rs.initLogs(LOG_FILE, "append");
@@ -101,7 +101,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: mustNotExist strategy will not throw for out of scope log file",
+    "FileSizeRotationStrategy: mustNotExist strategy will not throw for out of scope log file",
   async fn() {
     await createFile(LOG_FILE + ".8");
     const rs = every(100).bytes().withLogFileRetentionPolicy(of(7).files());
@@ -112,7 +112,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: mustNotExist strategy will throw for in scope log file",
+    "FileSizeRotationStrategy: mustNotExist strategy will throw for in scope log file",
   async fn() {
     await createFile(LOG_FILE + ".7");
     const rs = every(100).bytes().withLogFileRetentionPolicy(of(7).files());
@@ -129,7 +129,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: overwrite strategy will not delete for out of scope log file",
+    "FileSizeRotationStrategy: overwrite strategy will not delete for out of scope log file",
   async fn() {
     await createFile(LOG_FILE + ".8");
     const rs = every(100).bytes().withLogFileRetentionPolicy(of(7).files());
@@ -141,7 +141,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: overwrite strategy will delete for in scope log file",
+    "FileSizeRotationStrategy: overwrite strategy will delete for in scope log file",
   async fn() {
     await createFile(LOG_FILE + ".1");
     await createFile(LOG_FILE + ".7");
@@ -154,7 +154,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: No log files with date/time based retention policy causes no issues",
+    "FileSizeRotationStrategy: No log files with date/time based retention policy causes no issues",
   fn() {
     const rs = every(100).bytes().withLogFileRetentionPolicy(of(7).days());
     rs.initLogs(LOG_FILE, "overwrite");
@@ -163,7 +163,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: Log file (with date/time retention policy) mod time older than in-scope is not deleted",
+    "FileSizeRotationStrategy: Log file (with date/time retention policy) mod time older than in-scope is not deleted",
   ignore: Deno.build.os === "windows",
   async fn() {
     const d = new Date();
@@ -179,7 +179,8 @@ test({
 });
 
 test({
-  name: "ByteRotationStrategy: Log file with days date/time retention policy",
+  name:
+    "FileSizeRotationStrategy: Log file with days date/time retention policy",
   ignore: Deno.build.os === "windows",
   async fn() {
     const d = new Date();
@@ -200,7 +201,8 @@ test({
 });
 
 test({
-  name: "ByteRotationStrategy: Log file with hours date/time retention policy",
+  name:
+    "FileSizeRotationStrategy: Log file with hours date/time retention policy",
   ignore: Deno.build.os === "windows",
   async fn() {
     const d = new Date();
@@ -222,7 +224,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: Log file with minutes date/time retention policy",
+    "FileSizeRotationStrategy: Log file with minutes date/time retention policy",
   ignore: Deno.build.os === "windows",
   async fn() {
     const d = new Date();
@@ -244,7 +246,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: Log file with date/time retention policy throw with must not exist",
+    "FileSizeRotationStrategy: Log file with date/time retention policy throw with must not exist",
   ignore: Deno.build.os === "windows",
   async fn() {
     const d = new Date();
@@ -265,7 +267,7 @@ test({
 });
 
 test({
-  name: "ByteRotationStrategy: shouldRotate",
+  name: "FileSizeRotationStrategy: shouldRotate",
   fn() {
     const lrp = every(11).bytes();
     assert(!lrp.shouldRotate(encoder.encode("Hello ")));
@@ -280,7 +282,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: file based rotation will rotate original log file",
+    "FileSizeRotationStrategy: file based rotation will rotate original log file",
   async fn() {
     await createFile(LOG_FILE);
     const rs = every(15).bytes().withLogFileRetentionPolicy(of(7).files());
@@ -294,7 +296,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: file based rotation will rotate original log file",
+    "FileSizeRotationStrategy: file based rotation will rotate original log file",
   async fn() {
     await createFile(LOG_FILE);
     const rs = every(15).bytes().withLogFileRetentionPolicy(of(7).files());
@@ -308,7 +310,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: file based rotation will rotate all in scope log files",
+    "FileSizeRotationStrategy: file based rotation will rotate all in scope log files",
   async fn() {
     Deno.writeFileSync(LOG_FILE, encoder.encode("orig"));
     Deno.writeFileSync(LOG_FILE + ".1", encoder.encode("1"));
@@ -336,7 +338,7 @@ test({
 
 test({
   name:
-    "ByteRotationStrategy: dateTime based rotation will rotate all in scope log files",
+    "FileSizeRotationStrategy: dateTime based rotation will rotate all in scope log files",
   ignore: Deno.build.os === "windows",
   async fn() {
     Deno.writeFileSync(LOG_FILE, encoder.encode("orig"));

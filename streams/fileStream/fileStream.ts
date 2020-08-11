@@ -119,11 +119,12 @@ export class FileStream extends BaseStream {
 
   /** The strategy to use for rotating log files. Examples:
    * ```typescript
-   * every(20000).bytes()
-   * every(7).days()
-   * every(12).hours()
-   * every(90).minutes()
+   * withLogFileRotation(every(20000).bytes())
+   * withLogFileRotation(every(7).days())
+   * withLogFileRotation(every(12).hours())
+   * withLogFileRotation(every(90).minutes())
    * ```
+   * Default is no strategy and a single log file will grow without constraint.
    */
   withLogFileRotation(strategy: RotationStrategy): this {
     this.#rotationStrategy = strategy;
