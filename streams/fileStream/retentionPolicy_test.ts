@@ -7,14 +7,14 @@ import { of } from "./retentionPolicy.ts";
 import { ValidationError, IllegalStateError } from "../../types.ts";
 
 test({
-  name: "Negative file count throws Error",
+  name: "File count < 2 throws Error",
   fn() {
     assertThrows(
       () => {
-        of(-1).files();
+        of(1).files();
       },
       ValidationError,
-      "Invalid quantity",
+      "Log retention of type 'files' must have a quantity greater than 1",
     );
   },
 });
@@ -24,10 +24,10 @@ test({
   fn() {
     assertThrows(
       () => {
-        of(-1).days();
+        of(0).days();
       },
       ValidationError,
-      "Invalid quantity",
+      "Date/time based log retention must have quantity greater than 0",
     );
   },
 });

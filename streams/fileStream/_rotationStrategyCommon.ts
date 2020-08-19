@@ -83,3 +83,7 @@ function join(dir: string, file: string) {
   }
   return dir + "/" + file;
 }
+
+export function twoDig(num: number): string {
+  return num > 9 ? "" + num : "0" + num;
+}

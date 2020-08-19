@@ -30,11 +30,16 @@ export class LogFileRetentionPolicyImpl implements LogFileRetentionPolicy {
   #type: "files" | Periods;
 
   constructor(quantity: number, type: "files" | Periods) {
-    if (
-      (quantity < 0 && type == "files") || (quantity < 1 && type != "files")
-    ) {
-      throw new ValidationError("Invalid quantity for maximum archive count");
+    if (quantity < 2 && type == "files") {
+      throw new ValidationError(
+        "Log retention of type 'files' must have a quantity greater than 1",
+      );
+    } else if (quantity < 1 && type != "files") {
+      throw new ValidationError(
+        "Date/time based log retention must have quantity greater than 0",
+      );
     }
+
     this.#quantity = quantity;
     this.#type = type;
   }

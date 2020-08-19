@@ -11,6 +11,7 @@ import {
   getLogFilesInDir,
   matchesDatePattern,
   matchesDateTimePattern,
+  twoDig,
 } from "./_rotationStrategyCommon.ts";
 
 /**
@@ -21,7 +22,6 @@ import {
 export class DateTimeRotationStrategy implements RotationStrategy {
   #interval: number;
   #period: Periods;
-  #useUTCTime = false;
   #logFileRetentionPolicy: LogFileRetentionPolicy = of(7).days();
   #startOfIntervalPeriod = new Date();
   #endOfIntervalPeriod = new Date();
@@ -46,16 +46,18 @@ export class DateTimeRotationStrategy implements RotationStrategy {
 
       // check if base log file still exists and needs rotating
       const fi = fileInfo(filename);
-      if (fi && fi.birthtime) {
-        const birthTime = new Date(fi.birthtime.getTime());
+      const logBirthTime = this.getBirthTime(fi);
+      if (logBirthTime) {
+        const birthTime = new Date(logBirthTime.getTime());
         this.clearTimeInIntervalPeriod(birthTime);
         if (birthTime.getTime() != this.#startOfIntervalPeriod.getTime()) {
           this.rotateLogFile(filename, birthTime);
+          this.handleLogFileRetention(filename);
         }
       }
     } else if (initStrategy === "overwrite") {
       // Clean slate, remove any existing log files
-      for (const file in this.getLogFiles(filename)) {
+      for (const file of this.getLogFiles(filename)) {
         Deno.removeSync(file);
       }
     } /* mustNotExist */ else {
@@ -68,6 +70,10 @@ export class DateTimeRotationStrategy implements RotationStrategy {
         );
       }
     }
+  }
+
+  protected getBirthTime(fi: Deno.FileInfo | undefined): Date | null {
+    return fi && fi.birthtime ? fi.birthtime : null;
   }
 
   /**
@@ -87,12 +93,11 @@ export class DateTimeRotationStrategy implements RotationStrategy {
 
   private handleLogFileRetention(filename: string) {
     const logFiles = this.getLogFiles(filename);
-    const retentionDate = this.#logFileRetentionPolicy.oldestRetentionDate();
     if (this.#logFileRetentionPolicy.type === "files") {
-      if (logFiles.length - 1 > this.#logFileRetentionPolicy.quantity) {
+      if (logFiles.length > this.#logFileRetentionPolicy.quantity) {
         //delete by age older than retentionPolicy.quantity'th indexed file
         const mtimeMap: Map<Date, string> = new Map<Date, string>();
-        for (const file in logFiles) {
+        for (const file of logFiles) {
           const fileStat = Deno.statSync(file);
           if (fileStat && fileStat.mtime) {
             mtimeMap.set(fileStat.mtime, file);
@@ -106,15 +111,16 @@ export class DateTimeRotationStrategy implements RotationStrategy {
         // Delete those beyond retention quantity index in sorted array
         for (
           let i = this.#logFileRetentionPolicy.quantity;
-          i < logFiles.length - 1;
+          i < logFiles.length;
           i++
         ) {
           Deno.removeSync(mtimeMap.get(sortedKeys[i])!);
         }
       }
     } /* dateTime retention policy */ else {
+      const retentionDate = this.#logFileRetentionPolicy.oldestRetentionDate();
       //delete by age older than quantity.period
-      for (const file in logFiles) {
+      for (const file of logFiles) {
         const fileStat = Deno.statSync(file);
         if (fileStat && fileStat.mtime && fileStat.mtime < retentionDate) {
           Deno.removeSync(file);
@@ -124,7 +130,11 @@ export class DateTimeRotationStrategy implements RotationStrategy {
   }
 
   shouldRotate(formattedMessage: unknown): boolean {
-    return new Date() > this.#endOfIntervalPeriod;
+    return new Date() > this._getEndOfIntervalPeriod();
+  }
+
+  protected _getEndOfIntervalPeriod(): Date {
+    return this.#endOfIntervalPeriod;
   }
 
   /**
@@ -187,38 +197,21 @@ export class DateTimeRotationStrategy implements RotationStrategy {
     }
   }
 
-  // e.g. '.23.10.2020_22.16'
+  // e.g. '_2020.10.23_22.16'
   private dateSuffix(dateOnly: boolean, refDate: Date): string {
-    const utc = this.#useUTCTime;
-    let dateStr = ".";
-    dateStr += utc ? refDate.getUTCDate() : refDate.getDate();
+    let dateStr = "_";
+    dateStr += refDate.getFullYear();
     dateStr += ".";
-    dateStr += utc ? refDate.getUTCMonth() : refDate.getMonth();
+    dateStr += twoDig(refDate.getMonth() + 1);
     dateStr += ".";
-    dateStr += utc ? refDate.getUTCFullYear() : refDate.getFullYear();
+    dateStr += twoDig(refDate.getDate());
     if (!dateOnly) {
       dateStr += "_";
-      dateStr += utc ? refDate.getUTCHours() : refDate.getHours();
+      dateStr += twoDig(refDate.getHours());
       dateStr += ".";
-      dateStr += utc ? refDate.getUTCMinutes() : refDate.getMinutes();
+      dateStr += twoDig(refDate.getMinutes());
     }
     return dateStr;
-  }
-
-  /** Use UTC rather than local time for rotated file names. Default is to use
-   * local time.
-   */
-  withUTCTime(): this {
-    this.#useUTCTime = true;
-    return this;
-  }
-
-  /** Use local rather than UTC time for rotated file names. Default is to use
-   * local time.
-   */
-  withLocalTime(): this {
-    this.#useUTCTime = false;
-    return this;
   }
 
   /**
@@ -229,7 +222,7 @@ export class DateTimeRotationStrategy implements RotationStrategy {
    *
    * The default formatting (without setting a formatter) is as follows:
    * Period of days:  my_log_file.txt.18.03.2020
-   * Period of min/hours: my_log_file.txt.18.03.2020_15:00
+   * Period of min/hours: my_log_file.txt_18.03.2020_15.00
    */
   withFilenameFormatter(
     formatter: (filename: string, refDate: Date) => string,
