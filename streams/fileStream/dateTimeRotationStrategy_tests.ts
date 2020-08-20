@@ -192,6 +192,7 @@ test({
   fn() {
     class TestableDateTimeRotationStrategy extends DateTimeRotationStrategy {
       mockEndOfIntervalPeriod = new Date();
+
       protected _getEndOfIntervalPeriod(): Date {
         return this.mockEndOfIntervalPeriod;
       }
@@ -199,12 +200,16 @@ test({
 
     const rs = new TestableDateTimeRotationStrategy(1, "days");
     //End of interval period will be 1 day from now
-    assert(!rs.shouldRotate(""));
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 1);
+    rs.mockEndOfIntervalPeriod = futureDate;
+    assert(!rs.shouldRotate());
+
     const pastDate = new Date();
     //End of interval period set to yesterday
     pastDate.setDate(pastDate.getDate() - 1);
     rs.mockEndOfIntervalPeriod = pastDate;
-    assert(rs.shouldRotate(""));
+    assert(rs.shouldRotate());
   },
 });
 

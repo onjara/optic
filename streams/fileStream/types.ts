@@ -17,7 +17,7 @@ export interface RotationStrategy {
   /**
    * Given a log message, return true if the logs should rotate
    */
-  shouldRotate(logMessage: unknown): boolean;
+  shouldRotate(logMessage?: unknown): boolean;
 
   /**
    * Carry out a rotation of the logs

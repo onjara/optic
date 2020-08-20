@@ -40,6 +40,14 @@ export class DateTimeRotationStrategy implements RotationStrategy {
     this.setEndOfIntervalPeriod();
   }
 
+  /**
+   * Initialize the log files based on the following log file init strategy:
+   * * "append" - remove any log files outside the retention policy and rotate
+   * the primary log file if it requires it based on the creation date and the
+   * specified interval period
+   * * "overwrite" - remove any and all existing log files
+   * * "mustNotExist" - throw error if any log file exists
+   */
   initLogs(filename: string, initStrategy: LogFileInitStrategy): void {
     if (initStrategy === "append") {
       this.handleLogFileRetention(filename);
@@ -129,7 +137,8 @@ export class DateTimeRotationStrategy implements RotationStrategy {
     }
   }
 
-  shouldRotate(formattedMessage: unknown): boolean {
+  /** return true if this log event should initiate a log rotation */
+  shouldRotate(): boolean {
     return new Date() > this._getEndOfIntervalPeriod();
   }
 
@@ -139,7 +148,7 @@ export class DateTimeRotationStrategy implements RotationStrategy {
 
   /**
    * Rotate file by adding the date/time stamp to the end, delete any rotated
-   * files which fall outside the retention period, reset the start and end
+   * files which fall outside the retention policy, reset the start and end
    * of interval periods.
    */
   rotate(filename: string): void {
