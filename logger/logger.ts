@@ -37,6 +37,7 @@ export class Logger {
   #obfuscators: Obfuscator[] = [];
   #streamAdded = false;
   #meta: LogMetaImpl = new LogMetaImpl();
+  #ifCondition = true;
 
   constructor(name?: string) {
     if (name) {
@@ -237,7 +238,8 @@ export class Logger {
     msg: () => T | (T extends Function ? never : T),
     metadata: unknown[],
   ): T | undefined {
-    if (this.#minLevel > level) {
+    if (this.loggingBlocked(level)) {
+      this.#ifCondition = true; //reset to true
       return msg instanceof Function ? undefined : msg;
     }
     let resolvedMsg = msg instanceof Function ? msg() : msg;
@@ -288,6 +290,10 @@ export class Logger {
     }
 
     return resolvedMsg;
+  }
+
+  protected loggingBlocked(level: Level): boolean {
+    return this.#minLevel > level || !this.#ifCondition;
   }
 
   registerStreamHandlingOfLogRecord(stream: Stream, level: number): void {
@@ -422,5 +428,15 @@ export class Logger {
 
   protected getEnv(): { get(key: string): string | undefined } {
     return Deno.env;
+  }
+
+  /**
+   * Specify a condition under which this logging is allowed to occur.  Note
+   * that even if the condition is true, the logging is still subject to the
+   * logger (and possibly stream) log level constraints.
+   */
+  if(condition: boolean): Logger {
+    this.#ifCondition = condition;
+    return this;
   }
 }

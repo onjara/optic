@@ -221,6 +221,15 @@ to log info messages.  `value`, in this example, will be set to the return value
 `expensiveObjectCreation()` if the logger logged the message or `undefined` if
 it did not log it.
 
+### Conditional logging
+You can specify a condition which must be met to log the log message.  To do
+this, supply a boolean condition to the `if` function on the logger. E.g.
+```typescript
+logger.if(attempts > 3).warning("Excessive attempts by user");
+```
+Note that even if the condition is true, the log record may not be logged if
+the minimum log level for the logger (and/or stream) is higher than this record.
+
 ## Streams
 
 Streams in Optic control the flow of log records from a module logging statement

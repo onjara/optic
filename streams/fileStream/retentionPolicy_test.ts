@@ -6,6 +6,12 @@ import {
 import { of } from "./retentionPolicy.ts";
 import { ValidationError, IllegalStateError } from "../../types.ts";
 
+function wipeMs(date: Date): Date {
+  const d = new Date(date.getTime());
+  d.setMilliseconds(0);
+  return d;
+}
+
 test({
   name: "File count < 2 throws Error",
   fn() {
@@ -58,7 +64,7 @@ test({
   fn() {
     const d = new Date();
     d.setDate(d.getDate() - 7);
-    assertEquals(of(7).days().oldestRetentionDate(), d);
+    assertEquals(wipeMs(of(7).days().oldestRetentionDate()), wipeMs(d));
   },
 });
 
@@ -67,7 +73,7 @@ test({
   fn() {
     const d = new Date();
     d.setHours(d.getHours() - 7);
-    assertEquals(of(7).hours().oldestRetentionDate(), d);
+    assertEquals(wipeMs(of(7).hours().oldestRetentionDate()), wipeMs(d));
   },
 });
 
@@ -76,6 +82,6 @@ test({
   fn() {
     const d = new Date();
     d.setMinutes(d.getMinutes() - 7);
-    assertEquals(of(7).minutes().oldestRetentionDate(), d);
+    assertEquals(wipeMs(of(7).minutes().oldestRetentionDate()), wipeMs(d));
   },
 });

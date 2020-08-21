@@ -624,3 +624,16 @@ test({
     assertEquals(meta?.streamStats.get(testStream)?.handled.get(Level.INFO), 3);
   },
 });
+
+test({
+  name: "'If' logging works as expected",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger().addStream(testStream);
+
+    logger.if("123".length > 0).error("I should be logged");
+    logger.if("123".length > 9).error("I should not be logged");
+    assertEquals(1, testStream.logRecords.length);
+    assertEquals(testStream.logRecords[0].msg, "I should be logged");
+  },
+});
