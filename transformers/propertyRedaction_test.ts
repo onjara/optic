@@ -22,7 +22,7 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new PropertyRedaction("x").obfuscate(noopStream, lr);
+    const newLr = new PropertyRedaction("x").transform(noopStream, lr);
     assert(newLr.msg instanceof Error);
     assertEquals(
       (newLr.msg as Error).stack?.slice(0, 50),
@@ -41,7 +41,7 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new PropertyRedaction("x").obfuscate(noopStream, lr);
+    const newLr = new PropertyRedaction("x").transform(noopStream, lr);
     assert(lr === newLr);
   },
 });
@@ -56,8 +56,8 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
-    const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);
+    const newLrA = new PropertyRedaction("a").transform(noopStream, lr);
+    const newLrB = new PropertyRedaction("b").transform(noopStream, lr);
     assertEquals(newLrA.msg, { a: REDACTED, b: "hello" });
     assertEquals(newLrB.msg, { a: 6, b: REDACTED });
     assertEquals(lr.msg, { a: 6, b: "hello" });
@@ -74,10 +74,10 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
-    const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);
-    const newLrC = new PropertyRedaction("c").obfuscate(noopStream, lr);
-    const newLrD = new PropertyRedaction("d").obfuscate(noopStream, lr);
+    const newLrA = new PropertyRedaction("a").transform(noopStream, lr);
+    const newLrB = new PropertyRedaction("b").transform(noopStream, lr);
+    const newLrC = new PropertyRedaction("c").transform(noopStream, lr);
+    const newLrD = new PropertyRedaction("d").transform(noopStream, lr);
     assertEquals(newLrA.msg, { a: REDACTED, e: true });
     assertEquals(newLrB.msg, { a: { b: REDACTED }, e: true });
     assertEquals(newLrC.msg, { a: { b: { c: REDACTED } }, e: true });
@@ -97,7 +97,7 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLrA = new PropertyRedaction("e").obfuscate(noopStream, lr);
+    const newLrA = new PropertyRedaction("e").transform(noopStream, lr);
     assertEquals(newLrA.msg, [{ a: "hello" }, { e: REDACTED }, 1234, sym]);
   },
 });
@@ -117,10 +117,10 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
-    const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);
-    const newLrC = new PropertyRedaction("c").obfuscate(noopStream, lr);
-    const newLrD = new PropertyRedaction("d").obfuscate(noopStream, lr);
+    const newLrA = new PropertyRedaction("a").transform(noopStream, lr);
+    const newLrB = new PropertyRedaction("b").transform(noopStream, lr);
+    const newLrC = new PropertyRedaction("c").transform(noopStream, lr);
+    const newLrD = new PropertyRedaction("d").transform(noopStream, lr);
     assertEquals(
       newLrA.metadata,
       [{ a: REDACTED, b: true }, "The metadata", { c: "hello", d: "world" }, 1],
@@ -153,10 +153,10 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLrA = new PropertyRedaction("a").obfuscate(noopStream, lr);
-    const newLrB = new PropertyRedaction("b").obfuscate(noopStream, lr);
-    const newLrC = new PropertyRedaction("c").obfuscate(noopStream, lr);
-    const newLrD = new PropertyRedaction("d").obfuscate(noopStream, lr);
+    const newLrA = new PropertyRedaction("a").transform(noopStream, lr);
+    const newLrB = new PropertyRedaction("b").transform(noopStream, lr);
+    const newLrC = new PropertyRedaction("c").transform(noopStream, lr);
+    const newLrD = new PropertyRedaction("d").transform(noopStream, lr);
     assertEquals(
       newLrA.metadata,
       [{ a: REDACTED, e: true }, { a: REDACTED, e: true }],

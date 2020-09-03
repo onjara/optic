@@ -26,7 +26,7 @@ const fileStream = new FileStream("logFile.txt")
 const log = Optic.logger()
   .withMinLogLevel(Level.WARNING)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
-  .addObfuscator(new PropertyRedaction("password"))
+  .addTransformer(new PropertyRedaction("password"))
   .addStream(fileStream);
 
 log.info("Level too low. This won't be logged");

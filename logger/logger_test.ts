@@ -11,9 +11,9 @@ import {
   LogMeta,
   Monitor,
   Filter,
-  Obfuscator,
+  Transformer,
 } from "../types.ts";
-import { PropertyRedaction } from "../obfuscators/propertyRedaction.ts";
+import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
 import { SubStringFilter } from "../filters/subStringFilter.ts";
 
 class TestStream implements Stream {
@@ -66,10 +66,10 @@ class TestFilter implements Filter {
     this.functionsCalled.push("destroy");
   }
 }
-class TestObfuscator implements Obfuscator {
+class TestTransformer implements Transformer {
   functionsCalled: string[] = [];
-  obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
-    this.functionsCalled.push("obfuscate");
+  transform(stream: Stream, logRecord: LogRecord): LogRecord {
+    this.functionsCalled.push("transform");
     return logRecord;
   }
   setup() {
@@ -179,16 +179,16 @@ test({
 
 test({
   name:
-    "Unload event is registered and will log footers and destroy streams, monitors, filters and obfuscators",
+    "Unload event is registered and will log footers and destroy streams, monitors, filters and transformers",
   fn() {
     const testStream = new TestStream();
     const testMonitor = new TestMonitor();
     const testFilter = new TestFilter();
-    const testObfuscator = new TestObfuscator();
+    const testTransformer = new TestTransformer();
 
     new Logger().addStream(testStream).addMonitor(testMonitor).addFilter(
       testFilter,
-    ).addObfuscator(testObfuscator);
+    ).addTransformer(testTransformer);
     dispatchEvent(new Event("unload"));
     assertEquals(
       testStream.functionsCalled,
@@ -196,7 +196,7 @@ test({
     );
     assertEquals(testMonitor.functionsCalled, ["setup", "destroy"]);
     assertEquals(testFilter.functionsCalled, ["setup", "destroy"]);
-    assertEquals(testObfuscator.functionsCalled, ["setup", "destroy"]);
+    assertEquals(testTransformer.functionsCalled, ["setup", "destroy"]);
   },
 });
 
@@ -317,12 +317,12 @@ test({
 });
 
 test({
-  name: "Obfuscators call destroy() on removal",
+  name: "Transformers call destroy() on removal",
   fn() {
-    const testObfuscator = new TestObfuscator();
-    new Logger().addStream(new TestStream()).addObfuscator(testObfuscator)
-      .removeObfuscator(testObfuscator);
-    assertEquals(testObfuscator.functionsCalled, ["setup", "destroy"]);
+    const testTransformer = new TestTransformer();
+    new Logger().addStream(new TestStream()).addTransformer(testTransformer)
+      .removeTransformer(testTransformer);
+    assertEquals(testTransformer.functionsCalled, ["setup", "destroy"]);
   },
 });
 
@@ -393,23 +393,23 @@ test({
 });
 
 test({
-  name: "Obfuscators can be added/removed and obfuscate messages",
+  name: "Transformers can be added/removed and transform messages",
   fn() {
     const testStream1 = new TestStream();
     const testStream2 = new TestStream();
-    class TestObfuscator implements Obfuscator {
-      obfuscateCalls = 0;
+    class TestTransformer implements Transformer {
+      transformCalls = 0;
       replacements = 0;
-      obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
-        this.obfuscateCalls++;
+      transform(stream: Stream, logRecord: LogRecord): LogRecord {
+        this.transformCalls++;
 
         let msg = logRecord.msg as string;
         if (
           stream === testStream1 &&
-          (logRecord.msg as string).indexOf("obfuscate") > -1
+          (logRecord.msg as string).indexOf("transform") > -1
         ) {
           this.replacements++;
-          msg = msg.replace("obfuscate", "*********");
+          msg = msg.replace("transform", "*********");
           return {
             msg: msg,
             metadata: logRecord.metadata,
@@ -421,41 +421,47 @@ test({
         return logRecord;
       }
     }
-    const ob1 = new TestObfuscator();
-    const ob2 = new TestObfuscator();
+    const ob1 = new TestTransformer();
+    const ob2 = new TestTransformer();
     const logger = new Logger().addStream(testStream1).addStream(testStream2)
-      .addObfuscator(ob1).addObfuscator(ob2);
+      .addTransformer(ob1).addTransformer(ob2);
 
-    // log unobfuscated message
+    // log untransformed message
     logger.debug("hello");
-    assertEquals(ob1.obfuscateCalls, 2); // Called once per stream
-    assertEquals(ob2.obfuscateCalls, 2);
+    assertEquals(ob1.transformCalls, 2); // Called once per stream
+    assertEquals(ob2.transformCalls, 2);
     assertEquals(ob1.replacements, 0);
     assertEquals(ob2.replacements, 0);
     assertEquals(testStream1.logRecords[0].msg, "hello");
     assertEquals(testStream2.logRecords[0].msg, "hello");
 
-    // log obfuscated message
-    logger.debug("hello obfuscated");
-    assertEquals(ob1.obfuscateCalls, 4);
-    assertEquals(ob2.obfuscateCalls, 4);
+    // log transformed message
+    logger.debug("hello transformed");
+    assertEquals(ob1.transformCalls, 4);
+    assertEquals(ob2.transformCalls, 4);
     assertEquals(ob1.replacements, 1);
-    assertEquals(ob2.replacements, 0); // Second obfuscator won't find a match as first one already did
-    assertEquals(testStream1.logRecords[1].msg, "hello *********d");
-    assertEquals(testStream2.logRecords[1].msg, "hello *********d");
+    assertEquals(ob2.replacements, 0); // Second transformer won't find a match as first one already did
+    assertEquals(testStream1.logRecords[1].msg, "hello *********ed");
+    assertEquals(testStream2.logRecords[1].msg, "hello *********ed");
 
-    // Remove obfuscators and send same message again
-    logger.removeObfuscator(ob1).removeObfuscator(ob2);
-    logger.debug("hello obfuscated");
-    assertEquals(ob1.obfuscateCalls, 4); // Unchanged
-    assertEquals(ob2.obfuscateCalls, 4);
+    // Remove transformers and send same message again
+    logger.removeTransformer(ob1).removeTransformer(ob2);
+    logger.debug("hello transformer");
+    assertEquals(ob1.transformCalls, 4); // Unchanged
+    assertEquals(ob2.transformCalls, 4);
     assertEquals(ob1.replacements, 1);
     assertEquals(ob2.replacements, 0);
-    assertEquals(testStream1.logRecords[2].msg, "hello obfuscated");
-    assertEquals(testStream2.logRecords[2].msg, "hello obfuscated");
+    assertEquals(testStream1.logRecords[2].msg, "hello transformer");
+    assertEquals(testStream2.logRecords[2].msg, "hello transformer");
 
-    assertEquals(testStream1.meta?.streamStats.get(testStream1)?.obfuscated, 1);
-    assertEquals(testStream2.meta?.streamStats.get(testStream2)?.obfuscated, 0);
+    assertEquals(
+      testStream1.meta?.streamStats.get(testStream1)?.transformed,
+      1,
+    );
+    assertEquals(
+      testStream2.meta?.streamStats.get(testStream2)?.transformed,
+      0,
+    );
   },
 });
 
@@ -586,7 +592,7 @@ test({
     const testStream = new TestStream();
     const logger = new Logger("config").addStream(testStream)
       .withMinLogLevel(Level.INFO)
-      .addObfuscator(new PropertyRedaction("z"))
+      .addTransformer(new PropertyRedaction("z"))
       .addFilter(new SubStringFilter("def"))
       .addMonitor((logRecord: LogRecord) => {});
     logger.error("abc");
@@ -609,10 +615,10 @@ test({
     assertEquals(meta?.minLogLevel, Level.INFO);
     assertEquals(meta?.minLogLevelFrom, "programmatically set");
     assertEquals(meta?.monitors, 1);
-    assertEquals(meta?.obfuscators, 1);
+    assertEquals(meta?.transformers, 1);
     assert(new Date().getTime() - meta?.sessionStarted.getTime()! < 100);
     assertEquals(meta?.streamStats.get(testStream)?.filtered, 5);
-    assertEquals(meta?.streamStats.get(testStream)?.obfuscated, 2);
+    assertEquals(meta?.streamStats.get(testStream)?.transformed, 2);
     assertEquals(
       meta?.streamStats.get(testStream)?.handled.get(Level.ERROR),
       3,

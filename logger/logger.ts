@@ -5,8 +5,8 @@ import {
   Filter,
   MonitorFn,
   Monitor,
-  Obfuscator,
-  ObfuscatorFn,
+  Transformer,
+  TransformerFn,
   LogRecord,
   LogMeta,
 } from "../types.ts";
@@ -20,11 +20,11 @@ class LogMetaImpl implements LogMeta {
   readonly hostname = "unavailable";
   logger = "default";
   filters = 0;
-  obfuscators = 0;
+  transformers = 0;
   monitors = 0;
   streamStats: Map<
     Stream,
-    { handled: Map<number, number>; filtered: number; obfuscated: number }
+    { handled: Map<number, number>; filtered: number; transformed: number }
   > = new Map();
 }
 
@@ -34,7 +34,7 @@ export class Logger {
   #streams: Stream[] = [new ConsoleStream()];
   #filters: Filter[] = [];
   #monitors: Monitor[] = [];
-  #obfuscators: Obfuscator[] = [];
+  #transformers: Transformer[] = [];
   #streamAdded = false;
   #meta: LogMetaImpl = new LogMetaImpl();
   #ifCondition = true;
@@ -60,8 +60,8 @@ export class Logger {
       for (const filter of this.#filters) {
         if (filter.destroy) filter.destroy();
       }
-      for (const obfuscator of this.#obfuscators) {
-        if (obfuscator.destroy) obfuscator.destroy();
+      for (const transformer of this.#transformers) {
+        if (transformer.destroy) transformer.destroy();
       }
     });
   }
@@ -123,7 +123,7 @@ export class Logger {
     if (stream.logHeader) stream.logHeader(this.#meta);
     this.#meta.streamStats.set(
       stream,
-      { handled: new Map<number, number>(), filtered: 0, obfuscated: 0 },
+      { handled: new Map<number, number>(), filtered: 0, transformed: 0 },
     );
     return this;
   }
@@ -187,29 +187,29 @@ export class Logger {
   }
 
   /**
-   * Add an obfuscator to the logger.  Obfuscators will match parts of a log
-   * record and obfuscate them to prevent sensitive information from appearing
-   * in the logs. 
+   * Add a transformer to the logger.  Transformers may or may not transform
+   * your log record.  Examples include obfuscation of sensitive data, stripping
+   * new-lines, encoding output, etc.
    */
-  addObfuscator(obfuscator: Obfuscator | ObfuscatorFn): Logger {
-    if (typeof obfuscator === "function") {
-      obfuscator = { obfuscate: obfuscator };
+  addTransformer(transformer: Transformer | TransformerFn): Logger {
+    if (typeof transformer === "function") {
+      transformer = { transform: transformer };
     }
-    if (obfuscator.setup) obfuscator.setup();
-    this.#obfuscators.push(obfuscator);
-    this.#meta.obfuscators++;
+    if (transformer.setup) transformer.setup();
+    this.#transformers.push(transformer);
+    this.#meta.transformers++;
     return this;
   }
 
   /**
-   * Remove obfuscator from the logger.  Once removed, it will no longer examine
-   * any log records or obfuscate them.
+   * Remove transformer from the logger.  Once removed, it will no longer examine
+   * any log records or transform them.
    */
-  removeObfuscator(obfuscatorToRemove: Obfuscator): Logger {
-    this.#obfuscators = this.#obfuscators.filter((obfuscator) =>
-      obfuscator !== obfuscatorToRemove
+  removeTransformer(transformerToRemove: Transformer): Logger {
+    this.#transformers = this.#transformers.filter((transformer) =>
+      transformer !== transformerToRemove
     );
-    if (obfuscatorToRemove.destroy) obfuscatorToRemove.destroy();
+    if (transformerToRemove.destroy) transformerToRemove.destroy();
     return this;
   }
 
@@ -269,14 +269,17 @@ export class Logger {
         }
       }
 
-      if (this.#obfuscators.length > 0) {
-        // Apply obfuscators
-        for (let j = 0; !skip && j < this.#obfuscators.length; j++) {
+      if (this.#transformers.length > 0) {
+        // Apply transformers
+        for (let j = 0; !skip && j < this.#transformers.length; j++) {
           let thisLogRecord = logRecord;
-          thisLogRecord = this.#obfuscators[j].obfuscate(stream, thisLogRecord);
+          thisLogRecord = this.#transformers[j].transform(
+            stream,
+            thisLogRecord,
+          );
           if (logRecord !== thisLogRecord) {
             logRecord = thisLogRecord;
-            this.#meta.streamStats.get(stream)!.obfuscated++;
+            this.#meta.streamStats.get(stream)!.transformed++;
           }
         }
         if (!skip) {

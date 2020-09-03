@@ -6,7 +6,7 @@ import {
 } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { JsonFormatter } from "./json.ts";
-import { PropertyRedaction } from "../obfuscators/propertyRedaction.ts";
+import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
 import { LogRecord } from "../types.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
@@ -80,7 +80,7 @@ test({
     };
     const jf = new JsonFormatter().withPrettyPrintIndentation(2);
     const jfStar = new JsonFormatter().withPrettyPrintIndentation("**");
-    const newLrA = new PropertyRedaction("ljh").obfuscate(
+    const newLrA = new PropertyRedaction("ljh").transform(
       { handle(lR: LogRecord): void {} },
       lr,
     );

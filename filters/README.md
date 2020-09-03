@@ -2,7 +2,7 @@
 
 Filters allows you to filter out log records from your streams.  A log record
 can be filtered out from one stream but not another.  Filters are processed
-after monitors, but before obfuscators or stream handling.  Upon handling a
+after monitors, but before transformers or stream handling.  Upon handling a
 log record, the logger will run filters once for each registered stream.
 
 Some use cases for filters include:

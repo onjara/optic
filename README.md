@@ -6,12 +6,12 @@
 A powerful, highly extensible and easy to use logging framework for Deno. 
 
 ## At a glance
-* Highly extensible - build your own streams, filters, obfuscators, monitors, formatters and more
+* Highly extensible - build your own streams, filters, transformers, monitors, formatters and more
 * Easy to use fluid interface
 * Log anything
 * Deferred log message resolution for greater performance
 * Filters - keep your logs clean
-* Obfuscators - hide sensitive data
+* Transformers - hide sensitive data, strip new lines, encode data, etc.
 * Monitors - watch your logs and take action
 
 ## Quick start
@@ -50,7 +50,7 @@ const fileStream = new FileStream("logFile.txt")
 const log = Optic.logger()
   .withMinLogLevel(Level.WARNING)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
-  .addObfuscator(new PropertyRedaction("password"))
+  .addTransformer(new PropertyRedaction("password"))
   .addStream(fileStream);
 
 // "info" is lower than configured min log level of "warning"
@@ -187,7 +187,7 @@ actions undertaken
 * Run each registered monitor against the log record
 * For each stream
   * Run each registered filter
-  * Run each registered obfuscator against the log record (if not filtered)
+  * Run each registered transformer against the log record (if not filtered)
   * Pass log record to stream for handling (if not filtered)
 * Return msg value (or resolved msg value in deferred logging)
 
@@ -379,7 +379,7 @@ for full details.
 ## Monitors
 
 Monitors allow you to spy on log records that flow through your logger.  Monitors
-are run first, before any filtering, obfuscation or stream handling. 
+are run first, before any filtering, transformation or stream handling. 
 
 Some use cases for monitors include:
 * Collect stats of your log records
@@ -435,38 +435,41 @@ Monitors are registered directly with the logger as follows:
 const logger = Optic.logger().addMonitor(new UserMonitor());
 ```
 
-## Obfuscation
+## Transformers
 
-Optic allows you to obfuscate log records sent to a stream, allowing a log
-record to be obfuscated in one stream but not another. Obfuscation will hide
-part of a log record, leaving the remainder untouched. Obfuscation takes place
+Optic allows you to transform log records sent to a stream, allowing a log
+record to be transformed in one stream but not another. Transformation can
+change some, all or none of the original log record. Transformation takes place
 after monitors and also after log filtering but before the log record is sent
 to a stream.
 
-Some use cases for obfuscation include:
+Some use cases for transformation include:
 * Hiding sensitive data in your logs such as passwords or credit card details
-* Complying with data protection laws
+* Obscuring personal information, complying with data protection laws
+* Strip new lines from log data
+* Encoding data
+* Compressing data
 
-### Constructing an obfuscator
+### Constructing a transformer
 
-There are two ways to construct an obfuscator.
+There are two ways to construct an transformer.
 
-#### Obfuscation function
+#### Transformer function
 
-This is a good choice for short and simple obfuscators.  Obfuscator functions
+This is a good choice for short and simple transformers.  Transformer functions
 must match the following type:
 ```typescript
-export type ObfuscatorFn = (stream: Stream, logRecord: LogRecord) => LogRecord;
+export type TransformerFn = (stream: Stream, logRecord: LogRecord) => LogRecord;
 ```
 
 The function takes a stream and logRecord and returns either the original 
-log record if nothing is obfuscated, or a copy of the original with the
-necessary data obfuscated.  Example:
+log record if nothing is transformed, or a copy of the original with the
+necessary transformations applied.  Example:
 
 ```typescript
-import { ObfuscatorFn } from "https://deno.land/x/optic/mod.ts";
+import { TransformerFn } from "https://deno.land/x/optic/mod.ts";
 
-const ob: ObfuscatorFn = (stream: Stream, logRecord: LogRecord):LogRecord => ({
+const tr: TransformerFn = (stream: Stream, logRecord: LogRecord):LogRecord => ({
   msg: (logRecord.msg as string).startsWith("password:")
     ? "password: [Redacted]"
     : logRecord.msg,
@@ -477,17 +480,17 @@ const ob: ObfuscatorFn = (stream: Stream, logRecord: LogRecord):LogRecord => ({
 });
 ```
 
-#### Implement the Obfuscator interface
+#### Implement the Transformer interface
 
-The Obfuscator interface requires implementation of the `obfuscate` function,
-which is of type `ObfuscatorFn` as above.  This gives you the power of a class
-for more complex obfuscation.
+The Transformer interface requires implementation of the `transform` function,
+which is of type `TransformerFn` as above.  This gives you the power of a class
+for more complex transformations.
 
 ```typescript
-import { Obfuscator, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
+import { Transformer, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
 
-class PasswordObfuscator implements Obfuscator {
-  obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
+class PasswordObfuscator implements Transformer {
+  transform(stream: Stream, logRecord: LogRecord): LogRecord {
     if ((logRecord.msg as string).startsWith("password:")) {
       return {
         msg:"password: [Redacted]",
@@ -503,31 +506,31 @@ class PasswordObfuscator implements Obfuscator {
 }
 ```
 
-### Registering obfuscators
+### Registering transformers
 
-Obfuscators are registered directly with the logger as follows:
+Transformers are registered directly with the logger as follows:
 ```typescript
 const passwordObfuscator = new PasswordObfuscator();
-const logger = Optic.logger().addObfuscator(passwordObfuscator);
+const logger = Optic.logger().addTransformer(passwordObfuscator);
 ```
 
-### Optic obfuscators
+### Optic transformers
 
-Two out of the box obfuscators are available in Optic.
+Two out of the box transformers are available in Optic.
 
 #### Property redaction obfuscator
 
-This obfuscator allows you to specify a single object property name which if found
+This transformer allows you to specify a single object property name which if found
 in the `msg` or `metadata` log record fields (using deep object searching), will
 replace the value of that property with the string `[Redacted]`.  The original
-object is untouched, as obfuscation clones the object before obfuscation.
+object is untouched, as transformation clones the object before obfuscation.
 
 ```typescript
 import { PropertyRedaction } from "https://deno.land/x/optic/mod.ts";
 
-logger.addObfuscator(new PropertyRedaction('password'));
+logger.addTransformer(new PropertyRedaction('password'));
 
-// This next record is untouched by the obfuscator (no `password` property)
+// This next record is untouched by the transformer (no `password` property)
 logger.info({user: "abc29002", dateOfBirth: "1966/02/33"});
 
 // This record gets transformed to: {user: "abc29002", password: "[Redacted]"}
@@ -551,8 +554,8 @@ if groups are used, only the groups are replaced.
 ```typescript
 import { RegExReplacer, nonWhitespaceReplacer } from "https://deno.land/x/optic/mod.ts";
 
-logger.addObfuscator(new RegExReplacer(/£([\d]+\.[\d]{2})/));
-logger.addObfuscator(new RegExReplacer(/password: (.*)/, nonWhitespaceReplacer));
+logger.addTransformer(new RegExReplacer(/£([\d]+\.[\d]{2})/));
+logger.addTransformer(new RegExReplacer(/password: (.*)/, nonWhitespaceReplacer));
 
 logger.info("Amount: £122.51"); // becomes "Amount: £***.**" ('£' is not in a group)
 logger.info("password: MyS3cret! Pwd!"); // becomes "password: ********* ****"

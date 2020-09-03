@@ -22,7 +22,7 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
     assert(newLr.msg instanceof Error);
     assert(newLr.metadata[1] instanceof Error);
     assertEquals(
@@ -47,8 +47,8 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/world/).obfuscate(noopStream, lr);
-    const newLr2 = new RegExReplacer(/meta/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/world/).transform(noopStream, lr);
+    const newLr2 = new RegExReplacer(/meta/).transform(noopStream, lr);
     assertEquals(newLr.msg, ["hello", 123, "*****", sym]);
     assertEquals(newLr2.metadata, [{ a: true, b: "hello" }, "****Hello", sym]);
   },
@@ -64,7 +64,7 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
     assert(lr === newLr);
   },
 });
@@ -79,10 +79,10 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
     assertEquals(newLr.msg, "Log Message ***4, hello world");
 
-    const newLr2 = new RegExReplacer(/[s]{2}.*\d{4}/).obfuscate(
+    const newLr2 = new RegExReplacer(/[s]{2}.*\d{4}/).transform(
       noopStream,
       lr,
     );
@@ -100,19 +100,19 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/Message (\d{4})/).obfuscate(
+    const newLr = new RegExReplacer(/Message (\d{4})/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr.msg, "Log Message ****, hello world");
 
-    const newLr2 = new RegExReplacer(/Log ([a-zA-Z]+)/).obfuscate(
+    const newLr2 = new RegExReplacer(/Log ([a-zA-Z]+)/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr2.msg, "Log ******* 1234, hello world");
 
-    const newLr3 = new RegExReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).obfuscate(
+    const newLr3 = new RegExReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).transform(
       noopStream,
       lr,
     );
@@ -130,10 +130,10 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
     assertEquals(newLr.metadata, ["Log Message ***4, hello world"]);
 
-    const newLr2 = new RegExReplacer(/[s]{2}.*\d{4}/).obfuscate(
+    const newLr2 = new RegExReplacer(/[s]{2}.*\d{4}/).transform(
       noopStream,
       lr,
     );
@@ -151,19 +151,19 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/Message (\d{4})/).obfuscate(
+    const newLr = new RegExReplacer(/Message (\d{4})/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr.metadata, ["Log Message ****, hello world"]);
 
-    const newLr2 = new RegExReplacer(/Log ([a-zA-Z]+)/).obfuscate(
+    const newLr2 = new RegExReplacer(/Log ([a-zA-Z]+)/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr2.metadata, ["Log ******* 1234, hello world"]);
 
-    const newLr3 = new RegExReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).obfuscate(
+    const newLr3 = new RegExReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).transform(
       noopStream,
       lr,
     );
@@ -181,10 +181,10 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
     assertEquals(newLr.msg, { a: "hello ***4", b: { c: "***4, there" } });
 
-    const newLr2 = new RegExReplacer(/[o].*\d{4}/).obfuscate(noopStream, lr);
+    const newLr2 = new RegExReplacer(/[o].*\d{4}/).transform(noopStream, lr);
     assertEquals(newLr2.msg, { a: "hell* ****", b: { c: "1234, there" } });
   },
 });
@@ -199,19 +199,19 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
     assertEquals(
       newLr.metadata,
       [{ a: "hello ***4", b: { c: "***4, there" } }, { d: "£76.22" }],
     );
 
-    const newLr2 = new RegExReplacer(/[o].*\d{4}/).obfuscate(noopStream, lr);
+    const newLr2 = new RegExReplacer(/[o].*\d{4}/).transform(noopStream, lr);
     assertEquals(
       newLr2.metadata,
       [{ a: "hell* ****", b: { c: "1234, there" } }, { d: "£76.22" }],
     );
 
-    const newLr3 = new RegExReplacer(/£([\d]+\.[\d]{2})/).obfuscate(
+    const newLr3 = new RegExReplacer(/£([\d]+\.[\d]{2})/).transform(
       noopStream,
       lr,
     );
@@ -235,7 +235,7 @@ test({
     const newLr = new RegExReplacer(
       /\d{2}-\d{2}-\d{4}/,
       (match) => match.replace(/\d/g, "*"),
-    ).obfuscate(noopStream, lr);
+    ).transform(noopStream, lr);
     assertEquals(newLr.msg, "Date of birth: **-**-****");
   },
 });
@@ -253,13 +253,13 @@ test({
     const newLr = new RegExReplacer(
       /\d{2}-\d{2}-\d{4}/,
       nonWhitespaceReplacer,
-    ).obfuscate(noopStream, lr);
+    ).transform(noopStream, lr);
     assertEquals(newLr.msg, "Date of birth: **********");
 
     const newLr2 = new RegExReplacer(
       /Date of birth/,
       nonWhitespaceReplacer,
-    ).obfuscate(noopStream, lr);
+    ).transform(noopStream, lr);
     assertEquals(newLr2.msg, "**** ** *****: 30-04-1977");
   },
 });
@@ -277,7 +277,7 @@ test({
     const newLr = new RegExReplacer(
       /A(.*)Z/,
       nonWhitespaceReplacer,
-    ).obfuscate(noopStream, lr);
+    ).transform(noopStream, lr);
     assertEquals(newLr.msg, "A*********************************Z");
   },
 });
@@ -298,7 +298,7 @@ test({
       level: Level.DEBUG,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/ell/).obfuscate(noopStream, lr);
+    const newLr = new RegExReplacer(/ell/).transform(noopStream, lr);
     assertEquals((newLr.msg as B).a.name, "h***o world");
   },
 });

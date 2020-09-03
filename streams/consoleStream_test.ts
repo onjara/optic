@@ -44,7 +44,7 @@ test({
       console.log(savedMsgs);
       assert(
         (savedMsgs[0] as string).match(
-          /\d{4}[-]\d{2}[-]\d{2}[T]\d{2}[:]\d{2}[:]\d{2}[.]\d{3}[Z] DEBUG    hello/,
+          /\d{4}[-]\d{2}[-]\d{2}[T]\d{2}[:]\d{2}[:]\d{2}[.]\d{3}[Z]\sDEBUG\s\s\s\shello/,
         ),
       );
     } finally {
@@ -72,7 +72,7 @@ test({
         logger: "default",
         streamStats: new Map(),
         filters: 0,
-        obfuscators: 0,
+        transformers: 0,
         monitors: 0,
         logsHandled: 0,
       };

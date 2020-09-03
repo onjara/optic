@@ -1,4 +1,4 @@
-import { Obfuscator, LogRecord, Stream } from "../types.ts";
+import { Transformer, LogRecord, Stream } from "../types.ts";
 import { Level } from "../logger/levels.ts";
 import { clone } from "./deepClone.ts";
 
@@ -74,14 +74,14 @@ function escapeForRegExp(filename: string): string {
 }
 
 /**
- * An obfuscator to match regular expressions and replace with the specified
+ * A transformer to match regular expressions and replace with the specified
  * replacer function return value or replace all non-characters with `*`s.
  * `msg` and `metadata` fields are checked against the supplied RegExp.  Only
  * string values are compared and deep object checking is used.  The underlying
  * replacement is done via Javascript's `string.replace(regEx, replacer)`. The
  * default replacer function is alphaNumericReplacer.
  */
-export class RegExReplacer implements Obfuscator {
+export class RegExReplacer implements Transformer {
   #regex: RegExp;
   #replacer: Replacer = alphaNumericReplacer;
 
@@ -90,7 +90,7 @@ export class RegExReplacer implements Obfuscator {
     if (replacer) this.#replacer = replacer;
   }
 
-  obfuscate(stream: Stream, logRecord: LogRecord): LogRecord {
+  transform(stream: Stream, logRecord: LogRecord): LogRecord {
     let shouldRedactMsg = false;
     let shouldRedactMeta = false;
 

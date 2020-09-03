@@ -92,8 +92,8 @@ export abstract class BaseStream implements Stream {
     registered += meta.filters > 0
       ? "Filters registered: " + meta.filters + " "
       : "";
-    registered += meta.obfuscators > 0
-      ? "Obfuscators registered: " + meta.obfuscators + " "
+    registered += meta.transformers > 0
+      ? "Transformers registered: " + meta.transformers + " "
       : "";
     registered += meta.monitors > 0
       ? "Monitors registered: " + meta.monitors + " "
@@ -103,8 +103,8 @@ export abstract class BaseStream implements Stream {
     stats += meta.streamStats.get(this)!.filtered > 0
       ? "Records filtered: " + meta.streamStats.get(this)!.filtered + " "
       : "";
-    stats += meta.streamStats.get(this)!.obfuscated > 0
-      ? "Records obfuscated: " + meta.streamStats.get(this)!.obfuscated + " "
+    stats += meta.streamStats.get(this)!.transformed > 0
+      ? "Records transformed: " + meta.streamStats.get(this)!.transformed + " "
       : "";
 
     let levelStats = "";

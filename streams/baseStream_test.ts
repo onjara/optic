@@ -56,7 +56,7 @@ function logMeta(): LogMeta {
     logger: "default",
     streamStats: new Map(),
     filters: 0,
-    obfuscators: 0,
+    transformers: 0,
     monitors: 0,
   };
 }
@@ -155,7 +155,7 @@ test({
     const meta = logMeta();
     meta.streamStats.set(
       baseStream,
-      { handled: new Map<number, number>(), filtered: 0, obfuscated: 0 },
+      { handled: new Map<number, number>(), filtered: 0, transformed: 0 },
     );
     baseStream.logFooter(meta);
     assertEquals(baseStream.logs.length, 0);
@@ -176,7 +176,7 @@ test({
     const testStream = new TestStream();
     const logger = new Logger("config").addStream(testStream)
       .withMinLogLevel(Level.INFO)
-      .addObfuscator(new PropertyRedaction("z"))
+      .addTransformer(new PropertyRedaction("z"))
       .addFilter(new SubStringFilter("def"))
       .addMonitor((logRecord: LogRecord) => {});
     logger.error("abc");
@@ -196,11 +196,11 @@ test({
 
     assertEquals(
       testStream.logs[testStream.logs.length - 4],
-      "Filters registered: 1 Obfuscators registered: 1 Monitors registered: 1 ",
+      "Filters registered: 1 Transformers registered: 1 Monitors registered: 1 ",
     );
     assertEquals(
       testStream.logs[testStream.logs.length - 3],
-      "Records filtered: 5 Records obfuscated: 2 ",
+      "Records filtered: 5 Records transformed: 2 ",
     );
     assertEquals(
       testStream.logs[testStream.logs.length - 2],

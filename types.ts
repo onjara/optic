@@ -123,27 +123,27 @@ export interface Filter {
 }
 
 /**
- * Define an obfuscator for redacting part of a log record.  The output will
+ * Define an transformer for transforming a log record.  The output will
  * be either the same log record, untouched, or a new log record based on the
- * original, but with one or more properties redacted partly or in full.
+ * original, but with one or more change present.
  */
-export type ObfuscatorFn = (stream: Stream, logRecord: LogRecord) => LogRecord;
+export type TransformerFn = (stream: Stream, logRecord: LogRecord) => LogRecord;
 
 /**
- * Interface for defining a class to model logic for obfuscating log records
+ * Interface for defining a class to model logic for transforming log records
  */
-export interface Obfuscator {
-  obfuscate: ObfuscatorFn;
+export interface Transformer {
+  transform: TransformerFn;
 
   /**
-   * Optional.  Provides the opportunity for the obfuscator to perform any required
-   * setup.  This function is called when the obfuscator is added to the logger.
+   * Optional.  Provides the opportunity for the transformer to perform any required
+   * setup.  This function is called when the transformer is added to the logger.
    */
   setup?(): void;
 
   /**
-   * Optional.  Provides the opportunity for the obfuscator to perform any required
-   * teardown.  This function is called when the obfuscator is removed from the 
+   * Optional.  Provides the opportunity for the transformer to perform any required
+   * teardown.  This function is called when the transformer is removed from the 
    * logger or the module exits
    */
   destroy?(): void;
@@ -180,15 +180,15 @@ export interface LogMeta {
   minLogLevelFrom: string;
   /** The name of the logger for this metadata */
   readonly logger: string;
-  /** Count of handled (Map of Level -> count), filtered and obfuscated records by stream */
+  /** Count of handled (Map of Level -> count), filtered and transformed records by stream */
   readonly streamStats: Map<
     Stream,
-    { handled: Map<number, number>; filtered: number; obfuscated: number }
+    { handled: Map<number, number>; filtered: number; transformed: number }
   >;
   /** Number of filters added.  (Removed filters do not subtract from this total) */
   readonly filters: number;
-  /** Number of obfuscators added.  (Removed obfuscators do not subtract from this total) */
-  readonly obfuscators: number;
+  /** Number of transformers added.  (Removed transformers do not subtract from this total) */
+  readonly transformers: number;
   /** Number of monitors added.  (Removed monitors do not subtract from this total) */
   readonly monitors: number;
 }
