@@ -1,5 +1,5 @@
-import { LogRecord } from "../types.ts";
-import { Level } from "./levels.ts";
+import type { LogRecord } from "../types.ts";
+import type { Level } from "./levels.ts";
 
 /**
  * An immutable representation of LogRecord

@@ -5,7 +5,7 @@ import {
 } from "../test_deps.ts";
 import { Logger } from "./logger.ts";
 import { Level } from "./levels.ts";
-import {
+import type {
   Stream,
   LogRecord,
   LogMeta,

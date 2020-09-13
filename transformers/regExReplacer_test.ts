@@ -4,8 +4,9 @@ import {
   assertEquals,
 } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
-import { RegExReplacer, nonWhitespaceReplacer } from "./regExReplacer.ts";
-import { LogRecord } from "../types.ts";
+import { RegExReplacer } from "./regExReplacer.ts";
+import { nonWhitespaceReplacer } from "./regExReplacer.ts";
+import type { LogRecord } from "../types.ts";
 
 const noopStream = { handle(lr: LogRecord): void {} };
 

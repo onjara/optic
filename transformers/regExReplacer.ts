@@ -1,5 +1,5 @@
-import { Transformer, LogRecord, Stream } from "../types.ts";
-import { Level } from "../logger/levels.ts";
+import type { Transformer, LogRecord, Stream } from "../types.ts";
+import type { Level } from "../logger/levels.ts";
 import { clone } from "./deepClone.ts";
 
 /**
@@ -122,7 +122,7 @@ export class RegExReplacer implements Transformer {
 
   shouldRedact(obj: unknown, regEx: RegExp, replacer: Replacer): boolean {
     if (isObjectButNotArray(obj)) {
-      for (let key in (obj as Object)) {
+      for (let key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (typeof castObj[key] === "string") {
@@ -186,7 +186,7 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
 
   redact(obj: unknown, regEx: RegExp, replacer: Replacer): void {
     if (isObjectButNotArray(obj)) {
-      for (let key in (obj as Object)) {
+      for (let key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (typeof castObj[key] === "string") {

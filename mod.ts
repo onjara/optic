@@ -2,7 +2,8 @@ import { Logger } from "./logger/logger.ts";
 
 export { RegExFilter } from "./filters/regExFilter.ts";
 export { SubStringFilter } from "./filters/subStringFilter.ts";
-export { ColorRule, getColorForLevel } from "./formatters/color.ts";
+export type { ColorRule } from "./formatters/color.ts";
+export { getColorForLevel } from "./formatters/color.ts";
 export { JsonFormatter } from "./formatters/json.ts";
 export { TokenReplacer } from "./formatters/tokenReplacer.ts";
 export { SimpleDateTimeFormatter } from "./formatters/simpleDateTimeFormatter.ts";

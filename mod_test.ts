@@ -4,7 +4,7 @@ import {
   assert,
 } from "./test_deps.ts";
 import { Optic } from "./mod.ts";
-import { Stream, LogRecord } from "./types.ts";
+import type { Stream, LogRecord } from "./types.ts";
 
 class NoOpStream implements Stream {
   handle(logRecord: LogRecord): void {

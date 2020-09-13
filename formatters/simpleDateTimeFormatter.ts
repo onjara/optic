@@ -1,4 +1,4 @@
-import { DateTimeFormatter } from "../types.ts";
+import type { DateTimeFormatter } from "../types.ts";
 
 /**
  * A simple Date/Time formatter class, partly based on moment's date formatting

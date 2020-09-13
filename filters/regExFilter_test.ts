@@ -4,7 +4,7 @@ import {
 } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { RegExFilter } from "./regExFilter.ts";
-import { LogRecord } from "../types.ts";
+import type { LogRecord } from "../types.ts";
 
 function lrMsg(msg: unknown) {
   return {

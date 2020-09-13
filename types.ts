@@ -1,4 +1,4 @@
-import { Level } from "./logger/levels.ts";
+import type { Level } from "./logger/levels.ts";
 
 /**
  * Defines the flow of log records to a logging endpoint

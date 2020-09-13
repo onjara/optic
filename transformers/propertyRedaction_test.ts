@@ -5,7 +5,7 @@ import {
 } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { PropertyRedaction } from "./propertyRedaction.ts";
-import { LogRecord } from "../types.ts";
+import type { LogRecord } from "../types.ts";
 
 const noopStream = { handle(lr: LogRecord): void {} };
 const REDACTED = "[Redacted]";

@@ -1,5 +1,5 @@
 import { Level, nameToLevel } from "./levels.ts";
-import {
+import type {
   Stream,
   FilterFn,
   Filter,
@@ -12,6 +12,9 @@ import {
 } from "../types.ts";
 import { ConsoleStream } from "../streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyFunction = (...args: any[]) => any;
 
 class LogMetaImpl implements LogMeta {
   minLogLevel: Level = Level.DEBUG;
@@ -235,7 +238,7 @@ export class Logger {
 
   private logToStreams<T>(
     level: Level,
-    msg: () => T | (T extends Function ? never : T),
+    msg: () => T | (T extends AnyFunction ? never : T),
     metadata: unknown[],
   ): T | undefined {
     if (this.loggingBlocked(level)) {
@@ -317,9 +320,9 @@ export class Logger {
    * @param metadata supporting log message data
    */
   trace<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
-  trace<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
+  trace<T>(msg: (T extends AnyFunction ? never : T), ...metadata: unknown[]): T;
   trace<T>(
-    msg: () => T | (T extends Function ? never : T),
+    msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(Level.TRACE, msg, metadata);
@@ -332,9 +335,9 @@ export class Logger {
    * @param metadata supporting log message data
    */
   debug<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
-  debug<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
+  debug<T>(msg: (T extends AnyFunction ? never : T), ...metadata: unknown[]): T;
   debug<T>(
-    msg: () => T | (T extends Function ? never : T),
+    msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(Level.DEBUG, msg, metadata);
@@ -347,9 +350,9 @@ export class Logger {
    * @param metadata supporting log message data
    */
   info<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
-  info<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
+  info<T>(msg: (T extends AnyFunction ? never : T), ...metadata: unknown[]): T;
   info<T>(
-    msg: () => T | (T extends Function ? never : T),
+    msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(Level.INFO, msg, metadata);
@@ -363,9 +366,12 @@ export class Logger {
    * @param metadata supporting log message data
    */
   warning<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
-  warning<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
   warning<T>(
-    msg: () => T | (T extends Function ? never : T),
+    msg: (T extends AnyFunction ? never : T),
+    ...metadata: unknown[]
+  ): T;
+  warning<T>(
+    msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(Level.WARNING, msg, metadata);
@@ -379,9 +385,9 @@ export class Logger {
    * @param metadata supporting log message data
    */
   error<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
-  error<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
+  error<T>(msg: (T extends AnyFunction ? never : T), ...metadata: unknown[]): T;
   error<T>(
-    msg: () => T | (T extends Function ? never : T),
+    msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(Level.ERROR, msg, metadata);
@@ -395,9 +401,12 @@ export class Logger {
    * @param metadata supporting log message data
    */
   critical<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
-  critical<T>(msg: (T extends Function ? never : T), ...metadata: unknown[]): T;
   critical<T>(
-    msg: () => T | (T extends Function ? never : T),
+    msg: (T extends AnyFunction ? never : T),
+    ...metadata: unknown[]
+  ): T;
+  critical<T>(
+    msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(Level.CRITICAL, msg, metadata);
@@ -413,12 +422,12 @@ export class Logger {
   log<T>(level: Level, msg: () => T, ...metadata: unknown[]): T | undefined;
   log<T>(
     level: Level,
-    msg: (T extends Function ? never : T),
+    msg: (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T;
   log<T>(
     level: Level,
-    msg: () => T | (T extends Function ? never : T),
+    msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
     return this.logToStreams(level, msg, metadata);
@@ -426,7 +435,6 @@ export class Logger {
 
   protected getArgs(): string[] {
     return Deno.args;
-    Deno.env;
   }
 
   protected getEnv(): { get(key: string): string | undefined } {

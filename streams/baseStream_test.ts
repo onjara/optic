@@ -5,7 +5,7 @@ import {
   assertStringContains,
 } from "../test_deps.ts";
 import { BaseStream } from "./baseStream.ts";
-import { LogRecord, Formatter, LogMeta } from "../types.ts";
+import type { LogRecord, Formatter, LogMeta } from "../types.ts";
 import { Level } from "../logger/levels.ts";
 import { PropertyRedaction, SubStringFilter, Logger } from "../mod.ts";
 

@@ -1,4 +1,4 @@
-import { Periods, LogFileRetentionPolicy } from "./types.ts";
+import type { Periods, LogFileRetentionPolicy } from "./types.ts";
 import { ValidationError, IllegalStateError } from "../../types.ts";
 
 /**

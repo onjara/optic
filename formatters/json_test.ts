@@ -7,7 +7,7 @@ import {
 import { Level } from "../logger/levels.ts";
 import { JsonFormatter } from "./json.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
-import { LogRecord } from "../types.ts";
+import type { LogRecord } from "../types.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
 test({

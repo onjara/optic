@@ -1,9 +1,9 @@
-import {
+import type {
   Transformer,
   Stream,
   LogRecord,
 } from "../types.ts";
-import { Level } from "../logger/levels.ts";
+import type { Level } from "../logger/levels.ts";
 import { clone } from "./deepClone.ts";
 
 /**
@@ -42,7 +42,7 @@ export class PropertyRedaction implements Transformer {
 
   shouldRedact(obj: unknown, property: string): boolean {
     if (isObjectButNotErrorNorArray(obj)) {
-      for (let key in (obj as Object)) {
+      for (let key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (key === property) {
@@ -93,7 +93,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
 
   redact(obj: unknown, property: string): void {
     if (isObjectButNotErrorNorArray(obj)) {
-      for (let key in (obj as Object)) {
+      for (let key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (key === property) {

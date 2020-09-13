@@ -1,5 +1,5 @@
 import { Level, levelToName } from "../logger/levels.ts";
-import { LogMeta, LogRecord, Stream, Formatter } from "../types.ts";
+import type { LogMeta, LogRecord, Stream, Formatter } from "../types.ts";
 
 /**
  * An abstract base class for streams, using string based logs.
