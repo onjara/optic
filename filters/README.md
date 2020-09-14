@@ -49,7 +49,7 @@ class MyFilter implements Filter {
 Filters are registered directly with the logger as follows:
 ```
 const myFilter = new MyFilter();
-const logger = Optic.logger().addFilter(myFilter);
+const logger = new Logger().addFilter(myFilter);
 ```
 
 ## Ready made filters

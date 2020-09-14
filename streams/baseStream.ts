@@ -98,32 +98,34 @@ export abstract class BaseStream implements Stream {
     registered += meta.monitors > 0
       ? "Monitors registered: " + meta.monitors + " "
       : "";
-
-    let stats = "";
-    stats += meta.streamStats.get(this)!.filtered > 0
-      ? "Records filtered: " + meta.streamStats.get(this)!.filtered + " "
-      : "";
-    stats += meta.streamStats.get(this)!.transformed > 0
-      ? "Records transformed: " + meta.streamStats.get(this)!.transformed + " "
-      : "";
-
-    let levelStats = "";
-    const handledMap = meta.streamStats.get(this)!.handled;
-    levelStats = Array.from(handledMap.keys()).map((k) =>
-      levelToName(k) + ": " + handledMap.get(k)
-    ).join(", ");
-    if (levelStats != "") {
-      levelStats = "Log count => " + levelStats;
-    }
-
     if (registered != "") {
       this.log(this.format(this.metaLogRecord(meta, registered)));
     }
-    if (stats != "") {
-      this.log(this.format(this.metaLogRecord(meta, stats)));
-    }
-    if (levelStats != "") {
-      this.log(this.format(this.metaLogRecord(meta, levelStats)));
+
+    let stats = "";
+    if (meta.streamStats.get(this)) {
+      stats += meta.streamStats.get(this)!.filtered > 0
+        ? "Records filtered: " + meta.streamStats.get(this)!.filtered + " "
+        : "";
+      stats += meta.streamStats.get(this)!.transformed > 0
+        ? "Records transformed: " + meta.streamStats.get(this)!.transformed +
+          " "
+        : "";
+
+      let levelStats = "";
+      const handledMap = meta.streamStats.get(this)!.handled;
+      levelStats = Array.from(handledMap.keys()).map((k) =>
+        levelToName(k) + ": " + handledMap.get(k)
+      ).join(", ");
+      if (levelStats != "") {
+        levelStats = "Log count => " + levelStats;
+      }
+      if (stats != "") {
+        this.log(this.format(this.metaLogRecord(meta, stats)));
+      }
+      if (levelStats != "") {
+        this.log(this.format(this.metaLogRecord(meta, levelStats)));
+      }
     }
 
     this.log(this.format(loggingCompletedAtRecord));

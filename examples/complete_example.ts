@@ -2,7 +2,7 @@ import { FileStream, every, of } from "../streams/fileStream/mod.ts";
 import {
   Level,
   JsonFormatter,
-  Optic,
+  Logger,
   Stream,
   LogRecord,
   PropertyRedaction,
@@ -23,7 +23,7 @@ const fileStream = new FileStream("logFile.txt")
   .withLogHeader(true)
   .withLogFooter(true);
 
-const log = Optic.logger()
+const log = new Logger()
   .withMinLogLevel(Level.WARN)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
   .addTransformer(new PropertyRedaction("password"))

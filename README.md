@@ -18,16 +18,16 @@ A powerful, highly extensible and easy to use logging framework for Deno.
 
 ### Simple example
 ```typescript
-import { Optic } from "https://deno.land/x/optic/mod.ts";
+import { Logger } from "https://deno.land/x/optic/mod.ts";
 
-const logger = Optic.logger();
+const logger = new Logger();
 logger.info("Hello world!");  // outputs log record to the console
 ```
 
 ### Complete example
 ```typescript
 import { FileStream, every, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
-import { Level, JsonFormatter, Optic, Stream, LogRecord, PropertyRedaction } 
+import { Level, JsonFormatter, Logger, Stream, LogRecord, PropertyRedaction } 
   from "https://deno.land/x/optic/mod.ts";
 
 // Configure the output file stream
@@ -47,7 +47,7 @@ const fileStream = new FileStream("logFile.txt")
   .withLogFooter(true);
 
 // Configure the logger
-const log = Optic.logger()
+const log = new Logger()
   .withMinLogLevel(Level.WARN)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
   .addTransformer(new PropertyRedaction("password"))
@@ -79,20 +79,33 @@ interface and framework for all logging activity.
 
 ### Creating a logger
 
-Before you can log anything you must first get an instance of a logger.  This
-can either be the default logger, or a named logger.  Each logger instance will
-be stored in the state and reused if that logger is requested again.
+Before you can log anything you must first get an instance of a logger.
 
 ```typescript
-// Using the default logger
-const defaultLogger = Optic.logger();
+// Using an unnamed logger
+const defaultLogger = new Logger();
 
 // Using a named logger
-const configLogger = Optic.logger("config");
+const configLogger = new Logger("config");
+```
 
-// Reusing existing loggers
-const exactSameDefaultLogger = Optic.logger();
-const exactSameConfigLogger = Optic.logger("config");
+### Sharing loggers across modules
+
+To reuse the same logger instance across multiple modules, declare and configure
+your loggers in their own module which are then exported for use in other 
+modules.  E.g.
+
+```ts
+/** logger.ts */
+import { ConsoleStream, Logger } from "https://deno.land/x/optic/mod.ts";
+import { JsonFormatter } from "https://deno.land/x/optic/formatters/json.ts";
+export const logger = new Logger();
+logger.addStream(new ConsoleStream().withFormat(new JsonFormatter()));
+```
+```ts
+/** module_a.ts */
+import { logger } from "./logger.ts";
+logger.info("hello world");
 ```
 
 ### Logging an event
@@ -432,7 +445,7 @@ class UserMonitor implements Monitor {
 
 Monitors are registered directly with the logger as follows:
 ```typescript
-const logger = Optic.logger().addMonitor(new UserMonitor());
+const logger = new Logger().addMonitor(new UserMonitor());
 ```
 
 ## Transformers
@@ -511,7 +524,7 @@ class PasswordObfuscator implements Transformer {
 Transformers are registered directly with the logger as follows:
 ```typescript
 const passwordObfuscator = new PasswordObfuscator();
-const logger = Optic.logger().addTransformer(passwordObfuscator);
+const logger = new Logger().addTransformer(passwordObfuscator);
 ```
 
 ### Optic transformers
@@ -623,7 +636,7 @@ class MyFilter implements Filter {
 Filters are registered directly with the logger as follows:
 ```typescript
 const myFilter = new MyFilter();
-const logger = Optic.logger().addFilter(myFilter);
+const logger = new Logger().addFilter(myFilter);
 ```
 
 ### Optic filters
