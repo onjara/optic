@@ -10,7 +10,7 @@ test({
   fn() {
     assert(typeof getColorForLevel(Level.DEBUG) === "function");
     assert(typeof getColorForLevel(Level.INFO) === "function");
-    assert(typeof getColorForLevel(Level.WARNING) === "function");
+    assert(typeof getColorForLevel(Level.WARN) === "function");
     assert(typeof getColorForLevel(Level.ERROR) === "function");
     assert(typeof getColorForLevel(Level.CRITICAL) === "function");
 

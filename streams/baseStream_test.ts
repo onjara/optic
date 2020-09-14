@@ -182,13 +182,13 @@ test({
     logger.error("abc");
     logger.error("abc");
     logger.error("abc");
-    logger.warning("abc");
-    logger.warning("abc");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
+    logger.warn("abc");
+    logger.warn("abc");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
     logger.info("abc");
     logger.info({ z: "abc" });
     logger.info({ z: "abc" });
@@ -204,7 +204,7 @@ test({
     );
     assertEquals(
       testStream.logs[testStream.logs.length - 2],
-      "Log count => ERROR: 3, WARNING: 2, INFO: 3",
+      "Log count => ERROR: 3, WARN: 2, INFO: 3",
     );
   },
 });

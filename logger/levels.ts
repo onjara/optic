@@ -3,7 +3,7 @@ export enum Level {
   TRACE = 10,
   DEBUG = 20,
   INFO = 30,
-  WARNING = 40,
+  WARN = 40,
   ERROR = 50,
   CRITICAL = 60,
 }
@@ -12,7 +12,7 @@ const levelMap = new Map<number, string>();
 levelMap.set(10, "TRACE");
 levelMap.set(20, "DEBUG");
 levelMap.set(30, "INFO");
-levelMap.set(40, "WARNING");
+levelMap.set(40, "WARN");
 levelMap.set(50, "ERROR");
 levelMap.set(60, "CRITICAL");
 
@@ -20,7 +20,7 @@ const levelNameMap = new Map<string, number>();
 levelNameMap.set("TRACE", Level.TRACE);
 levelNameMap.set("DEBUG", Level.DEBUG);
 levelNameMap.set("INFO", Level.INFO);
-levelNameMap.set("WARNING", Level.WARNING);
+levelNameMap.set("WARN", Level.WARN);
 levelNameMap.set("ERROR", Level.ERROR);
 levelNameMap.set("CRITICAL", Level.CRITICAL);
 

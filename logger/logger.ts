@@ -359,22 +359,22 @@ export class Logger {
   }
 
   /**
-   * Warning is a mid log level used for recording situations that are unexpected
+   * Warn is a mid log level used for recording situations that are unexpected
    * or not quite right, but which are not necessarily causing issues
    * 
    * @param msg primary log message
    * @param metadata supporting log message data
    */
-  warning<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
-  warning<T>(
+  warn<T>(msg: () => T, ...metadata: unknown[]): T | undefined;
+  warn<T>(
     msg: (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T;
-  warning<T>(
+  warn<T>(
     msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
-    return this.logToStreams(Level.WARNING, msg, metadata);
+    return this.logToStreams(Level.WARN, msg, metadata);
   }
 
   /**

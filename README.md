@@ -32,7 +32,7 @@ import { Level, JsonFormatter, Optic, Stream, LogRecord, PropertyRedaction }
 
 // Configure the output file stream
 const fileStream = new FileStream("logFile.txt")
-  .withMinLogLevel(Level.WARNING)
+  .withMinLogLevel(Level.WARN)
   .withFormat(
     new JsonFormatter()
     .withPrettyPrintIndentation(2)
@@ -48,22 +48,22 @@ const fileStream = new FileStream("logFile.txt")
 
 // Configure the logger
 const log = Optic.logger()
-  .withMinLogLevel(Level.WARNING)
+  .withMinLogLevel(Level.WARN)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
   .addTransformer(new PropertyRedaction("password"))
   .addStream(fileStream);
 
-// "info" is lower than configured min log level of "warning"
+// "info" is lower than configured min log level of "warn"
 log.info("Level too low. This won't be logged");
 
 // logs "Hello World" and supporting metadata, returns "Hello world"
 const logVal: string = log.critical("Hello world", 12, true, {name: "Poe"}); 
 
 // Log records with `msg` of "spam" are filtered out
-log.warning("spam");
+log.warn("spam");
 
 // logs `msg` as { "user": "jsmith", "password": "[Redacted]" }
-log.warning({user: "jsmith", password: "secret_password"});
+log.warn({user: "jsmith", password: "secret_password"});
 
 // debug < min log level, so function isn't evaluated and error not thrown
 log.debug(() => { throw new Error("I'm not thrown"); }); 
@@ -112,7 +112,7 @@ Optic supports the following logging levels out of the box:
 * Trace
 * Debug
 * Info
-* Warning
+* Warn
 * Error
 * Critical
 
@@ -152,7 +152,7 @@ minimum level:
 Within the code, this can be set at any time and takes highest precedence of
 any method:
 ```typescript
-logger.withLevel(Level.WARNING);
+logger.withLevel(Level.WARN);
 ```
 
 #### Environment variable
@@ -225,7 +225,7 @@ it did not log it.
 You can specify a condition which must be met to log the log message.  To do
 this, supply a boolean condition to the `if` function on the logger. E.g.
 ```typescript
-logger.if(attempts > 3).warning("Excessive attempts by user");
+logger.if(attempts > 3).warn("Excessive attempts by user");
 ```
 Note that even if the condition is true, the log record may not be logged if
 the minimum log level for the logger (and/or stream) is higher than this record.
@@ -270,7 +270,7 @@ A stream which outputs log messages to the file system.
 
 ```typescript
 const fileStream = new FileStream("./logFile.txt")
-  .withMinLogLevel(Level.WARNING)
+  .withMinLogLevel(Level.WARN)
   .withFormat(new JsonFormatter())
   .withBufferSize(30000)
   .withLogFileInitMode("append")

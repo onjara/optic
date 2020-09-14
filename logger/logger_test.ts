@@ -376,7 +376,7 @@ test({
 
     // Remove filter and send same message again
     logger.removeFilter(filter1).removeFilter(filter2);
-    logger.warning("Filter out"); // This shouldn't be filtered out
+    logger.warn("Filter out"); // This shouldn't be filtered out
     assertEquals(
       testStream1.functionsCalled,
       ["setup", "logHeader", "handle", "handle"],
@@ -523,17 +523,17 @@ test({
 });
 
 test({
-  name: "WARNING messages work as expected",
+  name: "WARN messages work as expected",
   fn() {
     const testStream = new TestStream();
-    const output = new Logger().addStream(testStream).warning(
+    const output = new Logger().addStream(testStream).warn(
       { a: "b" },
       [{ c: "d" }],
     );
     assertEquals(output, { a: "b" });
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, { a: "b" });
-    assertEquals(testStream.logRecords[0].level, Level.WARNING);
+    assertEquals(testStream.logRecords[0].level, Level.WARN);
     assertEquals(testStream.logRecords[0].metadata, [[{ c: "d" }]]);
     assert(
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
@@ -598,13 +598,13 @@ test({
     logger.error("abc");
     logger.error("abc");
     logger.error("abc");
-    logger.warning("abc");
-    logger.warning("abc");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
-    logger.warning("abcdef");
+    logger.warn("abc");
+    logger.warn("abc");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
+    logger.warn("abcdef");
     logger.info("abc");
     logger.info({ z: "abc" });
     logger.info({ z: "abc" });
@@ -624,7 +624,7 @@ test({
       3,
     );
     assertEquals(
-      meta?.streamStats.get(testStream)?.handled.get(Level.WARNING),
+      meta?.streamStats.get(testStream)?.handled.get(Level.WARN),
       2,
     );
     assertEquals(meta?.streamStats.get(testStream)?.handled.get(Level.INFO), 3);

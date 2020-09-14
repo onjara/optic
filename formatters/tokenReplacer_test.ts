@@ -98,8 +98,8 @@ test({
     assertEquals(tr.format(lr), "DEBUG   ");
     lr.level = Level.INFO;
     assertEquals(tr.format(lr), "INFO    ");
-    lr.level = Level.WARNING;
-    assertEquals(tr.format(lr), "WARNING ");
+    lr.level = Level.WARN;
+    assertEquals(tr.format(lr), "WARN    ");
     lr.level = Level.ERROR;
     assertEquals(tr.format(lr), "ERROR   ");
     lr.level = Level.CRITICAL;

@@ -10,7 +10,7 @@ test({
     assertEquals(levelToName(Level.TRACE), "TRACE");
     assertEquals(levelToName(Level.DEBUG), "DEBUG");
     assertEquals(levelToName(Level.INFO), "INFO");
-    assertEquals(levelToName(Level.WARNING), "WARNING");
+    assertEquals(levelToName(Level.WARN), "WARN");
     assertEquals(levelToName(Level.ERROR), "ERROR");
     assertEquals(levelToName(Level.CRITICAL), "CRITICAL");
     assertEquals(levelToName(0), "UNKNOWN");
@@ -24,7 +24,7 @@ test({
     assertEquals(nameToLevel("TRACE"), Level.TRACE);
     assertEquals(nameToLevel("DEBUG"), Level.DEBUG);
     assertEquals(nameToLevel("INFO"), Level.INFO);
-    assertEquals(nameToLevel("WARNING"), Level.WARNING);
+    assertEquals(nameToLevel("WARN"), Level.WARN);
     assertEquals(nameToLevel("ERROR"), Level.ERROR);
     assertEquals(nameToLevel("CRITICAL"), Level.CRITICAL);
     assertEquals(nameToLevel("made up level"), 1);
