@@ -99,12 +99,14 @@ modules.  E.g.
 /** logger.ts */
 import { ConsoleStream, Logger } from "https://deno.land/x/optic/mod.ts";
 import { JsonFormatter } from "https://deno.land/x/optic/formatters/json.ts";
+
 export const logger = new Logger();
 logger.addStream(new ConsoleStream().withFormat(new JsonFormatter()));
 ```
 ```ts
 /** module_a.ts */
 import { logger } from "./logger.ts";
+
 logger.info("hello world");
 ```
 
