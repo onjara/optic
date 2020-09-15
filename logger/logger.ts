@@ -31,10 +31,12 @@ class LogMetaImpl implements LogMeta {
   > = new Map();
 }
 
+const defaultStream = new ConsoleStream();
+
 export class Logger {
   #name = "default";
   #minLevel: Level = Level.DEBUG;
-  #streams: Stream[] = [new ConsoleStream()];
+  #streams: Stream[] = [defaultStream];
   #filters: Filter[] = [];
   #monitors: Monitor[] = [];
   #transformers: Transformer[] = [];
@@ -47,6 +49,12 @@ export class Logger {
       this.#name = name;
       this.#meta.logger = name;
     }
+
+    this.#meta.streamStats.set(
+      defaultStream,
+      { handled: new Map<number, number>(), filtered: 0, transformed: 0 },
+    );
+
     //TODO check permissions here for meta.unableToReadEnvVar once stable and sync version available
 
     this.setMinLogLevel();
@@ -54,7 +62,7 @@ export class Logger {
     // Append footers and destroy loggers on unload of module
     addEventListener("unload", () => {
       for (const stream of this.#streams) {
-        if (stream.logFooter) stream.logFooter(this.#meta);
+        if (stream.logFooter && this.#streamAdded) stream.logFooter(this.#meta);
         if (stream.destroy) stream.destroy();
       }
       for (const monitor of this.#monitors) {
