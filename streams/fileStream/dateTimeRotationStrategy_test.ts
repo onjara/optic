@@ -8,7 +8,9 @@ import { ValidationError, IllegalStateError } from "../../types.ts";
 import { every, of } from "./mod.ts";
 import { twoDig } from "./_rotationStrategyCommon.ts";
 
-const LOG_FILE = "./test_log.file";
+const LOG_FILE = Deno.build.os === "windows"
+  ? ".\test_log.file"
+  : "./test_log.file";
 const encoder = new TextEncoder();
 
 function exists(filePath: string): boolean {
