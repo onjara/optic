@@ -8,9 +8,8 @@ import { ValidationError, IllegalStateError } from "../../types.ts";
 import { every, of } from "./mod.ts";
 import { twoDig } from "./_rotationStrategyCommon.ts";
 
-const LOG_FILE = Deno.build.os === "windows"
-  ? "test_log.file"
-  : "./test_log.file";
+const isWindows = Deno.build.os === "windows";
+const LOG_FILE = isWindows ? "test_log.file" : "./test_log.file";
 const encoder = new TextEncoder();
 
 function exists(filePath: string): boolean {
@@ -89,7 +88,8 @@ test({
         rs.initLogs(LOG_FILE, "mustNotExist");
       },
       IllegalStateError,
-      "Found log file(s) which must not exist: " + LOG_FILE + "_2020.02.25",
+      "Found log file(s) which must not exist: " + (isWindows ? ".\\" : "") +
+        LOG_FILE + "_2020.02.25",
     );
     Deno.removeSync(LOG_FILE + "_2020.02.25");
   },
