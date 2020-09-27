@@ -99,9 +99,9 @@ test({
   name: "Dates stringified correctly",
   fn() {
     assertEquals(stringify(SEPT_24_2020), `"2020-09-24T21:02:38.481Z"`);
-    assertEquals(
+    assertMatch(
       stringify(SEPT_24_2020, { dateTimeFormatter: DATE_FMT }),
-      `"22:02 Thursday Sep 24"`,
+      /\"\d\d:02 Thursday Sep 24\"/,
     );
   },
 });
@@ -128,9 +128,9 @@ test({
       first: { subFirst: map },
       second: { subSecond: SEPT_24_2020 },
     };
-    assertEquals(
+    assertMatch(
       stringify(obj, { dateTimeFormatter: DATE_FMT }),
-      `{"first":{"subFirst":[["22:02 Thursday Sep 24",["a","b","c"]]]},"second":{"subSecond":"22:02 Thursday Sep 24"}}`,
+      /{\"first\":{\"subFirst\":\[\[\"\d\d:02 Thursday Sep 24\",\[\"a\",\"b\",\"c\"\]\]\]},\"second\":{\"subSecond\":\"\d\d:02 Thursday Sep 24\"}}/,
     );
   },
 });

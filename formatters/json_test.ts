@@ -137,7 +137,7 @@ test({
 
     assertMatch(
       jf.format(lr),
-      /{\"dateTime\":\"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\"level\":\"DEBUG\",\"msg\":\"Error: An error was thrown\\n\s{4}at fn \(file:.*/,
+      /{\"dateTime\":\"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\"level\":\"DEBUG\",\"msg\":\"Error: An error was thrown\\n\s{4}at fn \(.*/,
     );
   },
 });
@@ -156,7 +156,7 @@ test({
 
     assertMatch(
       jf.format(lr),
-      /{\n\s\s\"dateTime\": \"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\n\s\s\"level\": \"DEBUG\",\n\s\s\"msg\": \"Error: A formatted error was thrown\n\s{4}at fn \(file:.*/,
+      /{\n\s\s\"dateTime\": \"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\n\s\s\"level\": \"DEBUG\",\n\s\s\"msg\": \"Error: A formatted error was thrown\n\s{4}at fn \(.*/,
     );
   },
 });
