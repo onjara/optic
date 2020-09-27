@@ -9,7 +9,7 @@ import { every, of } from "./mod.ts";
 import { twoDig } from "./_rotationStrategyCommon.ts";
 
 const LOG_FILE = Deno.build.os === "windows"
-  ? ".\test_log.file"
+  ? "test_log.file"
   : "./test_log.file";
 const encoder = new TextEncoder();
 
