@@ -7,6 +7,7 @@ import {
 } from "../types.ts";
 import { levelToName } from "../logger/levels.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
+import { stringify } from "./stringify.ts";
 
 type Fields = "msg" | "metadata" | "level" | "dateTime" | "logger";
 
@@ -20,34 +21,30 @@ export class JsonFormatter implements Formatter<string> {
   #indent: number | string = 0;
   #dateTimeFormatter: DateTimeFormatter | undefined = undefined;
 
-  // TODO find a better way than JSON.stringify everywhere
-
   format(logRecord: LogRecord): string {
     let output = "{";
     for (let field of this.#fields) {
       if (field === "dateTime") {
-        if (this.#dateTimeFormatter) {
-          output += '"dateTime":' +
-            JSON.stringify(
-              this.#dateTimeFormatter.formatDateTime(logRecord.dateTime),
-            ) + ",";
-        } else {
-          output += '"dateTime":' + JSON.stringify(logRecord.dateTime) + ",";
-        }
+        output += '"dateTime":' +
+          stringify(
+            logRecord.dateTime,
+            { dateTimeFormatter: this.#dateTimeFormatter },
+          ) + ",";
       } else if (field === "level") {
-        output += '"level":' + JSON.stringify(levelToName(logRecord.level)) +
+        output += '"level":' + stringify(levelToName(logRecord.level)) +
           ",";
       } else if (field === "msg") {
-        output += '"msg":' + JSON.stringify(logRecord.msg) + ",";
+        output += '"msg":' + stringify(logRecord.msg) + ",";
       } else if (field === "metadata") {
-        output += '"metadata":' + JSON.stringify(logRecord.metadata) + ",";
+        output += '"metadata":' + stringify(logRecord.metadata) + ",";
       } else if (field === "logger") {
         output += `"logger":"${logRecord.logger}",`;
       }
     }
     output = output.slice(0, -1) + "}";
     if (this.#indent !== 0) {
-      output = JSON.stringify(JSON.parse(output), null, this.#indent);
+      output = stringify(JSON.parse(output), { indent: this.#indent })
+        .replaceAll("\\n", "\n");
     }
     return output;
   }

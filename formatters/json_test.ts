@@ -23,7 +23,7 @@ test({
     const jf = new JsonFormatter();
     assertEquals(
       jf.format(lr),
-      '{"dateTime":"2020-06-17T02:24:00.000Z","level":"DEBUG","msg":{"a":6,"b":"hello"},"metadata":[true,null,"there"]}',
+      '{"dateTime":"2020-06-17T02:24:00.000Z","level":"DEBUG","msg":{"a":6,"b":"hello"},"metadata":[true,"undefined","there"]}',
     );
   },
 });
@@ -51,7 +51,10 @@ test({
       '{"dateTime":"2020-06-17T02:24:00.000Z"}',
     );
     assertEquals(jfLevel.format(lr), '{"level":"DEBUG"}');
-    assertEquals(jfMetadata.format(lr), '{"metadata":[true,null,"there"]}');
+    assertEquals(
+      jfMetadata.format(lr),
+      '{"metadata":[true,"undefined","there"]}',
+    );
     assertEquals(
       jfMsgDateTime.format(lr),
       '{"dateTime":"2020-06-17T02:24:00.000Z","msg":{"a":6,"b":"hello"},"logger":"default"}',
@@ -86,11 +89,11 @@ test({
     );
     assertEquals(
       jf.format(newLrA),
-      '{\n  "dateTime": "2020-06-17T02:24:00.000Z",\n  "level": "DEBUG",\n  "msg": {\n    "a": 6,\n    "b": "hello"\n  },\n  "metadata": [\n    true,\n    null,\n    "there"\n  ]\n}',
+      '{\n  "dateTime": "2020-06-17T02:24:00.000Z",\n  "level": "DEBUG",\n  "msg": {\n    "a": 6,\n    "b": "hello"\n  },\n  "metadata": [\n    true,\n    "undefined",\n    "there"\n  ]\n}',
     );
     assertEquals(
       jfStar.format(newLrA),
-      '{\n**"dateTime": "2020-06-17T02:24:00.000Z",\n**"level": "DEBUG",\n**"msg": {\n****"a": 6,\n****"b": "hello"\n**},\n**"metadata": [\n****true,\n****null,\n****"there"\n**]\n}',
+      '{\n**"dateTime": "2020-06-17T02:24:00.000Z",\n**"level": "DEBUG",\n**"msg": {\n****"a": 6,\n****"b": "hello"\n**},\n**"metadata": [\n****true,\n****"undefined",\n****"there"\n**]\n}',
     );
   },
 });
@@ -117,5 +120,43 @@ test({
     //   jf.format(lr),
     //   '{\"dateTime\":\"03:24 Wednesday Jun 17\",\"level\":\"DEBUG\",\"msg\":\"hello\",\"metadata\":[]}',
     // );
+  },
+});
+
+test({
+  name: "New lines are encoded so output is a single line",
+  fn() {
+    const lr = {
+      msg: new Error("An error was thrown"),
+      metadata: [true, undefined, "there"],
+      dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
+      level: Level.DEBUG,
+      logger: "default",
+    };
+    const jf = new JsonFormatter();
+
+    assertMatch(
+      jf.format(lr),
+      /{\"dateTime\":\"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\"level\":\"DEBUG\",\"msg\":\"Error: An error was thrown\\n\s{4}at fn \(file:.*/,
+    );
+  },
+});
+
+test({
+  name: "New lines are unencoded when output is pretty-printed",
+  fn() {
+    const lr = {
+      msg: new Error("A formatted error was thrown"),
+      metadata: [true, undefined, "there"],
+      dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
+      level: Level.DEBUG,
+      logger: "default",
+    };
+    const jf = new JsonFormatter().withPrettyPrintIndentation(2);
+
+    assertMatch(
+      jf.format(lr),
+      /{\n\s\s\"dateTime\": \"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\n\s\s\"level\": \"DEBUG\",\n\s\s\"msg\": \"Error: A formatted error was thrown\n\s{4}at fn \(file:.*/,
+    );
   },
 });

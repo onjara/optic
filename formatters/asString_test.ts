@@ -38,6 +38,6 @@ test({
     const a: { [k: string]: unknown } = {};
     a.name = "hello";
     a.circ = a;
-    assertEquals(asString(a), "[Unable to JSON.stringify()]");
+    assertEquals(asString(a), `{\"name\":\"hello\",\"circ\":\"[ref=.]\"}`);
   },
 });

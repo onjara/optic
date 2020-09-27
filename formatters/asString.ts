@@ -1,9 +1,11 @@
+import { stringify } from "./stringify.ts";
+
 /**
  * Convert an unknown object into a string.  Special considerations are:
  * * `function` - returns "[function]"
  * * `Date` - returns the toISOString() date
  * * `Error` - returns error stack trace or "[Error]" if there is none
- * * `Object` - JSON.stringify() representation or "[Unable to JSON.stringify()] if an error occurs"
+ * * `Object` - custom JSON.stringify() like representation or "[Unable to stringify()] if an error occurs"
  */
 export function asString(data: unknown): string {
   if (typeof data === "string") {
@@ -26,9 +28,9 @@ export function asString(data: unknown): string {
     return data.stack ? data.stack : "[" + data.name + "]";
   } else if (typeof data === "object") {
     try {
-      return JSON.stringify(data);
+      return stringify(data);
     } catch (err) {
-      return "[Unable to JSON.stringify()]";
+      return "[Unable to stringify()]";
     }
   }
   return "undefined";
