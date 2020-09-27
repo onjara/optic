@@ -44,7 +44,7 @@ export function getLogFilesInDir(
       matches.push(join(dir, dirEntry.name));
     }
   }
-
+  
   return matches;
 }
 

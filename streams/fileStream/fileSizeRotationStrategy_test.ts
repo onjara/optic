@@ -9,6 +9,8 @@ import { of } from "./retentionPolicy.ts";
 import { ValidationError, IllegalStateError } from "../../types.ts";
 import { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";
 
+console.log('hello world');
+
 const LOG_FILE = "./test_log.file";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -373,4 +375,37 @@ test({
     Deno.removeSync(LOG_FILE + ".3");
     Deno.removeSync(LOG_FILE + ".4");
   },
+});
+
+test({
+  name:
+    "FileSizeRotationStrategy: dateTime based rotation will rotate the only in scope log files",
+  ignore: Deno.build.os === "windows",
+  async fn() {
+    Deno.writeFileSync(LOG_FILE, encoder.encode("orig"));
+
+    const rs = every(15).bytes().withLogFileRetentionPolicy(of(3).days());
+    rs.rotate(LOG_FILE, encoder.encode("hello"));
+
+    assertEquals(rs.currentFileSize, 5);
+    assert(!exists(LOG_FILE)); // recreated in Stream, not here
+    assert(exists(LOG_FILE + ".1"));
+    assertEquals(readFile(LOG_FILE + ".1"), "orig");
+
+    Deno.removeSync(LOG_FILE + ".1");
+  },
+});
+
+test({
+  name: "FileSizeRotationStrategy: dateTime based rotation with mustNotExist initStrategy and one log file",
+  async fn() {
+    Deno.writeFileSync(LOG_FILE, encoder.encode("orig"));
+
+    const rs = every(15).bytes().withLogFileRetentionPolicy(of(3).days());
+    assertThrows(() => {
+      rs.initLogs(LOG_FILE, "mustNotExist");
+    }, IllegalStateError, "Found log file");
+
+    Deno.removeSync(LOG_FILE);
+  }
 });

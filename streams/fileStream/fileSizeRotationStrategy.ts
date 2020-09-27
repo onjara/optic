@@ -67,6 +67,8 @@ export class FileSizeRotationStrategy implements RotationStrategy {
           filename,
           matchesFilePattern,
         );
+        logFiles.push(filename);
+
         // Now remove log.txt.1, log.txt.2 ... up to max age (in days or hours)
         for (let logFile of logFiles) {
           const maxTimeAgo = this.#logFileRetentionPolicy.oldestRetentionDate();
@@ -104,11 +106,12 @@ export class FileSizeRotationStrategy implements RotationStrategy {
         filename,
         matchesFilePattern,
       );
+      logFiles.push(filename);
 
       /* Given the log files, find the maximum extension that is within the
        * oldest retention date.  Add 1 to this value to ensure it is rotated
        * along with all other log files with a lower extension */
-      maxFiles = 0;
+      maxFiles = 1;
       for (let logFile of logFiles) {
         const matched = logFile.match(/.*\.([\d]+)/);
         if (matched?.[1]) {
