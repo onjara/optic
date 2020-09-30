@@ -1,5 +1,7 @@
 import { Level, levelToName } from "../logger/levels.ts";
 import type { LogMeta, LogRecord, Stream, Formatter } from "../types.ts";
+import { LogMetaImpl } from "../logger/meta.ts";
+import { stringify } from "../formatters/stringify.ts";
 
 /**
  * An abstract base class for streams, using string based logs.
@@ -25,7 +27,6 @@ export abstract class BaseStream implements Stream {
 
   handle(logRecord: LogRecord): void {
     if (this.#minLevel > logRecord.level) return;
-
     const msg = this.format(logRecord);
     this.log(msg);
   }
@@ -70,71 +71,33 @@ export abstract class BaseStream implements Stream {
       ? ""
       : "Initial logger min log level: " + levelToName(meta.minLogLevel) +
         " (" + meta.minLogLevelFrom + ")";
-    const loggingInitAtRecord = this.metaLogRecord(
-      meta,
-      "Logging session initialized. " +
-        minLogLevel, /* on host Deno.hostname() */
-    );
 
-    this.log(this.format(loggingInitAtRecord));
+    this.log(
+      this.format(
+        this.logRecord(
+          meta,
+          "Logging session initialized. " + minLogLevel,
+          false,
+        ),
+      ), /* on host Deno.hostname(), */
+    );
   }
 
   logFooter(meta: LogMeta): void {
     if (!this.outputFooter) return;
 
-    const loggingCompletedAtRecord = this.metaLogRecord(
+    this.log(this.format(this.logRecord(
       meta,
       "Logging session complete.  Duration: " +
         (new Date().getTime() - this.#started.getTime()) + "ms",
-    );
-
-    let registered = "";
-    registered += meta.filters > 0
-      ? "Filters registered: " + meta.filters + " "
-      : "";
-    registered += meta.transformers > 0
-      ? "Transformers registered: " + meta.transformers + " "
-      : "";
-    registered += meta.monitors > 0
-      ? "Monitors registered: " + meta.monitors + " "
-      : "";
-    if (registered != "") {
-      this.log(this.format(this.metaLogRecord(meta, registered)));
-    }
-
-    let stats = "";
-    if (meta.streamStats.get(this)) {
-      stats += meta.streamStats.get(this)!.filtered > 0
-        ? "Records filtered: " + meta.streamStats.get(this)!.filtered + " "
-        : "";
-      stats += meta.streamStats.get(this)!.transformed > 0
-        ? "Records transformed: " + meta.streamStats.get(this)!.transformed +
-          " "
-        : "";
-
-      let levelStats = "";
-      const handledMap = meta.streamStats.get(this)!.handled;
-      levelStats = Array.from(handledMap.keys()).map((k) =>
-        levelToName(k) + ": " + handledMap.get(k)
-      ).join(", ");
-      if (levelStats != "") {
-        levelStats = "Log count => " + levelStats;
-      }
-      if (stats != "") {
-        this.log(this.format(this.metaLogRecord(meta, stats)));
-      }
-      if (levelStats != "") {
-        this.log(this.format(this.metaLogRecord(meta, levelStats)));
-      }
-    }
-
-    this.log(this.format(loggingCompletedAtRecord));
+      true,
+    )));
   }
 
-  private metaLogRecord(meta: LogMeta, msg: string): LogRecord {
+  private logRecord(meta: LogMeta, msg: string, logMeta: boolean): LogRecord {
     return {
       msg: msg,
-      metadata: [],
+      metadata: logMeta ? [(meta as LogMetaImpl).toRecord(this)] : [],
       dateTime: new Date(),
       level: Level.INFO,
       logger: meta.logger,

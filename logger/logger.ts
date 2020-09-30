@@ -12,24 +12,10 @@ import type {
 } from "../types.ts";
 import { ConsoleStream } from "../streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
+import { LogMetaImpl } from "./meta.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyFunction = (...args: any[]) => any;
-
-class LogMetaImpl implements LogMeta {
-  minLogLevel: Level = Level.DEBUG;
-  minLogLevelFrom = "default";
-  readonly sessionStarted = new Date();
-  readonly hostname = "unavailable";
-  logger = "default";
-  filters = 0;
-  transformers = 0;
-  monitors = 0;
-  streamStats: Map<
-    Stream,
-    { handled: Map<number, number>; filtered: number; transformed: number }
-  > = new Map();
-}
 
 const defaultStream = new ConsoleStream();
 
@@ -61,6 +47,7 @@ export class Logger {
 
     // Append footers and destroy loggers on unload of module
     addEventListener("unload", () => {
+      (this.#meta as LogMeta).sessionEnded = new Date();
       for (const stream of this.#streams) {
         if (stream.logFooter && this.#streamAdded) stream.logFooter(this.#meta);
         if (stream.destroy) stream.destroy();

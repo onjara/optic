@@ -174,6 +174,8 @@ export interface LogMeta {
   readonly hostname: string;
   /** The date and time the logging session started */
   readonly sessionStarted: Date;
+  /** The date and time the logging session ended (or undefined if still active)*/
+  sessionEnded?: Date;
   /** The min log level of the logger */
   minLogLevel: Level;
   /** Where the min log level was sourced from */

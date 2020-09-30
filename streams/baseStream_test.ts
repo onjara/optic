@@ -8,10 +8,14 @@ import { BaseStream } from "./baseStream.ts";
 import type { LogRecord, Formatter, LogMeta } from "../types.ts";
 import { Level } from "../logger/levels.ts";
 import { PropertyRedaction, SubStringFilter, Logger } from "../mod.ts";
+import { LogMetaImpl } from "../logger/meta.ts";
+import { assertMatch } from "https://deno.land/std@0.69.0/testing/asserts.ts";
+import { stringify } from "../formatters/stringify.ts";
 
 class MsgPassThrough implements Formatter<string> {
   format(lr: LogRecord): string {
-    return lr.msg === "format" ? "formatted!" : String(lr.msg);
+    const msg = lr.msg === "format" ? "formatted!" : stringify(lr.msg);
+    return msg + " " + stringify(lr.metadata);
   }
 }
 
@@ -48,17 +52,9 @@ function logRec(msg: string, level: Level): LogRecord {
 }
 
 function logMeta(): LogMeta {
-  return {
-    hostname: "host",
-    sessionStarted: new Date(),
-    minLogLevel: Level.INFO,
-    minLogLevelFrom: "default",
-    logger: "default",
-    streamStats: new Map(),
-    filters: 0,
-    transformers: 0,
-    monitors: 0,
-  };
+  const meta = new LogMetaImpl();
+  meta.minLogLevel = Level.INFO;
+  return meta;
 }
 
 test({
@@ -66,7 +62,7 @@ test({
   fn() {
     const baseStream = newBaseStream();
     baseStream.handle(logRec("hello", Level.DEBUG));
-    assertEquals(baseStream.logs[0], "hello");
+    assertEquals(baseStream.logs[0], `"hello" []`);
   },
 });
 
@@ -84,7 +80,7 @@ test({
   fn() {
     const baseStream = newBaseStream();
     baseStream.handle(logRec("format", Level.DEBUG));
-    assertEquals(baseStream.logs[0], "formatted!");
+    assertEquals(baseStream.logs[0], `formatted! []`);
   },
 });
 
@@ -151,20 +147,20 @@ test({
 test({
   name: "Log footer outputs header info",
   fn() {
-    const baseStream = newBaseStream().withLogFooter(false);
+    const testStream = newBaseStream().withLogFooter(false);
     const meta = logMeta();
     meta.streamStats.set(
-      baseStream,
+      testStream,
       { handled: new Map<number, number>(), filtered: 0, transformed: 0 },
     );
-    baseStream.logFooter(meta);
-    assertEquals(baseStream.logs.length, 0);
+    testStream.logFooter(meta);
+    assertEquals(testStream.logs.length, 0);
 
-    baseStream.withLogFooter();
-    baseStream.logFooter(meta);
-    assertEquals(baseStream.logs.length, 1);
+    testStream.withLogFooter();
+    testStream.logFooter(meta);
+    assertEquals(testStream.logs.length, 1);
     assertStringContains(
-      (baseStream.logs[0] as string),
+      (testStream.logs[0] as string),
       "Logging session complete.  Duration",
     );
   },
@@ -194,17 +190,9 @@ test({
     logger.info({ z: "abc" });
     logger.removeStream(testStream);
 
-    assertEquals(
-      testStream.logs[testStream.logs.length - 4],
-      "Filters registered: 1 Transformers registered: 1 Monitors registered: 1 ",
-    );
-    assertEquals(
-      testStream.logs[testStream.logs.length - 3],
-      "Records filtered: 5 Records transformed: 2 ",
-    );
-    assertEquals(
-      testStream.logs[testStream.logs.length - 2],
-      "Log count => ERROR: 3, WARN: 2, INFO: 3",
+    assertMatch(
+      testStream.logs[testStream.logs.length - 1] as string,
+      /\"Logging session complete\.\s\sDuration: \d+ms\" \[{\"sessionStarted\":\"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\",\"sessionEnded\":\"undefined\",\"minLogLevel\":\"INFO\",\"minLogLevelFrom\":\"programmatically set\",\"loggerName\":\"config\",\"filtersRegistered\":1,\"transformersRegistered\":1,\"monitorsRegistered\":1,\"streamName\":\"TestStream\",\"logRecordsHandled\":\"ERROR: 3, WARN: 2, INFO: 3\",\"recordsFiltered\":5,\"recordsTransformed\":2}\]/,
     );
   },
 });
