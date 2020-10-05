@@ -1,8 +1,4 @@
-import {
-  test,
-  assert,
-  assertThrows,
-} from "../test_deps.ts";
+import { assert, assertThrows, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import type { LogRecord } from "../types.ts";
 import { SubStringFilter } from "./subStringFilter.ts";

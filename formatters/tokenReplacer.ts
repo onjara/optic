@@ -1,12 +1,12 @@
 import type {
-  LogRecord,
-  Formatter,
-  DateTimeFormatterFn,
   DateTimeFormatter,
+  DateTimeFormatterFn,
+  Formatter,
+  LogRecord,
 } from "../types.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 import { asString } from "./asString.ts";
-import { longestLevelName, levelToName } from "../logger/levels.ts";
+import { levelToName, longestLevelName } from "../logger/levels.ts";
 import { getColorForLevel } from "./color.ts";
 
 /**

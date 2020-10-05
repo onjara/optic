@@ -1,12 +1,7 @@
-import {
-  test,
-  assert,
-  assertEquals,
-  assertThrows,
-} from "../../test_deps.ts";
+import { assert, assertEquals, assertThrows, test } from "../../test_deps.ts";
 import { every } from "./rotationStrategy.ts";
 import { of } from "./retentionPolicy.ts";
-import { ValidationError, IllegalStateError } from "../../types.ts";
+import { IllegalStateError, ValidationError } from "../../types.ts";
 import { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";
 
 console.log("hello world");

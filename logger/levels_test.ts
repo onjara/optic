@@ -1,7 +1,4 @@
-import {
-  test,
-  assertEquals,
-} from "../test_deps.ts";
+import { assertEquals, test } from "../test_deps.ts";
 import { Level, levelToName, nameToLevel } from "./levels.ts";
 
 test({

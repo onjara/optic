@@ -1,8 +1,4 @@
-import {
-  test,
-  assert,
-  assertEquals,
-} from "../test_deps.ts";
+import { assert, assertEquals, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { RegExReplacer } from "./regExReplacer.ts";
 import { nonWhitespaceReplacer } from "./regExReplacer.ts";

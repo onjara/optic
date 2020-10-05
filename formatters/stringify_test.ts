@@ -1,9 +1,4 @@
-import {
-  test,
-  assertEquals,
-  assertMatch,
-  assert,
-} from "../test_deps.ts";
+import { assert, assertEquals, assertMatch, test } from "../test_deps.ts";
 import { stringify } from "./stringify.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 

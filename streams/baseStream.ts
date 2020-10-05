@@ -1,5 +1,5 @@
 import { Level, levelToName } from "../logger/levels.ts";
-import type { LogMeta, LogRecord, Stream, Formatter } from "../types.ts";
+import type { Formatter, LogMeta, LogRecord, Stream } from "../types.ts";
 import { LogMetaImpl } from "../logger/meta.ts";
 import { stringify } from "../formatters/stringify.ts";
 

@@ -1,8 +1,4 @@
-import type {
-  Transformer,
-  Stream,
-  LogRecord,
-} from "../types.ts";
+import type { LogRecord, Stream, Transformer } from "../types.ts";
 import type { Level } from "../logger/levels.ts";
 import { clone } from "./deepClone.ts";
 

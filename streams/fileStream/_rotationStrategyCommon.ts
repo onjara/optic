@@ -1,8 +1,8 @@
 import {
-  win32Dirname,
+  posixBasename,
   posixDirname,
   win32Basename,
-  posixBasename,
+  win32Dirname,
 } from "./deps.ts";
 
 export function fileInfo(filePath: string): Deno.FileInfo | undefined {

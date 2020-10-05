@@ -1,11 +1,5 @@
 import { Level } from "../logger/levels.ts";
-import {
-  yellow,
-  gray,
-  red,
-  bold,
-  blue,
-} from "../deps.ts";
+import { blue, bold, gray, red, yellow } from "../deps.ts";
 
 /**
  * A type for defining a function which takes in a string and outputs the string

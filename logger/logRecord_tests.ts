@@ -1,7 +1,4 @@
-import {
-  test,
-  assertEquals,
-} from "../test_deps.ts";
+import { assertEquals, test } from "../test_deps.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 import { Level } from "./levels.ts";
 

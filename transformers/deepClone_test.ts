@@ -1,8 +1,4 @@
-import {
-  test,
-  assert,
-  assertEquals,
-} from "../test_deps.ts";
+import { assert, assertEquals, test } from "../test_deps.ts";
 import { clone } from "./deepClone.ts";
 
 test({

@@ -1,7 +1,4 @@
-import {
-  test,
-  assertEquals,
-} from "../test_deps.ts";
+import { assertEquals, test } from "../test_deps.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
 function assertDtf(format: string, date: Date, expectedOutput: string) {

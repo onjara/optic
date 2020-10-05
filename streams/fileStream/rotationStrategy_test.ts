@@ -1,8 +1,4 @@
-import {
-  test,
-  assert,
-  assertThrows,
-} from "../../test_deps.ts";
+import { assert, assertThrows, test } from "../../test_deps.ts";
 import { every } from "./rotationStrategy.ts";
 import { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";
 import { DateTimeRotationStrategy } from "./dateTimeRotationStrategy.ts";

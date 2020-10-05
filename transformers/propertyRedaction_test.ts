@@ -1,8 +1,4 @@
-import {
-  test,
-  assert,
-  assertEquals,
-} from "../test_deps.ts";
+import { assert, assertEquals, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { PropertyRedaction } from "./propertyRedaction.ts";
 import type { LogRecord } from "../types.ts";

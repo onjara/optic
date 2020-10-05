@@ -1,9 +1,4 @@
-import {
-  test,
-  assertEquals,
-  assertMatch,
-  assert,
-} from "../test_deps.ts";
+import { assert, assertEquals, assertMatch, test } from "../test_deps.ts";
 import { TokenReplacer } from "./tokenReplacer.ts";
 import { Level } from "../logger/levels.ts";
 import { gray } from "../deps.ts";

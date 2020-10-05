@@ -1,10 +1,6 @@
-import {
-  test,
-  assert,
-  assertThrows,
-} from "../../test_deps.ts";
+import { assert, assertThrows, test } from "../../test_deps.ts";
 import { DateTimeRotationStrategy } from "./dateTimeRotationStrategy.ts";
-import { ValidationError, IllegalStateError } from "../../types.ts";
+import { IllegalStateError, ValidationError } from "../../types.ts";
 import { every, of } from "./mod.ts";
 import { twoDig } from "./_rotationStrategyCommon.ts";
 

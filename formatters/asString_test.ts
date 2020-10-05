@@ -1,8 +1,4 @@
-import {
-  test,
-  assertEquals,
-  assertMatch,
-} from "../test_deps.ts";
+import { assertEquals, assertMatch, test } from "../test_deps.ts";
 import { asString } from "./asString.ts";
 
 test({

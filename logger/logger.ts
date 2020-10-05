@@ -1,14 +1,14 @@
 import { Level, nameToLevel } from "./levels.ts";
 import type {
-  Stream,
-  FilterFn,
   Filter,
-  MonitorFn,
+  FilterFn,
+  LogMeta,
+  LogRecord,
   Monitor,
+  MonitorFn,
+  Stream,
   Transformer,
   TransformerFn,
-  LogRecord,
-  LogMeta,
 } from "../types.ts";
 import { ConsoleStream } from "../streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";

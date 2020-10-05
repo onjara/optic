@@ -1,8 +1,8 @@
 import {
-  Formatter,
-  LogRecord,
   DateTimeFormatter,
   DateTimeFormatterFn,
+  Formatter,
+  LogRecord,
   ValidationError,
 } from "../types.ts";
 import { levelToName } from "../logger/levels.ts";

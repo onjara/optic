@@ -1,10 +1,6 @@
-import {
-  test,
-  assertEquals,
-  assertThrows,
-} from "../../test_deps.ts";
+import { assertEquals, assertThrows, test } from "../../test_deps.ts";
 import { of } from "./retentionPolicy.ts";
-import { ValidationError, IllegalStateError } from "../../types.ts";
+import { IllegalStateError, ValidationError } from "../../types.ts";
 
 function wipeMs(date: Date): Date {
   const d = new Date(date.getTime());

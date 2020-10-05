@@ -1,4 +1,4 @@
-import { Stream, LogMeta } from "../types.ts";
+import { LogMeta, Stream } from "../types.ts";
 import { Level, levelToName } from "./levels.ts";
 
 export class LogMetaImpl implements LogMeta {

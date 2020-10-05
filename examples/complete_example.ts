@@ -1,11 +1,11 @@
-import { FileStream, every, of } from "../streams/fileStream/mod.ts";
+import { every, FileStream, of } from "../streams/fileStream/mod.ts";
 import {
-  Level,
   JsonFormatter,
+  Level,
   Logger,
-  Stream,
   LogRecord,
   PropertyRedaction,
+  Stream,
 } from "../mod.ts";
 
 const fileStream = new FileStream("logFile.txt")

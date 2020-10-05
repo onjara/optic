@@ -1,8 +1,4 @@
-import {
-  test,
-  assertEquals,
-  assert,
-} from "../test_deps.ts";
+import { assert, assertEquals, test } from "../test_deps.ts";
 import { ConsoleStream } from "./consoleStream.ts";
 import { Level } from "../logger/levels.ts";
 

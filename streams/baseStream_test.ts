@@ -1,13 +1,13 @@
 import {
-  test,
-  assertEquals,
   assert,
+  assertEquals,
   assertStringContains,
+  test,
 } from "../test_deps.ts";
 import { BaseStream } from "./baseStream.ts";
-import type { LogRecord, Formatter, LogMeta } from "../types.ts";
+import type { Formatter, LogMeta, LogRecord } from "../types.ts";
 import { Level } from "../logger/levels.ts";
-import { PropertyRedaction, SubStringFilter, Logger } from "../mod.ts";
+import { Logger, PropertyRedaction, SubStringFilter } from "../mod.ts";
 import { LogMetaImpl } from "../logger/meta.ts";
 import { assertMatch } from "https://deno.land/std@0.69.0/testing/asserts.ts";
 import { stringify } from "../formatters/stringify.ts";

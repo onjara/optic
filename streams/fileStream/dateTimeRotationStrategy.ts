@@ -1,11 +1,11 @@
 import type {
-  RotationStrategy,
-  Periods,
-  LogFileRetentionPolicy,
   LogFileInitStrategy,
+  LogFileRetentionPolicy,
+  Periods,
+  RotationStrategy,
 } from "./types.ts";
 import { of } from "./retentionPolicy.ts";
-import { ValidationError, IllegalStateError } from "../../types.ts";
+import { IllegalStateError, ValidationError } from "../../types.ts";
 import {
   fileInfo,
   getLogFilesInDir,

@@ -1,7 +1,7 @@
 export {
-  yellow,
+  blue,
+  bold,
   gray,
   red,
-  bold,
-  blue,
-} from "https://deno.land/std@0.71.0/fmt/colors.ts";
+  yellow,
+} from "https://deno.land/std@0.73.0/fmt/colors.ts";

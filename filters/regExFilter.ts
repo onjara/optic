@@ -1,4 +1,4 @@
-import type { Filter, Stream, LogRecord } from "../types.ts";
+import type { Filter, LogRecord, Stream } from "../types.ts";
 import { asString } from "../formatters/asString.ts";
 
 /**

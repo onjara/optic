@@ -1,16 +1,12 @@
-import {
-  test,
-  assertEquals,
-  assert,
-} from "../test_deps.ts";
+import { assert, assertEquals, test } from "../test_deps.ts";
 import { Logger } from "./logger.ts";
 import { Level } from "./levels.ts";
 import type {
-  Stream,
-  LogRecord,
-  LogMeta,
-  Monitor,
   Filter,
+  LogMeta,
+  LogRecord,
+  Monitor,
+  Stream,
   Transformer,
 } from "../types.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";

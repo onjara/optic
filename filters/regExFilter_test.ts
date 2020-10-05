@@ -1,7 +1,4 @@
-import {
-  test,
-  assert,
-} from "../test_deps.ts";
+import { assert, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { RegExFilter } from "./regExFilter.ts";
 import type { LogRecord } from "../types.ts";

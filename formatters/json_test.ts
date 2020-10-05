@@ -1,9 +1,4 @@
-import {
-  test,
-  assertEquals,
-  assertThrows,
-  assertMatch,
-} from "../test_deps.ts";
+import { assertEquals, assertMatch, assertThrows, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { JsonFormatter } from "./json.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
