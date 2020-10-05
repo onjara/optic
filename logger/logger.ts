@@ -281,12 +281,16 @@ export class Logger {
           }
         }
         if (!skip) {
-          stream.handle(logRecord);
-          this.registerStreamHandlingOfLogRecord(stream, level);
+          const handled = stream.handle(logRecord);
+          if (handled) {
+            this.registerStreamHandlingOfLogRecord(stream, level);
+          }
         }
       } else if (!skip) {
-        stream.handle(logRecord);
-        this.registerStreamHandlingOfLogRecord(stream, level);
+        const handled = stream.handle(logRecord);
+        if (handled) {
+          this.registerStreamHandlingOfLogRecord(stream, level);
+        }
       }
     }
 

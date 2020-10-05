@@ -23,7 +23,9 @@ function lrMeta(data: unknown[]) {
 }
 
 const stream = {
-  handle(logRecord: LogRecord): void {},
+  handle(logRecord: LogRecord): boolean {
+    return true;
+  },
 };
 
 test({

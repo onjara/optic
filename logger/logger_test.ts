@@ -31,9 +31,11 @@ class TestStream implements Stream {
   destroy?(): void {
     this.functionsCalled.push("destroy");
   }
-  handle(logRecord: LogRecord): void {
+  handle(logRecord: LogRecord): boolean {
+    if (logRecord.level == Level.TRACE) return false;
     this.functionsCalled.push("handle");
     this.logRecords.push(logRecord);
+    return true;
   }
 }
 
@@ -464,7 +466,14 @@ test({
 test({
   name: "TRACE messages work as expected",
   fn() {
-    const testStream = new TestStream();
+    class TestableTraceStream extends TestStream {
+      handle(logRecord: LogRecord): boolean {
+        this.functionsCalled.push("handle");
+        this.logRecords.push(logRecord);
+        return true;
+      }
+    }
+    const testStream = new TestableTraceStream();
     const logger = new Logger().addStream(testStream);
     const ignoredOutput = logger.trace("World");
     assertEquals(ignoredOutput, "World");
@@ -604,6 +613,7 @@ test({
     logger.info("abc");
     logger.info({ z: "abc" });
     logger.info({ z: "abc" });
+    logger.trace("I should not be handled");
     const meta = testStream.meta;
     assertEquals(meta?.filters, 1);
     assertEquals(meta?.hostname, "unavailable");
@@ -624,6 +634,10 @@ test({
       2,
     );
     assertEquals(meta?.streamStats.get(testStream)?.handled.get(Level.INFO), 3);
+    assertEquals(
+      meta?.streamStats.get(testStream)?.handled.get(Level.TRACE),
+      undefined,
+    );
   },
 });
 

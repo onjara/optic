@@ -41,7 +41,7 @@ export interface Stream {
    * 
    * @param logRecord 
    */
-  handle(logRecord: LogRecord): void;
+  handle(logRecord: LogRecord): boolean;
 }
 
 /**

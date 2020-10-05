@@ -4,7 +4,11 @@ import { RegExReplacer } from "./regExReplacer.ts";
 import { nonWhitespaceReplacer } from "./regExReplacer.ts";
 import type { LogRecord } from "../types.ts";
 
-const noopStream = { handle(lr: LogRecord): void {} };
+const noopStream = {
+  handle(lr: LogRecord): boolean {
+    return true;
+  },
+};
 
 test({
   name:

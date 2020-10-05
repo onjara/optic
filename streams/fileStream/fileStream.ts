@@ -64,8 +64,8 @@ export class FileStream extends BaseStream {
     super.logFooter(meta);
   }
 
-  handle(logRecord: LogRecord): void {
-    if (this.minLogLevel > logRecord.level) return;
+  handle(logRecord: LogRecord): boolean {
+    if (this.minLogLevel > logRecord.level) return false;
 
     if (logRecord.level > Level.ERROR) {
       this.#deferredLogQueue.push(logRecord);
@@ -79,6 +79,7 @@ export class FileStream extends BaseStream {
       }
       this.#deferredLogQueue.push(logRecord);
     }
+    return true;
   }
 
   private processDeferredQueue() {

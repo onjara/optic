@@ -79,7 +79,11 @@ test({
     const jf = new JsonFormatter().withPrettyPrintIndentation(2);
     const jfStar = new JsonFormatter().withPrettyPrintIndentation("**");
     const newLrA = new PropertyRedaction("ljh").transform(
-      { handle(lR: LogRecord): void {} },
+      {
+        handle(lR: LogRecord): boolean {
+          return true;
+        },
+      },
       lr,
     );
     assertEquals(

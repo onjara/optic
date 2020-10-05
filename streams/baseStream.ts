@@ -25,10 +25,11 @@ export abstract class BaseStream implements Stream {
 
   destroy(): void {/* NoOp */}
 
-  handle(logRecord: LogRecord): void {
-    if (this.#minLevel > logRecord.level) return;
+  handle(logRecord: LogRecord): boolean {
+    if (this.#minLevel > logRecord.level) return false;
     const msg = this.format(logRecord);
     this.log(msg);
+    return true;
   }
 
   /** the minimum log level the log record must have to be logged */
