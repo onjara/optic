@@ -84,7 +84,7 @@ test({
         new FileStream(LOG_FILE).withLogFileInitMode("mustNotExist").setup();
       },
       Error,
-      "File exists",
+      "exists",
     );
     Deno.removeSync(LOG_FILE);
   },
