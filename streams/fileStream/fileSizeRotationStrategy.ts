@@ -70,7 +70,7 @@ export class FileSizeRotationStrategy implements RotationStrategy {
         logFiles.push(filename);
 
         // Now remove log.txt.1, log.txt.2 ... up to max age (in days or hours)
-        for (let logFile of logFiles) {
+        for (const logFile of logFiles) {
           const maxTimeAgo = this.#logFileRetentionPolicy.oldestRetentionDate();
           const lastModified = fileInfo(logFile)?.mtime;
           if (lastModified && lastModified.getTime() >= maxTimeAgo.getTime()) {
@@ -112,10 +112,12 @@ export class FileSizeRotationStrategy implements RotationStrategy {
        * oldest retention date.  Add 1 to this value to ensure it is rotated
        * along with all other log files with a lower extension */
       maxFiles = 1;
-      for (let logFile of logFiles) {
+      //console.log('Oldest retention date: ', this.#logFileRetentionPolicy.oldestRetentionDate().getTime());
+      for (const logFile of logFiles) {
         const matched = logFile.match(/.*\.([\d]+)/);
         if (matched?.[1]) {
           const statInfo = Deno.statSync(logFile)?.mtime?.getTime();
+          //console.log('stat time of ', logFile, ':', statInfo);
           if (
             statInfo &&
             statInfo >

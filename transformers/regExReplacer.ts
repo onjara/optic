@@ -122,7 +122,7 @@ export class RegExReplacer implements Transformer {
 
   shouldRedact(obj: unknown, regEx: RegExp, replacer: Replacer): boolean {
     if (isObjectButNotArray(obj)) {
-      for (let key in (obj as Record<string, unknown>)) {
+      for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (typeof castObj[key] === "string") {
@@ -186,7 +186,7 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
 
   redact(obj: unknown, regEx: RegExp, replacer: Replacer): void {
     if (isObjectButNotArray(obj)) {
-      for (let key in (obj as Record<string, unknown>)) {
+      for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (typeof castObj[key] === "string") {

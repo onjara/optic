@@ -92,11 +92,8 @@ export class FileStream extends BaseStream {
 
   log(msg: string): void {
     const encodedMsg = this.#encoder.encode(msg + "\n");
-    if (
-      this.#maxBufferSize > 0 &&
-      this.#rotationStrategy?.shouldRotate(encodedMsg)
-    ) {
-      this.flush();
+    if (this.#rotationStrategy?.shouldRotate(encodedMsg)) {
+      this.#buffer.flush();
       Deno.close(this.#logFile.rid);
       this.#rotationStrategy.rotate(this.#filename, encodedMsg);
       this.#logFile = Deno.openSync(
@@ -150,5 +147,14 @@ export class FileStream extends BaseStream {
   withLogFileInitMode(mode: LogFileInitStrategy): this {
     this.#logFileInitStrategy = mode;
     return this;
+  }
+
+  /** Returns the filename associated with this stream */
+  getFileName(): string {
+    return this.#filename;
+  }
+
+  protected _buffer(): BufWriterSync {
+    return this.#buffer;
   }
 }

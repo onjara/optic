@@ -42,7 +42,7 @@ export function nameToLevel(name: string): number {
  */
 export function longestLevelName(): number {
   let longest = 0;
-  for (let key of levelNameMap.keys()) {
+  for (const key of levelNameMap.keys()) {
     longest = key.length > longest ? key.length : longest;
   }
   return longest;

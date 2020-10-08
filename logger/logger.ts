@@ -213,7 +213,7 @@ export class Logger {
 
   private getArgsMinLevel(): string | undefined {
     for (let i = 0; i < this.getArgs().length; i++) {
-      let arg = this.getArgs()[i];
+      const arg = this.getArgs()[i];
       if (arg.startsWith("minLogLevel=")) {
         return arg.slice("minLogLevel=".length);
       }
@@ -240,7 +240,7 @@ export class Logger {
       this.#ifCondition = true; //reset to true
       return msg instanceof Function ? undefined : msg;
     }
-    let resolvedMsg = msg instanceof Function ? msg() : msg;
+    const resolvedMsg = msg instanceof Function ? msg() : msg;
 
     let logRecord: LogRecord = new ImmutableLogRecord(
       resolvedMsg,

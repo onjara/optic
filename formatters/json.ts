@@ -23,7 +23,7 @@ export class JsonFormatter implements Formatter<string> {
 
   format(logRecord: LogRecord): string {
     let output = "{";
-    for (let field of this.#fields) {
+    for (const field of this.#fields) {
       if (field === "dateTime") {
         output += '"dateTime":' +
           stringify(
