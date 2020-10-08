@@ -8,7 +8,7 @@ function lrMsg(msg: unknown) {
     msg: msg,
     metadata: ["The metadata"],
     dateTime: new Date("2020-06-17T03:24:00"),
-    level: Level.DEBUG,
+    level: Level.Debug,
     logger: "default",
   };
 }
@@ -18,7 +18,7 @@ function lrMeta(meta: string[]) {
     msg: "The msg",
     metadata: meta,
     dateTime: new Date("2020-06-17T03:24:00"),
-    level: Level.DEBUG,
+    level: Level.Debug,
     logger: "default",
   };
 }

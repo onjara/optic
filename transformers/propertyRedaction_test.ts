@@ -19,7 +19,7 @@ test({
       msg: err,
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new PropertyRedaction("x").transform(noopStream, lr);
@@ -38,7 +38,7 @@ test({
       msg: "Log Message",
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new PropertyRedaction("x").transform(noopStream, lr);
@@ -53,7 +53,7 @@ test({
       msg: { a: 6, b: "hello" },
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLrA = new PropertyRedaction("a").transform(noopStream, lr);
@@ -71,7 +71,7 @@ test({
       msg: { a: { b: { c: { d: "hello" } } }, e: true },
       metadata: ["The metadata"],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLrA = new PropertyRedaction("a").transform(noopStream, lr);
@@ -94,7 +94,7 @@ test({
       msg: [{ a: "hello" }, { e: true }, 1234, sym],
       metadata: ["The metadata"],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLrA = new PropertyRedaction("e").transform(noopStream, lr);
@@ -114,7 +114,7 @@ test({
         1,
       ],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLrA = new PropertyRedaction("a").transform(noopStream, lr);
@@ -150,7 +150,7 @@ test({
         { a: { b: { c: { d: "hello" } } }, e: true },
       ],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLrA = new PropertyRedaction("a").transform(noopStream, lr);

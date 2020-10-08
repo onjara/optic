@@ -7,7 +7,7 @@ import { stringify } from "../formatters/stringify.ts";
  * An abstract base class for streams, using string based logs.
  */
 export abstract class BaseStream implements Stream {
-  #minLevel = Level.DEBUG;
+  #minLevel = Level.Debug;
   #formatter: Formatter<string>;
   #started = new Date();
   outputHeader = true;
@@ -100,7 +100,7 @@ export abstract class BaseStream implements Stream {
       msg: msg,
       metadata: logMeta ? [(meta as LogMetaImpl).toRecord(this)] : [],
       dateTime: new Date(),
-      level: Level.INFO,
+      level: Level.Info,
       logger: meta.logger,
     };
   }

@@ -22,7 +22,7 @@ test({
   fn() {
     const stream = new TestStream();
     const meta = new LogMetaImpl();
-    meta.minLogLevel = Level.WARN;
+    meta.minLogLevel = Level.Warn;
     meta.minLogLevelFrom = "Environment variable";
     (meta as LogMeta).sessionEnded = new Date(1592360640000); // "2020-06-17T03:24:00"
     meta.logger = "MyLogger";
@@ -33,9 +33,9 @@ test({
       stream,
       { handled: new Map<number, number>(), filtered: 6, transformed: 7 },
     );
-    meta.streamStats.get(stream)?.handled.set(Level.DEBUG, 8);
-    meta.streamStats.get(stream)?.handled.set(Level.INFO, 9);
-    meta.streamStats.get(stream)?.handled.set(Level.WARN, 10);
+    meta.streamStats.get(stream)?.handled.set(Level.Debug, 8);
+    meta.streamStats.get(stream)?.handled.set(Level.Info, 9);
+    meta.streamStats.get(stream)?.handled.set(Level.Warn, 10);
 
     const record = meta.toRecord(stream);
     //assert less than 100ms have passed
@@ -43,14 +43,14 @@ test({
       new Date().getTime() - 100 < (record.sessionStarted as Date).getTime(),
     );
     assertEquals(record.sessionEnded, new Date(1592360640000));
-    assertEquals(record.minLogLevel, "WARN");
+    assertEquals(record.minLogLevel, "Warn");
     assertEquals(record.minLogLevelFrom, "Environment variable");
     assertEquals(record.loggerName, "MyLogger");
     assertEquals(record.filtersRegistered, 3);
     assertEquals(record.transformersRegistered, 4);
     assertEquals(record.monitorsRegistered, 5);
     assertEquals(record.streamName, "TestStream");
-    assertEquals(record.logRecordsHandled, "DEBUG: 8, INFO: 9, WARN: 10");
+    assertEquals(record.logRecordsHandled, "Debug: 8, Info: 9, Warn: 10");
     assertEquals(record.recordsFiltered, 6);
     assertEquals(record.recordsTransformed, 7);
   },

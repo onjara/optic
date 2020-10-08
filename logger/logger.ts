@@ -21,7 +21,7 @@ const defaultStream = new ConsoleStream();
 
 export class Logger {
   #name = "default";
-  #minLevel: Level = Level.DEBUG;
+  #minLevel: Level = Level.Debug;
   #streams: Stream[] = [defaultStream];
   #filters: Filter[] = [];
   #monitors: Monitor[] = [];
@@ -324,7 +324,7 @@ export class Logger {
     msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
-    return this.logToStreams(Level.TRACE, msg, metadata);
+    return this.logToStreams(Level.Trace, msg, metadata);
   }
 
   /**
@@ -339,7 +339,7 @@ export class Logger {
     msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
-    return this.logToStreams(Level.DEBUG, msg, metadata);
+    return this.logToStreams(Level.Debug, msg, metadata);
   }
 
   /**
@@ -354,7 +354,7 @@ export class Logger {
     msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
-    return this.logToStreams(Level.INFO, msg, metadata);
+    return this.logToStreams(Level.Info, msg, metadata);
   }
 
   /**
@@ -373,7 +373,7 @@ export class Logger {
     msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
-    return this.logToStreams(Level.WARN, msg, metadata);
+    return this.logToStreams(Level.Warn, msg, metadata);
   }
 
   /**
@@ -389,7 +389,7 @@ export class Logger {
     msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
-    return this.logToStreams(Level.ERROR, msg, metadata);
+    return this.logToStreams(Level.Error, msg, metadata);
   }
 
   /**
@@ -408,7 +408,7 @@ export class Logger {
     msg: () => T | (T extends AnyFunction ? never : T),
     ...metadata: unknown[]
   ): T | undefined {
-    return this.logToStreams(Level.CRITICAL, msg, metadata);
+    return this.logToStreams(Level.Critical, msg, metadata);
   }
 
   /**

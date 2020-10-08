@@ -12,13 +12,13 @@ test({
       msg: { a: 6, b: "hello" },
       metadata: [true, undefined, "there"],
       dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const jf = new JsonFormatter();
     assertEquals(
       jf.format(lr),
-      '{"dateTime":"2020-06-17T02:24:00.000Z","level":"DEBUG","msg":{"a":6,"b":"hello"},"metadata":[true,"undefined","there"]}',
+      '{"dateTime":"2020-06-17T02:24:00.000Z","level":"Debug","msg":{"a":6,"b":"hello"},"metadata":[true,"undefined","there"]}',
     );
   },
 });
@@ -30,7 +30,7 @@ test({
       msg: { a: 6, b: "hello" },
       metadata: [true, undefined, "there"],
       dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const jfMsg = new JsonFormatter().withFields(["msg"]);
@@ -45,7 +45,7 @@ test({
       jfDateTime.format(lr),
       '{"dateTime":"2020-06-17T02:24:00.000Z"}',
     );
-    assertEquals(jfLevel.format(lr), '{"level":"DEBUG"}');
+    assertEquals(jfLevel.format(lr), '{"level":"Debug"}');
     assertEquals(
       jfMetadata.format(lr),
       '{"metadata":[true,"undefined","there"]}',
@@ -73,7 +73,7 @@ test({
       msg: { a: 6, b: "hello" },
       metadata: [true, undefined, "there"],
       dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const jf = new JsonFormatter().withPrettyPrintIndentation(2);
@@ -88,11 +88,11 @@ test({
     );
     assertEquals(
       jf.format(newLrA),
-      '{\n  "dateTime": "2020-06-17T02:24:00.000Z",\n  "level": "DEBUG",\n  "msg": {\n    "a": 6,\n    "b": "hello"\n  },\n  "metadata": [\n    true,\n    "undefined",\n    "there"\n  ]\n}',
+      '{\n  "dateTime": "2020-06-17T02:24:00.000Z",\n  "level": "Debug",\n  "msg": {\n    "a": 6,\n    "b": "hello"\n  },\n  "metadata": [\n    true,\n    "undefined",\n    "there"\n  ]\n}',
     );
     assertEquals(
       jfStar.format(newLrA),
-      '{\n**"dateTime": "2020-06-17T02:24:00.000Z",\n**"level": "DEBUG",\n**"msg": {\n****"a": 6,\n****"b": "hello"\n**},\n**"metadata": [\n****true,\n****"undefined",\n****"there"\n**]\n}',
+      '{\n**"dateTime": "2020-06-17T02:24:00.000Z",\n**"level": "Debug",\n**"msg": {\n****"a": 6,\n****"b": "hello"\n**},\n**"metadata": [\n****true,\n****"undefined",\n****"there"\n**]\n}',
     );
   },
 });
@@ -104,7 +104,7 @@ test({
       msg: "hello",
       metadata: [],
       dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const jf = new JsonFormatter().withDateTimeFormat(
@@ -113,11 +113,11 @@ test({
 
     assertMatch(
       jf.format(lr),
-      /{\"dateTime\":\"0\d:24 Wednesday Jun 17\",\"level\":\"DEBUG\",\"msg\":\"hello\",\"metadata\":\[\]}/,
+      /{\"dateTime\":\"0\d:24 Wednesday Jun 17\",\"level\":\"Debug\",\"msg\":\"hello\",\"metadata\":\[\]}/,
     );
     // assertEquals(
     //   jf.format(lr),
-    //   '{\"dateTime\":\"03:24 Wednesday Jun 17\",\"level\":\"DEBUG\",\"msg\":\"hello\",\"metadata\":[]}',
+    //   '{\"dateTime\":\"03:24 Wednesday Jun 17\",\"level\":\"Debug\",\"msg\":\"hello\",\"metadata\":[]}',
     // );
   },
 });
@@ -129,14 +129,14 @@ test({
       msg: new Error("An error was thrown"),
       metadata: [true, undefined, "there"],
       dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const jf = new JsonFormatter();
 
     assertMatch(
       jf.format(lr),
-      /{\"dateTime\":\"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\"level\":\"DEBUG\",\"msg\":\"Error: An error was thrown\\n\s{4}at fn \(.*/,
+      /{\"dateTime\":\"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\"level\":\"Debug\",\"msg\":\"Error: An error was thrown\\n\s{4}at fn \(.*/,
     );
   },
 });
@@ -148,14 +148,14 @@ test({
       msg: new Error("A formatted error was thrown"),
       metadata: [true, undefined, "there"],
       dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const jf = new JsonFormatter().withPrettyPrintIndentation(2);
 
     assertMatch(
       jf.format(lr),
-      /{\n\s\s\"dateTime\": \"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\n\s\s\"level\": \"DEBUG\",\n\s\s\"msg\": \"Error: A formatted error was thrown\n\s{4}at fn \(.*/,
+      /{\n\s\s\"dateTime\": \"2020-06-17T\d\d:\d\d:\d\d\.\d\d\dZ\",\n\s\s\"level\": \"Debug\",\n\s\s\"msg\": \"Error: A formatted error was thrown\n\s{4}at fn \(.*/,
     );
   },
 });

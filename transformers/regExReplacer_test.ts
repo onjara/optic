@@ -20,7 +20,7 @@ test({
       msg: err,
       metadata: [{ a: true, b: "hello" }, err2],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
@@ -45,7 +45,7 @@ test({
       msg: ["hello", 123, "world", sym],
       metadata: [{ a: true, b: "hello" }, "metaHello", sym],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/world/).transform(noopStream, lr);
@@ -62,7 +62,7 @@ test({
       msg: "Log Message",
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
@@ -77,7 +77,7 @@ test({
       msg: "Log Message 1234, hello world",
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
@@ -98,7 +98,7 @@ test({
       msg: "Log Message 1234, hello world",
       metadata: [{ a: true, b: "hello" }],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/Message (\d{4})/).transform(
@@ -128,7 +128,7 @@ test({
       msg: "some log message",
       metadata: ["Log Message 1234, hello world"],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
@@ -149,7 +149,7 @@ test({
       msg: "some log message",
       metadata: ["Log Message 1234, hello world"],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/Message (\d{4})/).transform(
@@ -179,7 +179,7 @@ test({
       msg: { a: "hello 1234", b: { c: "1234, there" } },
       metadata: [{ a: true, b: undefined }],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
@@ -197,7 +197,7 @@ test({
       msg: "some log message",
       metadata: [{ a: "hello 1234", b: { c: "1234, there" } }, { d: "£76.22" }],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
@@ -230,7 +230,7 @@ test({
       msg: "Date of birth: 30-04-1977",
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(
@@ -248,7 +248,7 @@ test({
       msg: "Date of birth: 30-04-1977",
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(
@@ -272,7 +272,7 @@ test({
       msg: `A¬!"£$%^&*()_-+=]}[{#~'@;:/?.>,<\|'Z`,
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(
@@ -296,7 +296,7 @@ test({
       msg: new B(),
       metadata: [],
       dateTime: new Date("2020-06-17T03:24:00"),
-      level: Level.DEBUG,
+      level: Level.Debug,
       logger: "default",
     };
     const newLr = new RegExReplacer(/ell/).transform(noopStream, lr);

@@ -1,28 +1,28 @@
 /** Default log levels */
 export enum Level {
-  TRACE = 10,
-  DEBUG = 20,
-  INFO = 30,
-  WARN = 40,
-  ERROR = 50,
-  CRITICAL = 60,
+  Trace = 10,
+  Debug = 20,
+  Info = 30,
+  Warn = 40,
+  Error = 50,
+  Critical = 60,
 }
 
 const levelMap = new Map<number, string>();
-levelMap.set(10, "TRACE");
-levelMap.set(20, "DEBUG");
-levelMap.set(30, "INFO");
-levelMap.set(40, "WARN");
-levelMap.set(50, "ERROR");
-levelMap.set(60, "CRITICAL");
+levelMap.set(10, "Trace");
+levelMap.set(20, "Debug");
+levelMap.set(30, "Info");
+levelMap.set(40, "Warn");
+levelMap.set(50, "Error");
+levelMap.set(60, "Critical");
 
 const levelNameMap = new Map<string, number>();
-levelNameMap.set("TRACE", Level.TRACE);
-levelNameMap.set("DEBUG", Level.DEBUG);
-levelNameMap.set("INFO", Level.INFO);
-levelNameMap.set("WARN", Level.WARN);
-levelNameMap.set("ERROR", Level.ERROR);
-levelNameMap.set("CRITICAL", Level.CRITICAL);
+levelNameMap.set("Trace", Level.Trace);
+levelNameMap.set("Debug", Level.Debug);
+levelNameMap.set("Info", Level.Info);
+levelNameMap.set("Warn", Level.Warn);
+levelNameMap.set("Error", Level.Error);
+levelNameMap.set("Critical", Level.Critical);
 
 /** Translate Level enum to string value */
 export function levelToName(level: Level): string {

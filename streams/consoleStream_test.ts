@@ -31,7 +31,7 @@ test({
       new ConsoleStream().handle(
         {
           msg: "hello",
-          level: Level.DEBUG,
+          level: Level.Debug,
           metadata: [],
           dateTime: new Date(),
           logger: "default",
@@ -40,7 +40,7 @@ test({
       console.log(savedMsgs);
       assert(
         (savedMsgs[0] as string).match(
-          /\d{4}[-]\d{2}[-]\d{2}[T]\d{2}[:]\d{2}[:]\d{2}[.]\d{3}[Z]\sDEBUG\s\s\s\shello/,
+          /\d{4}[-]\d{2}[-]\d{2}[T]\d{2}[:]\d{2}[:]\d{2}[.]\d{3}[Z]\sDebug\s\s\s\shello/,
         ),
       );
     } finally {
@@ -63,7 +63,7 @@ test({
       const lm = {
         hostname: "",
         sessionStarted: new Date(),
-        minLogLevel: Level.DEBUG,
+        minLogLevel: Level.Debug,
         minLogLevelFrom: "somewhere",
         logger: "default",
         streamStats: new Map(),

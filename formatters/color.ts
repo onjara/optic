@@ -12,11 +12,11 @@ export type ColorRule = (msg: string) => string;
  * a new color rule, and existing levels may be updated with new rules too.
  */
 const colorRules: Map<Level, ColorRule> = new Map<Level, ColorRule>();
-colorRules.set(Level.DEBUG, (msg: string) => gray(msg));
-colorRules.set(Level.INFO, (msg: string) => blue(msg));
-colorRules.set(Level.WARN, (msg: string) => yellow(msg));
-colorRules.set(Level.ERROR, (msg: string) => red(msg));
-colorRules.set(Level.CRITICAL, (msg: string) => bold(red(msg)));
+colorRules.set(Level.Debug, (msg: string) => gray(msg));
+colorRules.set(Level.Info, (msg: string) => blue(msg));
+colorRules.set(Level.Warn, (msg: string) => yellow(msg));
+colorRules.set(Level.Error, (msg: string) => red(msg));
+colorRules.set(Level.Critical, (msg: string) => bold(red(msg)));
 
 export function getColorForLevel(level: number): ColorRule {
   const color: ColorRule | undefined = colorRules.get(level);

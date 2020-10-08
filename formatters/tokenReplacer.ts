@@ -54,7 +54,7 @@ export class TokenReplacer implements Formatter<string> {
    * to set the minimum length output for the level.  E.g. if the levelPadding
    * is set to 10 and a debug log message is formatted, then you will get:
    * ```
-   * "DEBUG     "
+   * "Debug     "
    * ```
    * This can help ensure that the next field will start at the same position
    * regardless of the length of the level.  This advantage requires that any

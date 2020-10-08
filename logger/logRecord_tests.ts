@@ -8,7 +8,7 @@ test({
     const ilr = new ImmutableLogRecord(
       "msg",
       ["a", "b"],
-      Level.DEBUG,
+      Level.Debug,
       "myLogger",
     );
     ilr.metadata[0] = "ddddddddddd";

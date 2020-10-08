@@ -67,7 +67,7 @@ export class FileStream extends BaseStream {
   handle(logRecord: LogRecord): boolean {
     if (this.minLogLevel > logRecord.level) return false;
 
-    if (logRecord.level > Level.ERROR) {
+    if (logRecord.level > Level.Error) {
       this.#deferredLogQueue.push(logRecord);
       this.processDeferredQueue();
       this.flush();

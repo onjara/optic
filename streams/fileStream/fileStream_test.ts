@@ -176,8 +176,8 @@ test({
 test({
   name: "Log records less than min log level aren't handled",
   fn() {
-    const fs = new FileStream(LOG_FILE).withMinLogLevel(Level.ERROR);
-    assert(!fs.handle(logRec("shouldn't be logged", Level.DEBUG)));
+    const fs = new FileStream(LOG_FILE).withMinLogLevel(Level.Error);
+    assert(!fs.handle(logRec("shouldn't be logged", Level.Debug)));
   },
 });
 
@@ -186,7 +186,7 @@ test({
   async fn() {
     const fs = new TestableFileStream(LOG_FILE);
     fs.setup();
-    const handled = fs.handle(logRec("hello world", Level.ERROR));
+    const handled = fs.handle(logRec("hello world", Level.Error));
     assert(handled);
     assertEquals(Deno.statSync(LOG_FILE).size, 0, "Message still queued");
     assertEquals(fs.getBuffer().buffered(), 0, "Nothing buffered yet");
@@ -208,7 +208,7 @@ test({
   fn() {
     const fs = new TestableFileStream(LOG_FILE);
     fs.setup();
-    const handled = fs.handle(logRec("hello world", Level.CRITICAL));
+    const handled = fs.handle(logRec("hello world", Level.Critical));
     assert(handled);
     assertEquals(
       Deno.statSync(LOG_FILE).size,

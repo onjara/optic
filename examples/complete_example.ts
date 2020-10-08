@@ -9,7 +9,7 @@ import {
 } from "../mod.ts";
 
 const fileStream = new FileStream("logFile.txt")
-  .withMinLogLevel(Level.WARN)
+  .withMinLogLevel(Level.Warn)
   .withFormat(
     new JsonFormatter()
       .withPrettyPrintIndentation(2)
@@ -24,7 +24,7 @@ const fileStream = new FileStream("logFile.txt")
   .withLogFooter(true);
 
 const log = new Logger()
-  .withMinLogLevel(Level.WARN)
+  .withMinLogLevel(Level.Warn)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
   .addTransformer(new PropertyRedaction("password"))
   .addStream(fileStream);

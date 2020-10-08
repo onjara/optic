@@ -2,7 +2,7 @@ import { LogMeta, Stream } from "../types.ts";
 import { Level, levelToName } from "./levels.ts";
 
 export class LogMetaImpl implements LogMeta {
-  minLogLevel: Level = Level.DEBUG;
+  minLogLevel: Level = Level.Debug;
   minLogLevelFrom = "default";
   readonly sessionStarted = new Date();
   readonly hostname = "unavailable";

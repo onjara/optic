@@ -53,7 +53,7 @@ function logRec(msg: string, level: Level): LogRecord {
 
 function logMeta(): LogMeta {
   const meta = new LogMetaImpl();
-  meta.minLogLevel = Level.INFO;
+  meta.minLogLevel = Level.Info;
   return meta;
 }
 
@@ -61,7 +61,7 @@ test({
   name: "Default base stream will log debug messages",
   fn() {
     const baseStream = newBaseStream();
-    baseStream.handle(logRec("hello", Level.DEBUG));
+    baseStream.handle(logRec("hello", Level.Debug));
     assertEquals(baseStream.logs[0], `"hello" []`);
   },
 });
@@ -69,8 +69,8 @@ test({
 test({
   name: "Stream with higher min log level than log record won't log message",
   fn() {
-    const baseStream = newBaseStream().withMinLogLevel(Level.INFO);
-    baseStream.handle(logRec("hello", Level.DEBUG));
+    const baseStream = newBaseStream().withMinLogLevel(Level.Info);
+    baseStream.handle(logRec("hello", Level.Debug));
     assertEquals(baseStream.logs.length, 0);
   },
 });
@@ -79,7 +79,7 @@ test({
   name: "Log messages are formatted by the default format function",
   fn() {
     const baseStream = newBaseStream();
-    baseStream.handle(logRec("format", Level.DEBUG));
+    baseStream.handle(logRec("format", Level.Debug));
     assertEquals(baseStream.logs[0], `formatted! []`);
   },
 });
@@ -90,7 +90,7 @@ test({
     const baseStream = newBaseStream().withFormat(
       new AlternativeMsgPassThrough(),
     );
-    baseStream.handle(logRec("hello", Level.DEBUG));
+    baseStream.handle(logRec("hello", Level.Debug));
     assertEquals(baseStream.logs[0], "world");
   },
 });
@@ -171,7 +171,7 @@ test({
   fn() {
     const testStream = new TestStream();
     const logger = new Logger("config").addStream(testStream)
-      .withMinLogLevel(Level.INFO)
+      .withMinLogLevel(Level.Info)
       .addTransformer(new PropertyRedaction("z"))
       .addFilter(new SubStringFilter("def"))
       .addMonitor((logRecord: LogRecord) => {});
@@ -192,7 +192,7 @@ test({
 
     assertMatch(
       testStream.logs[testStream.logs.length - 1] as string,
-      /\"Logging session complete\.\s\sDuration: \d+ms\" \[{\"sessionStarted\":\"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\",\"sessionEnded\":\"undefined\",\"minLogLevel\":\"INFO\",\"minLogLevelFrom\":\"programmatically set\",\"loggerName\":\"config\",\"filtersRegistered\":1,\"transformersRegistered\":1,\"monitorsRegistered\":1,\"streamName\":\"TestStream\",\"logRecordsHandled\":\"ERROR: 3, WARN: 2, INFO: 3\",\"recordsFiltered\":5,\"recordsTransformed\":2}\]/,
+      /\"Logging session complete\.\s\sDuration: \d+ms\" \[{\"sessionStarted\":\"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\",\"sessionEnded\":\"undefined\",\"minLogLevel\":\"Info\",\"minLogLevelFrom\":\"programmatically set\",\"loggerName\":\"config\",\"filtersRegistered\":1,\"transformersRegistered\":1,\"monitorsRegistered\":1,\"streamName\":\"TestStream\",\"logRecordsHandled\":\"Error: 3, Warn: 2, Info: 3\",\"recordsFiltered\":5,\"recordsTransformed\":2}\]/,
     );
   },
 });

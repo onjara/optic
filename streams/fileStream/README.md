@@ -11,11 +11,11 @@ const fs = new FileStream("/data/logs/logFile.txt");
 
 ## Specifying the minimum log level
 
-By default, the file stream will log messages at or above `DEBUG`.  You may 
+By default, the file stream will log messages at or above `Debug`.  You may 
 change this by programmatically setting the minimum log level:
 ```typescript
 const fs = new FileStream("./logFile.txt")
-  .withMinLogLevel(Level.ERROR);
+  .withMinLogLevel(Level.Error);
 
 ```
 
@@ -44,7 +44,7 @@ every log record to the log file, by setting the buffer size to 0 bytes.
 
 The buffer is flushed in the following scenarios:
 * The new log record, when added to the buffer, would cause the buffer to exceed the max buffer size
-* A log record with a log level greater than `ERROR` is logged
+* A log record with a log level greater than `Error` is logged
 * The module exits normally (triggering a flush of the buffer via an `unload` event)
 * `flush()` is called manually.  (e.g. `fileStream.flush()`)
 

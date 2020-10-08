@@ -38,7 +38,7 @@ logger.addStream(
 );
 
 logger.info("hello world");
-// Outputs in color to console: 22:09:54 2020-07-10 Level: [INFO      ] Msg: hello world
+// Outputs in color to console: 22:09:54 2020-07-10 Level: [Info      ] Msg: hello world
 ```
 
 * `withDateTimeFormat` allows for custom date/time formats and is described in more detail below.
@@ -83,7 +83,7 @@ logger.info("Hello world");
 // Outputs:
 {
   "dateTime": "22:49:09 2020-07-10",
-  "level": "INFO",
+  "level": "Info",
   "logger": "default",
   "msg": "Hello world"
 }

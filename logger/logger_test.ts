@@ -32,7 +32,7 @@ class TestStream implements Stream {
     this.functionsCalled.push("destroy");
   }
   handle(logRecord: LogRecord): boolean {
-    if (logRecord.level == Level.TRACE) return false;
+    if (logRecord.level == Level.Trace) return false;
     this.functionsCalled.push("handle");
     this.logRecords.push(logRecord);
     return true;
@@ -79,11 +79,11 @@ class TestTransformer implements Transformer {
 }
 
 test({
-  name: "Logger default level is DEBUG",
+  name: "Logger default level is Debug",
   fn() {
     assertEquals(
       new Logger().addStream(new TestStream()).minLogLevel(),
-      Level.DEBUG,
+      Level.Debug,
     );
   },
 });
@@ -93,12 +93,12 @@ test({
   fn() {
     const logger = new class extends Logger {
       protected getArgs(): string[] {
-        return ["minLogLevel=INFO"];
+        return ["minLogLevel=Info"];
       }
     }();
     const testStream = new TestStream();
-    assertEquals(logger.addStream(testStream).minLogLevel(), Level.INFO);
-    assertEquals(testStream.meta?.minLogLevel, Level.INFO);
+    assertEquals(logger.addStream(testStream).minLogLevel(), Level.Info);
+    assertEquals(testStream.meta?.minLogLevel, Level.Info);
     assertEquals(
       testStream.meta?.minLogLevelFrom,
       "from command line argument",
@@ -125,14 +125,14 @@ test({
       protected getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
-            return key === "OPTIC_MIN_LEVEL" ? "ERROR" : undefined;
+            return key === "OPTIC_MIN_LEVEL" ? "Error" : undefined;
           },
         };
       }
     }();
     const testStream = new TestStream();
-    assertEquals(logger.addStream(testStream).minLogLevel(), Level.ERROR);
-    assertEquals(testStream.meta?.minLogLevel, Level.ERROR);
+    assertEquals(logger.addStream(testStream).minLogLevel(), Level.Error);
+    assertEquals(testStream.meta?.minLogLevel, Level.Error);
     assertEquals(testStream.meta?.minLogLevelFrom, "from environment variable");
   },
 });
@@ -160,17 +160,17 @@ test({
       protected getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
-            return key === "OPTIC_MIN_LEVEL" ? "ERROR" : undefined;
+            return key === "OPTIC_MIN_LEVEL" ? "Error" : undefined;
           },
         };
       }
       protected getArgs(): string[] {
-        return ["minLogLevel=INFO"];
+        return ["minLogLevel=Info"];
       }
     }();
     assertEquals(
       logger.addStream(new TestStream()).minLogLevel(),
-      Level.INFO,
+      Level.Info,
     );
   },
 });
@@ -203,10 +203,10 @@ test({
   fn() {
     const testStream = new TestStream();
     const logger = new Logger().addStream(testStream).withMinLogLevel(
-      Level.INFO,
+      Level.Info,
     );
-    assertEquals(logger.minLogLevel(), Level.INFO);
-    assertEquals(testStream.meta?.minLogLevel, Level.INFO);
+    assertEquals(logger.minLogLevel(), Level.Info);
+    assertEquals(testStream.meta?.minLogLevel, Level.Info);
     assertEquals(testStream.meta?.minLogLevelFrom, "programmatically set");
   },
 });
@@ -237,7 +237,7 @@ test({
   fn() {
     const testStream = new TestStream();
     const logger = new Logger().addStream(testStream).withMinLogLevel(
-      Level.INFO,
+      Level.Info,
     );
     logger.debug("hello");
     // assert that 'handle' isn't called on stream
@@ -464,7 +464,7 @@ test({
 });
 
 test({
-  name: "TRACE messages work as expected",
+  name: "Trace messages work as expected",
   fn() {
     class TestableTraceStream extends TestStream {
       handle(logRecord: LogRecord): boolean {
@@ -480,11 +480,11 @@ test({
     assertEquals(testStream.functionsCalled, ["setup", "logHeader"]);
     assertEquals(testStream.logRecords.length, 0);
 
-    const output = logger.withMinLogLevel(Level.TRACE).trace(() => "hello");
+    const output = logger.withMinLogLevel(Level.Trace).trace(() => "hello");
     assertEquals(output, "hello");
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, "hello");
-    assertEquals(testStream.logRecords[0].level, Level.TRACE);
+    assertEquals(testStream.logRecords[0].level, Level.Trace);
     assertEquals(testStream.logRecords[0].metadata, []);
     assert(
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
@@ -494,14 +494,14 @@ test({
 });
 
 test({
-  name: "DEBUG messages work as expected",
+  name: "Debug messages work as expected",
   fn() {
     const testStream = new TestStream();
     const output = new Logger().addStream(testStream).debug(() => "hello");
     assertEquals(output, "hello");
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, "hello");
-    assertEquals(testStream.logRecords[0].level, Level.DEBUG);
+    assertEquals(testStream.logRecords[0].level, Level.Debug);
     assertEquals(testStream.logRecords[0].metadata, []);
     assert(
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
@@ -511,14 +511,14 @@ test({
 });
 
 test({
-  name: "INFO messages work as expected",
+  name: "Info messages work as expected",
   fn() {
     const testStream = new TestStream();
     const output = new Logger().addStream(testStream).info("hello", 1, 2, 3);
     assertEquals(output, "hello");
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, "hello");
-    assertEquals(testStream.logRecords[0].level, Level.INFO);
+    assertEquals(testStream.logRecords[0].level, Level.Info);
     assertEquals(testStream.logRecords[0].metadata, [1, 2, 3]);
     assert(
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
@@ -528,7 +528,7 @@ test({
 });
 
 test({
-  name: "WARN messages work as expected",
+  name: "Warn messages work as expected",
   fn() {
     const testStream = new TestStream();
     const output = new Logger().addStream(testStream).warn(
@@ -538,7 +538,7 @@ test({
     assertEquals(output, { a: "b" });
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, { a: "b" });
-    assertEquals(testStream.logRecords[0].level, Level.WARN);
+    assertEquals(testStream.logRecords[0].level, Level.Warn);
     assertEquals(testStream.logRecords[0].metadata, [[{ c: "d" }]]);
     assert(
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
@@ -548,14 +548,14 @@ test({
 });
 
 test({
-  name: "ERROR messages work as expected",
+  name: "Error messages work as expected",
   fn() {
     const testStream = new TestStream();
     const output = new Logger().addStream(testStream).error(true);
     assertEquals(output, true);
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, true);
-    assertEquals(testStream.logRecords[0].level, Level.ERROR);
+    assertEquals(testStream.logRecords[0].level, Level.Error);
     assertEquals(testStream.logRecords[0].metadata, []);
     assert(
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
@@ -565,14 +565,14 @@ test({
 });
 
 test({
-  name: "CRITICAL messages work as expected",
+  name: "Critical messages work as expected",
   fn() {
     const testStream = new TestStream();
     const output = new Logger().addStream(testStream).critical(undefined);
     assertEquals(output, undefined);
     assertEquals(testStream.functionsCalled, ["setup", "logHeader", "handle"]);
     assertEquals(testStream.logRecords[0].msg, undefined);
-    assertEquals(testStream.logRecords[0].level, Level.CRITICAL);
+    assertEquals(testStream.logRecords[0].level, Level.Critical);
     assertEquals(testStream.logRecords[0].metadata, []);
     assert(
       new Date().getTime() - testStream.logRecords[0].dateTime.getTime() <
@@ -596,7 +596,7 @@ test({
   fn() {
     const testStream = new TestStream();
     const logger = new Logger("config").addStream(testStream)
-      .withMinLogLevel(Level.INFO)
+      .withMinLogLevel(Level.Info)
       .addTransformer(new PropertyRedaction("z"))
       .addFilter(new SubStringFilter("def"))
       .addMonitor((logRecord: LogRecord) => {});
@@ -618,7 +618,7 @@ test({
     assertEquals(meta?.filters, 1);
     assertEquals(meta?.hostname, "unavailable");
     assertEquals(meta?.logger, "config");
-    assertEquals(meta?.minLogLevel, Level.INFO);
+    assertEquals(meta?.minLogLevel, Level.Info);
     assertEquals(meta?.minLogLevelFrom, "programmatically set");
     assertEquals(meta?.monitors, 1);
     assertEquals(meta?.transformers, 1);
@@ -626,16 +626,16 @@ test({
     assertEquals(meta?.streamStats.get(testStream)?.filtered, 5);
     assertEquals(meta?.streamStats.get(testStream)?.transformed, 2);
     assertEquals(
-      meta?.streamStats.get(testStream)?.handled.get(Level.ERROR),
+      meta?.streamStats.get(testStream)?.handled.get(Level.Error),
       3,
     );
     assertEquals(
-      meta?.streamStats.get(testStream)?.handled.get(Level.WARN),
+      meta?.streamStats.get(testStream)?.handled.get(Level.Warn),
       2,
     );
-    assertEquals(meta?.streamStats.get(testStream)?.handled.get(Level.INFO), 3);
+    assertEquals(meta?.streamStats.get(testStream)?.handled.get(Level.Info), 3);
     assertEquals(
-      meta?.streamStats.get(testStream)?.handled.get(Level.TRACE),
+      meta?.streamStats.get(testStream)?.handled.get(Level.Trace),
       undefined,
     );
   },

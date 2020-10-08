@@ -7,7 +7,7 @@ const lr = {
   msg: "Log Message",
   metadata: ["The metadata"],
   dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-  level: Level.DEBUG,
+  level: Level.Debug,
   logger: "default",
 };
 
@@ -16,7 +16,7 @@ function getMsgLr(msg: unknown) {
     msg: msg,
     metadata: ["The metadata"],
     dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-    level: Level.DEBUG,
+    level: Level.Debug,
     logger: "default",
   };
 }
@@ -26,7 +26,7 @@ function getMetadataLr(meta: unknown[]) {
     msg: "The msg",
     metadata: meta,
     dateTime: new Date(1592360640000), // "2020-06-17T03:24:00"
-    level: Level.DEBUG,
+    level: Level.Debug,
     logger: "default",
   };
 }
@@ -89,16 +89,16 @@ test({
   name: "Levels are properly formatted",
   fn() {
     const tr = new TokenReplacer().withFormat("{level}");
-    lr.level = Level.DEBUG;
-    assertEquals(tr.format(lr), "DEBUG   ");
-    lr.level = Level.INFO;
-    assertEquals(tr.format(lr), "INFO    ");
-    lr.level = Level.WARN;
-    assertEquals(tr.format(lr), "WARN    ");
-    lr.level = Level.ERROR;
-    assertEquals(tr.format(lr), "ERROR   ");
-    lr.level = Level.CRITICAL;
-    assertEquals(tr.format(lr), "CRITICAL");
+    lr.level = Level.Debug;
+    assertEquals(tr.format(lr), "Debug   ");
+    lr.level = Level.Info;
+    assertEquals(tr.format(lr), "Info    ");
+    lr.level = Level.Warn;
+    assertEquals(tr.format(lr), "Warn    ");
+    lr.level = Level.Error;
+    assertEquals(tr.format(lr), "Error   ");
+    lr.level = Level.Critical;
+    assertEquals(tr.format(lr), "Critical");
   },
 });
 
@@ -140,10 +140,10 @@ test({
   name: "If color is enabled, then output is tagged with color",
   fn() {
     const tr = new TokenReplacer().withColor();
-    lr.level = Level.DEBUG;
+    lr.level = Level.Debug;
     assertEquals(
       tr.format(lr),
-      gray("2020-06-17T02:24:00.000Z DEBUG    Log Message The metadata"),
+      gray("2020-06-17T02:24:00.000Z Debug    Log Message The metadata"),
     );
   },
 });

@@ -32,7 +32,7 @@ import { Level, JsonFormatter, Logger, Stream, LogRecord, PropertyRedaction }
 
 // Configure the output file stream
 const fileStream = new FileStream("logFile.txt")
-  .withMinLogLevel(Level.WARN)
+  .withMinLogLevel(Level.Warn)
   .withFormat(
     new JsonFormatter()
     .withPrettyPrintIndentation(2)
@@ -48,7 +48,7 @@ const fileStream = new FileStream("logFile.txt")
 
 // Configure the logger
 const log = new Logger()
-  .withMinLogLevel(Level.WARN)
+  .withMinLogLevel(Level.Warn)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
   .addTransformer(new PropertyRedaction("password"))
   .addStream(fileStream);
@@ -139,7 +139,7 @@ logger.error("Oops, something went wrong");
 
 Or through the use of the Level enum, e.g.
 ```typescript
-logger.log(Level.INFO, "Here some info");
+logger.log(Level.Info, "Here some info");
 ```
 
 ### Log Records
@@ -158,7 +158,7 @@ logger| The name of the logger which generated the event
 ### Minimum log level
 
 Each logger can be configured to log at a minimum level (the default level is
-`DEBUG`). Log events with a level lower than the minimum level are discarded with
+`Debug`). Log events with a level lower than the minimum level are discarded with
 no action taken. There are 3 ways in which you can configure a logger to log at a 
 minimum level:
 
@@ -167,7 +167,7 @@ minimum level:
 Within the code, this can be set at any time and takes highest precedence of
 any method:
 ```typescript
-logger.withLevel(Level.WARN);
+logger.withLevel(Level.Warn);
 ```
 
 #### Environment variable
@@ -175,12 +175,12 @@ logger.withLevel(Level.WARN);
 Through the use of an environment variable `OPTIC_MIN_LEVEL` you can set the
 minimum log level of any logger.  This method takes lowest priority and will be
 overridden if set programmatically or supplied via a command line argument. The
-values for this variable are any of the logging levels in uppercase, e.g. `INFO`.
+values for this variable are any of the logging levels in uppercase, e.g. `Info`.
 
 **NOTE** for this method to work you MUST supply `--allow-env` to the Deno
 command line process.  E.g.:
 ```shell
-OPTIC_MIN_LEVEL=ERROR deno run --allow-env my-module.ts
+OPTIC_MIN_LEVEL=Error deno run --allow-env my-module.ts
 ```
 
 #### Command line argument
@@ -189,9 +189,9 @@ You may also set the value of the minimum log level via a command line
 argument, `minLogLevel`.  Minimum log levels set this way apply to all loggers
 unless overridden by programmatically setting a new level.  Example:
 ```shell
-deno run my-module.ts minLogLevel=ERROR
+deno run my-module.ts minLogLevel=Error
 ```
-The value of the argument is any valid log level in uppercase
+The value of the argument is any valid log level in Pascal case.
 
 ### Logging lifecycle
 
@@ -266,7 +266,7 @@ A basic stream which outputs log messages to the console.
 
 ```typescript
 const consoleStream = new ConsoleStream()
-  .withMinLogLevel(Level.DEBUG)
+  .withMinLogLevel(Level.Debug)
   .withLogHeader(true)
   .withLogFooter(true)
   .withFormat(
@@ -285,7 +285,7 @@ A stream which outputs log messages to the file system.
 
 ```typescript
 const fileStream = new FileStream("./logFile.txt")
-  .withMinLogLevel(Level.WARN)
+  .withMinLogLevel(Level.Warn)
   .withFormat(new JsonFormatter())
   .withBufferSize(30000)
   .withLogFileInitMode("append")
