@@ -9,7 +9,7 @@ import {
 import { LogMetaImpl } from "../../logger/meta.ts";
 import { Level } from "../../logger/levels.ts";
 import { LogRecord, ValidationError } from "../../types.ts";
-import { BufWriterSync } from "https://deno.land/std@0.73.0/io/bufio.ts";
+import { BufWriterSync } from "./deps.ts";
 
 const LOG_FILE = "./logFile.txt";
 const ENCODER = new TextEncoder();
