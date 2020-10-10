@@ -73,11 +73,11 @@ indefinitely.  You may wish to employ a log rotation strategy.  This will
 automatically move the current log file to a backup file and start a fresh one,
 preventing any individual log file from getting to big.  It can also help
 organize your log files better.  There are two rotation strategies:
-* __Byte rotation__ - When the log file would grow beyond a specified size, then
+* File size rotation__ - When the log file would grow beyond a specified size, then
 the file is rotated
 * __Date based rotation__ - This is a work in progress
 
-### Byte size rotation
+### File size rotation
 
 If a log file write would grow the file bigger than the specified size, then the
 log file is rotated first.  As an example, let's say you have a log file `mod.log`.
