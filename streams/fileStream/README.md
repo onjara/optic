@@ -85,8 +85,8 @@ Upon its first rotation, `mod.log` becomes `mod.log.1` and the log record(s) are
 written to a new, empty, `mod.log`.  When `mod.log` is ready to rotate again,
 `mod.log.1` becomes `mod.log.2`, `mod.log` becomes `mod.log.1` and the new
 record(s) are written to a new, empty, `mod.log`.  The number of log files kept
-in rotation is specified by the rotation strategy. The default is 7 log files.
-Any log records which fall outside of rotation are deleted.  For example, with
+in rotation is specified by the retention policy. The default is 7 log files.
+Any log records which fall outside of the retention policy are deleted.  For example, with
 the default of 7 log files, when mod.log.7 rotates, it would be deleted instead.
 
 Examples:
