@@ -38,6 +38,8 @@ export class FileSizeRotationStrategy implements RotationStrategy {
   }
 
   initLogs(filename: string, initStrategy: LogFileInitStrategy): void {
+    this.handleLogFileRetentionInit(filename);
+
     if (initStrategy === "append") {
       // reuse existing log file, if it exists
       const fi = fileInfo(filename);
@@ -84,6 +86,49 @@ export class FileSizeRotationStrategy implements RotationStrategy {
             }
           }
         }
+      }
+    }
+  }
+
+  /**
+   * On initialization, remove any log files which fall outside the specified 
+   * retention policy.
+   * @param filename 
+   */
+  private handleLogFileRetentionInit(filename: string): void {
+    const logFiles = getLogFilesInDir(
+      filename,
+      matchesFilePattern,
+    );
+    logFiles.push(filename);
+
+    for (const logFile of logFiles) {
+      const matched = logFile.match(/.*\.([\d]+)/);
+      if (matched?.[1]) {
+        if (this.#logFileRetentionPolicy.type === "files") {
+          if (+matched[1] > this.#logFileRetentionPolicy.quantity) {
+            Deno.removeSync(logFile);
+          }
+        } /* date/time based retention */ else {
+          const statInfo = Deno.statSync(logFile)?.mtime?.getTime();
+          if (
+            statInfo &&
+            statInfo <
+              this.#logFileRetentionPolicy.oldestRetentionDate().getTime()
+          ) {
+            Deno.removeSync(logFile);
+          }
+        }
+      }
+    }
+    if (this.#logFileRetentionPolicy.type !== "files" && exists(filename)) {
+      const statInfo = Deno.statSync(filename)?.mtime?.getTime();
+      if (
+        statInfo &&
+        statInfo <
+          this.#logFileRetentionPolicy.oldestRetentionDate().getTime()
+      ) {
+        Deno.removeSync(filename);
       }
     }
   }

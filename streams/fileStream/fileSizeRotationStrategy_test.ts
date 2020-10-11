@@ -4,8 +4,6 @@ import { of } from "./retentionPolicy.ts";
 import { IllegalStateError, ValidationError } from "../../types.ts";
 import { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";
 
-console.log("hello world");
-
 const LOG_FILE = "./test_log.file";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -99,12 +97,14 @@ test({
 
 test({
   name:
-    "FileSizeRotationStrategy: mustNotExist strategy will not throw for out of scope log file",
+    "FileSizeRotationStrategy: initialization will delete out of scope log file with date/time based retention",
   async fn() {
-    await createFile(LOG_FILE + ".8");
-    const rs = every(100).bytes().withLogFileRetentionPolicy(of(7).files());
+    const eightDaysAgo = new Date();
+    eightDaysAgo.setDate(eightDaysAgo.getDate() - 8);
+    await createFile(LOG_FILE, eightDaysAgo);
+    const rs = every(100).bytes().withLogFileRetentionPolicy(of(2).days());
     rs.initLogs(LOG_FILE, "mustNotExist");
-    Deno.removeSync(LOG_FILE + ".8");
+    assert(!exists(LOG_FILE));
   },
 });
 
@@ -127,13 +127,12 @@ test({
 
 test({
   name:
-    "FileSizeRotationStrategy: overwrite strategy will not delete for out of scope log file",
+    "FileSizeRotationStrategy: initialization will delete out of scope log file with file count retention",
   async fn() {
     await createFile(LOG_FILE + ".8");
     const rs = every(100).bytes().withLogFileRetentionPolicy(of(7).files());
     rs.initLogs(LOG_FILE, "overwrite");
-    assert(exists(LOG_FILE + ".8"));
-    Deno.removeSync(LOG_FILE + ".8");
+    assert(!exists(LOG_FILE + ".8"));
   },
 });
 
@@ -161,7 +160,7 @@ test({
 
 test({
   name:
-    "FileSizeRotationStrategy: Log file (with date/time retention policy) mod time older than in-scope is not deleted",
+    "FileSizeRotationStrategy: Log file (with date/time retention policy) mod time older than in-scope is deleted",
   ignore: Deno.build.os === "windows",
   async fn() {
     const d = new Date();
@@ -171,8 +170,7 @@ test({
     const rs = every(100).bytes().withLogFileRetentionPolicy(of(7).days());
     rs.initLogs(LOG_FILE, "overwrite");
 
-    assert(exists(LOG_FILE + ".1"));
-    Deno.removeSync(LOG_FILE + ".1");
+    assert(!exists(LOG_FILE + ".1"));
   },
 });
 
@@ -193,8 +191,7 @@ test({
     rs.initLogs(LOG_FILE, "overwrite");
 
     assert(!exists(LOG_FILE + ".1"));
-    assert(exists(LOG_FILE + ".2"));
-    Deno.removeSync(LOG_FILE + ".2");
+    assert(!exists(LOG_FILE + ".2"));
   },
 });
 
@@ -215,8 +212,7 @@ test({
     rs.initLogs(LOG_FILE, "overwrite");
 
     assert(!exists(LOG_FILE + ".1"));
-    assert(exists(LOG_FILE + ".2"));
-    Deno.removeSync(LOG_FILE + ".2");
+    assert(!exists(LOG_FILE + ".2"));
   },
 });
 
@@ -237,8 +233,7 @@ test({
     rs.initLogs(LOG_FILE, "overwrite");
 
     assert(!exists(LOG_FILE + ".1"));
-    assert(exists(LOG_FILE + ".2"));
-    Deno.removeSync(LOG_FILE + ".2");
+    assert(!exists(LOG_FILE + ".2"));
   },
 });
 
