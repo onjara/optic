@@ -8,8 +8,8 @@ files:
   - ./**/*.ts
   - ./**/*.md
   - ./LICENSE
-  - ./mod.ts
 ignore:
-  - ./perf-tests
+  - ./perf-tests/*.ts
+  - ./tester.ts
 checkAll: true
 unlisted: false
