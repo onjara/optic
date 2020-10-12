@@ -100,7 +100,6 @@ export class FileSizeRotationStrategy implements RotationStrategy {
       filename,
       matchesFilePattern,
     );
-    logFiles.push(filename);
 
     for (const logFile of logFiles) {
       const matched = logFile.match(/.*\.([\d]+)/);
