@@ -2,10 +2,14 @@ name: optic
 description: A powerful logging framework for Deno
 stable: true
 version: 1.0.0
-repository: https://github.com/onjara/optic
+entry: /mod.ts
+repository: 'https://github.com/onjara/optic'
 files:
   - ./**/*.ts
   - ./**/*.md
   - ./LICENSE
+  - ./mod.ts
 ignore:
   - ./perf-tests
+checkAll: true
+unlisted: false
