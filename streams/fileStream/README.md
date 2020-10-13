@@ -75,8 +75,7 @@ automatically move the current log file to a backup file and start a fresh one,
 preventing any individual log file from getting to big.  It can also help
 organize your log files better.  There are two rotation strategies:
 * File size rotation__ - When the log file would grow beyond a specified size, then
-the file is rotated
-* __Date based rotation__ - This is a work in progress
+the file is rotated.
 
 ### File size rotation
 
@@ -85,12 +84,9 @@ log file is rotated first.  As an example, let's say you have a log file `mod.lo
 Upon its first rotation, `mod.log` becomes `mod.log.1` and the log record(s) are
 written to a new, empty, `mod.log`.  When `mod.log` is ready to rotate again,
 `mod.log.1` becomes `mod.log.2`, `mod.log` becomes `mod.log.1` and the new
-record(s) are written to a new, empty, `mod.log`.  The number of log files kept
-in rotation is specified by the retention policy. The default is 7 log files.
-Any log records which fall outside of the retention policy are deleted.  For example, with
-the default of 7 log files, when mod.log.7 rotates, it would be deleted instead.
+record(s) are written to a new, empty, `mod.log`.  
 
-Examples:
+Example:
 ```typescript
 import { FileStream, every } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
 
@@ -98,14 +94,34 @@ const fileStream = new FileStream("./logFile.txt")
   .withLogFileRotation(every(2000000).bytes());
 ```
 
+### Date/Time rotation
+
+With this rotation strategy, files are rotated after a fixed period of days, hours 
+or minutes.  Rotated log files are appended with the date and, for minutes or hours
+based rotation strategies, the time as well.  E.g. `mod.log.2020.05.25` or 
+`mod.log_2020.05.25_15.33`.
+
+Example:
+```typescript
+import { FileStream, every } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
+
+const fileStream = new FileStream("./logFile.txt")
+  .withLogFileRotation(every(2).days());
+```
+
 ## Log file retention
 
-Log file retention may also be specified, defining either how many log
-files to keep or for how long to keep them.  As log file retention only makes
-sense for rotated log files, log file retention policy is an attribute of
-the log rotation and may be specified as a quantity of files, minutes, hours or
-days.  Retention policy is applied at stream initialization and on log
-rotation events.  Examples:
+By default, a maximum of 7 log files are kept.  A custom log file retention policy
+may also be specified, defining either the maximum number of log files to keep or
+for how long to keep them.  Any log file which falls outside the retention policy
+is deleted.
+
+As log file retention only makes sense for rotated log files, log file retention
+policy is an attribute of the log rotation strategy and may be specified as a
+quantity of files, minutes, hours or days.  Retention policy is enforced at
+stream initialization and on log rotation events.  
+
+Examples:
 ```typescript
 import { FileStream, every, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
 

@@ -80,7 +80,9 @@ export class DateTimeRotationStrategy implements RotationStrategy {
     }
   }
 
-  protected getBirthTime(fi: Deno.FileInfo | undefined): Date | undefined | null {
+  protected getBirthTime(
+    fi: Deno.FileInfo | undefined,
+  ): Date | undefined | null {
     return fi?.birthtime || fi?.mtime;
   }
 
