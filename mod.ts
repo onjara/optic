@@ -1,11 +1,6 @@
 // Copyright 2020 the optic authors. All rights reserved. MIT license.
-export { RegExFilter } from "./filters/regExFilter.ts";
-export { SubStringFilter } from "./filters/subStringFilter.ts";
-export { ColorRule } from "./formatters/color.ts";
-export { getColorForLevel } from "./formatters/color.ts";
-export { JsonFormatter } from "./formatters/json.ts";
-export { TokenReplacer } from "./formatters/tokenReplacer.ts";
-export { SimpleDateTimeFormatter } from "./formatters/simpleDateTimeFormatter.ts";
+
+// Logger
 export {
   Level,
   levelToName,
@@ -13,10 +8,28 @@ export {
   nameToLevel,
 } from "./logger/levels.ts";
 export { Logger } from "./logger/logger.ts";
-export { PropertyRedaction } from "./transformers/propertyRedaction.ts";
-export { RegExReplacer } from "./transformers/regExReplacer.ts";
+
+// Streams
+// (see also https://github.com/onjara/optic/blob/master/streams/fileStream/mod.ts)
 export { BaseStream } from "./streams/baseStream.ts";
 export { ConsoleStream } from "./streams/consoleStream.ts";
+
+// Filters
+export { RegExFilter } from "./filters/regExFilter.ts";
+export { SubStringFilter } from "./filters/subStringFilter.ts";
+
+// Formatters
+export { ColorRule } from "./formatters/color.ts";
+export { getColorForLevel } from "./formatters/color.ts";
+export { JsonFormatter } from "./formatters/json.ts";
+export { TokenReplacer } from "./formatters/tokenReplacer.ts";
+export { SimpleDateTimeFormatter } from "./formatters/simpleDateTimeFormatter.ts";
+
+// Transformers
+export { PropertyRedaction } from "./transformers/propertyRedaction.ts";
+export { RegExReplacer } from "./transformers/regExReplacer.ts";
+
+// Types
 export {
   DateTimeFormatter,
   DateTimeFormatterFn,
