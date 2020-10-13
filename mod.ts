@@ -27,7 +27,12 @@ export { SimpleDateTimeFormatter } from "./formatters/simpleDateTimeFormatter.ts
 
 // Transformers
 export { PropertyRedaction } from "./transformers/propertyRedaction.ts";
-export { RegExReplacer } from "./transformers/regExReplacer.ts";
+export {
+  alphaNumericReplacer,
+  nonWhitespaceReplacer,
+  RegExReplacer,
+  Replacer,
+} from "./transformers/regExReplacer.ts";
 
 // Types
 export {
