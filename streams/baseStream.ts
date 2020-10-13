@@ -7,7 +7,7 @@ import { LogMetaImpl } from "../logger/meta.ts";
  * An abstract base class for streams, using string based logs.
  */
 export abstract class BaseStream implements Stream {
-  #minLevel = Level.Debug;
+  #minLevel = Level.Trace;
   #formatter: Formatter<string>;
   #started = new Date();
   outputHeader = true;
