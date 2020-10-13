@@ -1,3 +1,5 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
+
 /** The strategy to take when initializing logs:
  * * `"append"` - Reuse log file if it exists, create otherwise
  * * `"overwrite"` - Always start with an empty log file, overwriting any existing one

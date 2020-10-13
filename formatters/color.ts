@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 import { Level } from "../logger/levels.ts";
 import { blue, bold, gray, red, yellow } from "../deps.ts";
 

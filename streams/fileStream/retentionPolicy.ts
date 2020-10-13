@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 import type { LogFileRetentionPolicy, Periods } from "./types.ts";
 import { IllegalStateError, ValidationError } from "../../types.ts";
 

@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertMatch, test } from "../test_deps.ts";
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
+import { assertEquals, assertMatch, test } from "../test_deps.ts";
 import { stringify } from "./stringify.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 

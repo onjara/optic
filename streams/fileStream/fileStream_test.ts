@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 import { assert, assertEquals, assertThrows, test } from "../../test_deps.ts";
 import { FileStream } from "./fileStream.ts";
 import { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";

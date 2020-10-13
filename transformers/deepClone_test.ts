@@ -1,4 +1,5 @@
-import { assert, assertEquals, test } from "../test_deps.ts";
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
+import { assertEquals, test } from "../test_deps.ts";
 import { clone } from "./deepClone.ts";
 
 test({

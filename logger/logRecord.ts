@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 import type { LogRecord } from "../types.ts";
 import type { Level } from "./levels.ts";
 

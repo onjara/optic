@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 export { RegExFilter } from "./filters/regExFilter.ts";
 export { SubStringFilter } from "./filters/subStringFilter.ts";
 export type { ColorRule } from "./formatters/color.ts";

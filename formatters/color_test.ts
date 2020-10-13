@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 import { assert, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { getColorForLevel } from "./color.ts";

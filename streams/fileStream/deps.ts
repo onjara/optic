@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 export {
   basename as posixBasename,
   dirname as posixDirname,

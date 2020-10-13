@@ -1,3 +1,4 @@
+// Copyright 2020 the optic authors. All rights reserved. MIT license.
 export { FileStream } from "./fileStream.ts";
 export { every } from "./rotationStrategy.ts";
 export { of } from "./retentionPolicy.ts";
