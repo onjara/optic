@@ -6,6 +6,7 @@ This stream will output log records to a log file.  It has many options.
 
 The log file is specified in the constructor of the file stream:
 ```typescript
+import { FileStream } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
 const fs = new FileStream("/data/logs/logFile.txt");
 ```
 
@@ -91,6 +92,8 @@ the default of 7 log files, when mod.log.7 rotates, it would be deleted instead.
 
 Examples:
 ```typescript
+import { FileStream, every } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
+
 const fileStream = new FileStream("./logFile.txt")
   .withLogFileRotation(every(2000000).bytes());
 ```
@@ -101,13 +104,18 @@ Log file retention may also be specified, defining either how many log
 files to keep or for how long to keep them.  As log file retention only makes
 sense for rotated log files, log file retention policy is an attribute of
 the log rotation and may be specified as a quantity of files, minutes, hours or
-days.  Examples:
+days.  Retention policy is applied at stream initialization and on log
+rotation events.  Examples:
 ```typescript
+import { FileStream, every, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
+
+// Retain up to 7 log files maximum
 const fixedNumberLogFileRetention = new FileStream("./logFile.txt")
   .withLogFileRotation(
     every(2000000).bytes()
       .withLogFileRetentionPolicy(of(7).files()));
 
+// Retain logs files for maximum of 36 hours
 const fixedTimeframeLogFileRetention = new FileStream("./logFile.txt")
   .withLogFileRotation(
     every(2000000).bytes()

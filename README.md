@@ -158,7 +158,7 @@ logger| The name of the logger which generated the event
 ### Minimum log level
 
 Each logger can be configured to log at a minimum level (the default level is
-`Debug`). Log events with a level lower than the minimum level are discarded with
+`Debug`). Log events with a level lower than the minimum level are ignored with
 no action taken. There are 3 ways in which you can configure a logger to log at a 
 minimum level:
 
@@ -305,13 +305,14 @@ See also [Formatting](#log-formatting) for further detail on formatting your log
 
 You can build your own stream by creating a class which implements the [`Stream`](./types.ts)
 interface.  The `handle` function is the only requirement which defines what
-your stream should do with a log record.  
+your stream should do with a log record (and return true if the record was handled).  
 
 Basic example:
 ```typescript
 class SimpleStream implements Stream {
-  handle(logRecord: LogRecord) {
+  handle(logRecord: LogRecord): boolean {
     console.log(logRecord.msg);
+    return true;
   }
 }
 

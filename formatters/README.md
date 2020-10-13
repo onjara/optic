@@ -26,6 +26,8 @@ The constructed token template is then passed to the `withFormat` function.
 
 Complete example using `TokenReplacer`:
 ```typescript
+import { ConsoleStream, TokenReplacer } from "https://deno.land/x/optic/mod.ts";
+
 logger.addStream(
   new ConsoleStream()
     .withFormat(
@@ -68,6 +70,8 @@ Available fields are:
 
 Complete example using `JsonFormatter`:
 ```typescript
+import { ConsoleStream, JsonFormatter } from "https://deno.land/x/optic/mod.ts";
+
 logger.addStream(
   new ConsoleStream()
     .withFormat(
@@ -103,6 +107,8 @@ from the local date/time.
 
 E.g. to use as a standalone class
 ```typescript
+import { SimpleDateTimeFormatter } from "https://deno.land/x/optic/mod.ts";
+
 const dtf = new SimpleDateTimeFormatter('hh:mm:ss:SSS YYYY-MM-DD');
 const dateTime = dtf.formatDateTime(new Date());
 ```
@@ -137,6 +143,8 @@ Optic's formatters allow you to add this formatter as follows, typically using
 the shorthand of just the formatting string:
 
 ```typescript
+import { ConsoleStream, TokenReplacer } from "https://deno.land/x/optic/mod.ts";
+
 logger.addStream(
   new ConsoleStream()
     .withFormat(
@@ -160,7 +168,9 @@ export interface Formatter<T> {
 
 Example:
 ```typescript
-class MyFormatter implements Formatter<String> {
+import { ConsoleStream, Formatter, LogRecord } from "https://deno.land/x/optic/mod.ts";
+
+class MyFormatter implements Formatter<string> {
   format(logRecord: LogRecord): string {
     return "Hello! " + logRecord.msg;
   }
