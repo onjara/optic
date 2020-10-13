@@ -1,5 +1,5 @@
 #
-# commit.sh - Run this script prior to commiting any changes to git to ensure
+# pre-commit.sh - Run this script prior to commiting any changes to git to ensure
 # that all code is properly updated, formatted, linted and tested.
 #
 echo '*** Removing erroneous test output ***'
