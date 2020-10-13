@@ -61,7 +61,6 @@ export class DateTimeRotationStrategy implements RotationStrategy {
         this.clearTimeInIntervalPeriod(birthTime);
         if (birthTime.getTime() != this.#startOfIntervalPeriod.getTime()) {
           this.rotateLogFile(filename, birthTime);
-          this.handleLogFileRetention(filename);
         }
       }
     } else if (initStrategy === "overwrite") {
@@ -81,8 +80,8 @@ export class DateTimeRotationStrategy implements RotationStrategy {
     }
   }
 
-  protected getBirthTime(fi: Deno.FileInfo | undefined): Date | null {
-    return fi && fi.birthtime ? fi.birthtime : null;
+  protected getBirthTime(fi: Deno.FileInfo | undefined): Date | undefined | null {
+    return fi?.birthtime || fi?.mtime;
   }
 
   /**
@@ -197,14 +196,14 @@ export class DateTimeRotationStrategy implements RotationStrategy {
    */
   private rotateLogFile(filename: string, refDate: Date): void {
     // using the reference date, rotate the log file by renaming it
+    Deno.renameSync(filename, this.logFilenameWithTimestamp(filename, refDate));
+  }
+
+  private logFilenameWithTimestamp(filename: string, refDate: Date): string {
     if (this.#filenameFormatter) {
-      Deno.renameSync(filename, this.#filenameFormatter(filename, refDate));
-    } else {
-      Deno.renameSync(
-        filename,
-        filename + this.dateSuffix(this.#period == "days", refDate),
-      );
+      return this.#filenameFormatter(filename, refDate);
     }
+    return filename + this.dateSuffix(this.#period == "days", refDate);
   }
 
   // e.g. '_2020.10.23_22.16'
