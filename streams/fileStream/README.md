@@ -22,7 +22,7 @@ const fs = new FileStream("./logFile.txt")
 
 ## Formatting the log records
 
-The file stream takes in any of Optic's formatters.  See the [full documentation](https://github.com/onjara/optic#log-formatting)
+The file stream takes in any of Optic's formatters.  See the [full documentation](../../README.md#log-formatting)
 on formatting for details.
 
 ## Log buffering

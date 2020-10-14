@@ -298,7 +298,7 @@ const fileStream = new FileStream("./logFile.txt")
 logger.addStream(fileStream);
 ```
 
-See [FileStream documentation](./streams/fileStream) for full details.
+See [FileStream documentation](./streams/fileStream/README.md) for full details.
 See also [Formatting](#log-formatting) for further detail on formatting your logs.
 
 ### Defining a custom stream
@@ -323,14 +323,14 @@ functions, and also can expose `setup()` and `destroy()` functions.
 
 ## Log formatting
 
-Optic's streams allows you to format your logs however you wish, either through
+Optic's streams allow you to format your logs however you wish, either through
 your own custom formatting or several out of the box formatters.  Formatters
 are set directly on the stream via `withFormat()`.
 
 ### Optic formatters overview
 
 Three out of the box formatters are available.  See also the [complete 
-documentation on formatters](./formatters).
+documentation on formatters](./formatters/README.md).
 
 #### TokenReplacer formatter
 
@@ -350,7 +350,7 @@ logger.addStream(
     )
 );
 ```
-See [TokenReplacer documentation](./formatters#tokenreplacer-formatter) for full details.
+See [TokenReplacer documentation](./formatters/README.md#tokenreplacer-formatter) for full details.
 
 #### JSON formatter
 
@@ -369,7 +369,7 @@ logger.addStream(
     ),
 );
 ```
-See [JSON formatter documentation](./formatters#json-formatter) for full details.
+See [JSON formatter documentation](./formatters/README.md#json-formatter) for full details.
 
 #### DateTimeFormatter
 
@@ -384,12 +384,12 @@ logger.addStream(
     )
 );
 ```
-See [DateTimeFormatter](./formatters#datetimeformatter) for full details.
+See [DateTimeFormatter](./formatters/README.md#datetimeformatter) for full details.
 
 #### Custom formatters
 
 You can also easily supply your own custom formatter by implementing the 
-`Formatter` interface.  See [Using your own custom formatter](formatters#using-your-own-custom-formatter)
+`Formatter` interface.  See [Using your own custom formatter](./formatters/README.md#using-your-own-custom-formatter)
 for full details.
 
 ## Monitors
@@ -462,7 +462,7 @@ to a stream.
 Some use cases for transformation include:
 * Hiding sensitive data in your logs such as passwords or credit card details
 * Obscuring personal information, complying with data protection laws
-* Strip new lines from log data
+* Strip new lines from log data (log forging protection)
 * Encoding data
 * Compressing data
 
