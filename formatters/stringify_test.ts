@@ -13,13 +13,22 @@ test({
     assertEquals(stringify("/£([\d]+\.[\d]{2})/"), `"/£([\d]+\.[\d]{2})/"`);
 
     assertEquals(stringify(5), "5");
-    assertEquals(stringify(null), "null");
-    assertEquals(stringify(undefined), `"undefined"`);
+    assertEquals(stringify(5.00012), "5.00012");
+    assertEquals(stringify(-5.00012), "-5.00012");
+    assertEquals(stringify(9007199254740991n), `"9007199254740991"`);
     assertEquals(stringify(Infinity), `"Infinity"`);
     assertEquals(stringify(-Infinity), `"-Infinity"`);
     assertEquals(stringify(NaN), `"NaN"`);
-    assertEquals(stringify(9007199254740991n), `"9007199254740991"`);
-    assertEquals(stringify(() => "hello world"), `"[Function]"`);
+    assertEquals(stringify(null), "null");
+    assertEquals(stringify(undefined), `"undefined"`);
+    assertEquals(stringify(() => "hello world"), `"[function]"`);
+    assertEquals(stringify(true), "true");
+    assertEquals(stringify(false), "false");
+    assertEquals(stringify(Symbol("a")), `"Symbol(a)"`);
+    assertMatch(
+      stringify(new Date("2020-06-17T03:24:00")),
+      /2020-06-1[6,7,8]T\d\d:\d\d:00.000Z/,
+    );
   },
 });
 

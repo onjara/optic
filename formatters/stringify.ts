@@ -127,8 +127,10 @@ function createReplacer(
       return "NaN";
     } else if (typeof value === "bigint") {
       return value.toLocaleString();
+    } else if (typeof value === "symbol") {
+      return String(value);
     } else if (typeof value === "function") {
-      return "[Function]";
+      return "[function]";
     } else if (originalValue instanceof Date && options?.dateTimeFormatter) {
       return options.dateTimeFormatter.formatDateTime(originalValue);
     }
