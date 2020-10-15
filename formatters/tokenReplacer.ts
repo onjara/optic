@@ -1,9 +1,10 @@
 // Copyright 2020 the optic authors. All rights reserved. MIT license.
-import type {
+import {
   DateTimeFormatter,
   DateTimeFormatterFn,
   Formatter,
   LogRecord,
+  ValidationError,
 } from "../types.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 import { asString } from "./asString.ts";
@@ -24,6 +25,7 @@ import { getColorForLevel } from "./color.ts";
  * ```
  */
 export class TokenReplacer implements Formatter<string> {
+  #validTokens = ["{dateTime}", "{level}", "{msg}", "{metadata}", "{logger}"];
   #formatString = "{dateTime} {level} {msg} {metadata}";
   #levelPadding = 0;
   #withColor = false;
@@ -77,6 +79,16 @@ export class TokenReplacer implements Formatter<string> {
    * @param tokenString 
    */
   withFormat(tokenString: string): this {
+    const matches = tokenString.match(/{([^{].+?)}/g);
+    if (matches) {
+      for (let i = 0; i < matches.length; i++) {
+        if (this.#validTokens.indexOf(matches[i]) < 0) {
+          throw new ValidationError(`${matches[i]} is not a valid token`);
+        }
+      }
+    } else {
+      throw new ValidationError("No matching tokens found in " + tokenString);
+    }
     this.#formatString = tokenString;
     return this;
   }

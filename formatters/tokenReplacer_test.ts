@@ -3,6 +3,8 @@ import { assert, assertEquals, assertMatch, test } from "../test_deps.ts";
 import { TokenReplacer } from "./tokenReplacer.ts";
 import { Level } from "../logger/levels.ts";
 import { gray } from "../deps.ts";
+import { assertThrows } from "https://deno.land/std@0.74.0/testing/asserts.ts";
+import { ValidationError } from "../types.ts";
 
 const lr = {
   msg: "Log Message",
@@ -170,5 +172,38 @@ test({
       tr.format(lr),
       "Log Message default",
     );
+  },
+});
+
+test({
+  name: "No tokens in string throws error",
+  fn() {
+    assertThrows(
+      () => {
+        new TokenReplacer().withFormat("no tokens here!");
+      },
+      ValidationError,
+      "No matching tokens found",
+    );
+  },
+});
+
+test({
+  name: "Unexpected tokens in string throws error",
+  fn() {
+    assertThrows(
+      () => {
+        new TokenReplacer().withFormat("{msg} {logger} {madeUpToken}");
+      },
+      ValidationError,
+      "{madeUpToken} is not a valid token",
+    );
+  },
+});
+
+test({
+  name: "Extra braces around token are OK",
+  fn() {
+    new TokenReplacer().withFormat("{{msg}} {logger}");
   },
 });
