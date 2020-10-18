@@ -30,6 +30,7 @@ export class Logger {
   #streamAdded = false;
   #meta: LogMetaImpl = new LogMetaImpl();
   #ifCondition = true;
+  #enabled = true;
 
   constructor(name?: string) {
     if (name) {
@@ -50,7 +51,9 @@ export class Logger {
     addEventListener("unload", () => {
       (this.#meta as LogMeta).sessionEnded = new Date();
       for (const stream of this.#streams) {
-        if (stream.logFooter && this.#streamAdded) stream.logFooter(this.#meta);
+        if (stream.logFooter && this.#streamAdded && this.#enabled) {
+          stream.logFooter(this.#meta);
+        }
         if (stream.destroy) stream.destroy();
       }
       for (const monitor of this.#monitors) {
@@ -97,6 +100,7 @@ export class Logger {
    * Log records with a lower level are not processed by anything.
    */
   withMinLogLevel(level: Level): this {
+    if (!this.#enabled) return this;
     this.#minLevel = level;
     this.#meta.minLogLevelFrom = "programmatically set";
     this.#meta.minLogLevel = this.#minLevel;
@@ -112,6 +116,7 @@ export class Logger {
    * stream.  Adding any additional streams removes this default stream.
    */
   addStream(stream: Stream): Logger {
+    if (!this.#enabled) return this;
     if (!this.#streamAdded) {
       // remove the default console stream if adding specified ones
       this.#streams = [];
@@ -129,6 +134,7 @@ export class Logger {
 
   /** Remove stream from the logger */
   removeStream(removeStream: Stream): Logger {
+    if (!this.#enabled) return this;
     this.#streams = this.#streams.filter((stream) => stream !== removeStream);
     if (removeStream.logFooter) removeStream.logFooter(this.#meta);
     if (removeStream.destroy) removeStream.destroy();
@@ -140,6 +146,7 @@ export class Logger {
    * being processed by the logger and potentially take action.
    */
   addMonitor(monitor: Monitor | MonitorFn): Logger {
+    if (!this.#enabled) return this;
     if (typeof monitor === "function") {
       monitor = { check: monitor };
     }
@@ -154,6 +161,7 @@ export class Logger {
    * log records passing through the logger.
    */
   removeMonitor(monitorToRemove: Monitor): Logger {
+    if (!this.#enabled) return this;
     this.#monitors = this.#monitors.filter((monitor) =>
       monitor !== monitorToRemove
     );
@@ -166,6 +174,7 @@ export class Logger {
    * reject them from being processes if the filter condition is met.
    */
   addFilter(filter: Filter | FilterFn): Logger {
+    if (!this.#enabled) return this;
     if (typeof filter === "function") {
       filter = { shouldFilterOut: filter };
     }
@@ -180,6 +189,7 @@ export class Logger {
    * examine any log records or reject them.
    */
   removeFilter(filterToRemove: Filter): Logger {
+    if (!this.#enabled) return this;
     this.#filters = this.#filters.filter((filter) => filter !== filterToRemove);
     if (filterToRemove.destroy) filterToRemove.destroy();
     return this;
@@ -191,6 +201,7 @@ export class Logger {
    * new-lines, encoding output, etc.
    */
   addTransformer(transformer: Transformer | TransformerFn): Logger {
+    if (!this.#enabled) return this;
     if (typeof transformer === "function") {
       transformer = { transform: transformer };
     }
@@ -205,6 +216,7 @@ export class Logger {
    * any log records or transform them.
    */
   removeTransformer(transformerToRemove: Transformer): Logger {
+    if (!this.#enabled) return this;
     this.#transformers = this.#transformers.filter((transformer) =>
       transformer !== transformerToRemove
     );
@@ -237,7 +249,7 @@ export class Logger {
     msg: () => T | (T extends AnyFunction ? never : T),
     metadata: unknown[],
   ): T | undefined {
-    if (this.loggingBlocked(level)) {
+    if (!this.#enabled || this.loggingBlocked(level)) {
       this.#ifCondition = true; //reset to true
       return msg instanceof Function ? undefined : msg;
     }
@@ -298,11 +310,10 @@ export class Logger {
     return resolvedMsg;
   }
 
-  protected loggingBlocked(level: Level): boolean {
-    return this.#minLevel > level || !this.#ifCondition;
-  }
-
-  registerStreamHandlingOfLogRecord(stream: Stream, level: number): void {
+  private registerStreamHandlingOfLogRecord(
+    stream: Stream,
+    level: number,
+  ): void {
     if (!this.#meta.streamStats.get(stream)!.handled.has(level)) {
       this.#meta.streamStats.get(stream)!.handled.set(level, 0);
     }
@@ -433,14 +444,6 @@ export class Logger {
     return this.logToStreams(level, msg, metadata);
   }
 
-  protected getArgs(): string[] {
-    return Deno.args;
-  }
-
-  protected getEnv(): { get(key: string): string | undefined } {
-    return Deno.env;
-  }
-
   /**
    * Specify a condition under which this logging is allowed to occur.  Note
    * that even if the condition is true, the logging is still subject to the
@@ -449,5 +452,32 @@ export class Logger {
   if(condition: boolean): Logger {
     this.#ifCondition = condition;
     return this;
+  }
+
+  /**
+   * Set this to false to disable the logger completely. Default is true.  A 
+   * disabled logger is effectively a no-op logger.  Logs are not logged,
+   * deferred log message values are not resolved, and removing/adding streams,
+   * filters, monitors and transformers are silently ignored with no effect.
+   * 
+   * The only action streams, monitors, filters or transformers will undertake in
+   * a disabled logger (and which were added before the logger was disabled) will
+   * be to call `destroy()` on unload of the module.
+   */
+  enabled(condition: boolean): Logger {
+    this.#enabled = condition;
+    return this;
+  }
+
+  protected getArgs(): string[] {
+    return Deno.args;
+  }
+
+  protected getEnv(): { get(key: string): string | undefined } {
+    return Deno.env;
+  }
+
+  protected loggingBlocked(level: Level): boolean {
+    return this.#minLevel > level || !this.#ifCondition;
   }
 }

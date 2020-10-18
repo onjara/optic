@@ -14,6 +14,15 @@ A powerful, highly extensible and easy to use logging framework for Deno.
 * Transformers - hide sensitive data, strip new lines, encode data, etc.
 * Monitors - watch your logs and take action
 
+## Table of contents
+1. [Quick start](#quick-start)
+2. [Logging](#logging)
+3. [Streams](#streams)
+4. [Log formatting](#log-formatting)
+5. [Monitors](#monitors)
+6. [Transformers](#transformers)
+7. [Filters](#filters)
+
 ## Quick start
 
 ### Simple example
@@ -244,6 +253,26 @@ logger.if(attempts > 3).warn("Excessive attempts by user");
 ```
 Note that even if the condition is true, the log record may not be logged if
 the minimum log level for the logger (and/or stream) is higher than this record.
+
+### Disabling the logger
+You can programmatically disable the logger which transforms it into a no-op
+logger.  This is useful for loggers which should not run in a production
+environment for example and the value of `enabled()` can be supplied via an
+environment variable or argument. The logger can later be re-enabled. When
+disabled:
+* Logs are not logged and deferred log messages are not resolved
+* Adding or removing streams, filters, monitors or transformers is silently 
+ignored and they are not added (or removed)
+* Changes to the minimum log level are silently ignored
+
+The only action the logger will undertake when disabled is, upon module unload,
+to carry out any tear down (e.g. `destroy()`) on any streams, filters, monitors
+or transformers which were registered before the logger was disabled.
+
+To disable the logger:
+```typescript
+logger.enabled(false);
+```
 
 ## Streams
 

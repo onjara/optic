@@ -654,3 +654,56 @@ test({
     assertEquals(testStream.logRecords[0].msg, "I should be logged");
   },
 });
+
+test({
+  name: "Disabled logger will not log messages",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger().addStream(testStream);
+
+    logger.error("I should be logged");
+    logger.enabled(false);
+    logger.error("I should not be logged");
+    assertEquals(1, testStream.logRecords.length);
+    assertEquals(testStream.logRecords[0].msg, "I should be logged");
+
+    logger.enabled(true);
+    logger.error("I should be logged again");
+    assertEquals(2, testStream.logRecords.length);
+    assertEquals(testStream.logRecords[1].msg, "I should be logged again");
+  },
+});
+
+test({
+  name: "Disabled logger does not change",
+  fn() {
+    const logger = new Logger().enabled(false);
+
+    assertEquals(logger.minLogLevel(), Level.Debug);
+    logger.withMinLogLevel(Level.Error);
+    assertEquals(logger.minLogLevel(), Level.Debug);
+
+    const testStream = new TestStream();
+    logger.addStream(testStream);
+    logger.critical("Nothing happens");
+    assertEquals(testStream.functionsCalled.length, 0);
+
+    logger.removeStream(testStream);
+    assertEquals(testStream.functionsCalled.length, 0);
+
+    let called = false;
+    logger.addMonitor((logRecord: LogRecord) => {
+      called = true;
+    });
+    logger.addFilter((stream: Stream, logRecord: LogRecord) => {
+      called = true;
+      return true;
+    });
+    logger.addTransformer((stream: Stream, logRecord: LogRecord) => {
+      called = true;
+      return logRecord;
+    });
+    logger.critical("Nothing still happens");
+    assert(!called);
+  },
+});
