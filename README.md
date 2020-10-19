@@ -35,9 +35,10 @@ logger.info("Hello world!");  // outputs log record to the console
 
 ### Complete example
 ```typescript
-import { FileStream, every, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
-import { Level, JsonFormatter, Logger, Stream, LogRecord, PropertyRedaction } 
-  from "https://deno.land/x/optic/mod.ts";
+import { every, FileStream, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
+import { Level, Logger, LogRecord, Stream } from "https://deno.land/x/optic/mod.ts";
+import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
+import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
 
 // Configure the output file stream
 const fileStream = new FileStream("logFile.txt")
@@ -294,6 +295,9 @@ There are two out of the box streams available.
 A basic stream which outputs log messages to the console.
 
 ```typescript
+import { ConsoleStream, Logger, Level } from "https://deno.land/x/optic/mod.ts";
+import { TokenReplacer } from "https://deno.land/x/optic/formatters/mod.ts";
+
 const consoleStream = new ConsoleStream()
   .withMinLogLevel(Level.Debug)
   .withLogHeader(true)
@@ -304,7 +308,7 @@ const consoleStream = new ConsoleStream()
       .withDateTimeFormat("YYYY.MM.DD hh:mm:ss:SSS")
   );
 
-logger.addStream(consoleStream);
+const logger = new Logger().addStream(consoleStream);
 ```
 See [Formatting](#log-formatting) for further detail on formatting your logs.
 
@@ -313,6 +317,10 @@ See [Formatting](#log-formatting) for further detail on formatting your logs.
 A stream which outputs log messages to the file system.
 
 ```typescript
+import { Logger, Level } from "https://deno.land/x/optic/mod.ts";
+import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
+import { FileStream, every, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
+
 const fileStream = new FileStream("./logFile.txt")
   .withMinLogLevel(Level.Warn)
   .withFormat(new JsonFormatter())
@@ -324,7 +332,7 @@ const fileStream = new FileStream("./logFile.txt")
   .withLogHeader(true)
   .withLogFooter(true);
 
-logger.addStream(fileStream);
+const logger = new Logger().addStream(fileStream);
 ```
 
 See [FileStream documentation](./streams/fileStream/README.md) for full details.
@@ -338,6 +346,8 @@ your stream should do with a log record (and return true if the record was handl
 
 Basic example:
 ```typescript
+import { Logger, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
+
 class SimpleStream implements Stream {
   handle(logRecord: LogRecord): boolean {
     console.log(logRecord.msg);
@@ -345,7 +355,7 @@ class SimpleStream implements Stream {
   }
 }
 
-logger.addStream(new SimpleStream());
+const logger = new Logger().addStream(new SimpleStream());
 ```
 Streams can also take logging metadata in `logHeader()` and `logFooter()`
 functions, and also can expose `setup()` and `destroy()` functions.
@@ -368,7 +378,10 @@ placeholders for the various log record fields.
 
 Example:
 ```typescript
-logger.addStream(
+import { Logger, ConsoleStream } from "https://deno.land/x/optic/mod.ts";
+import { TokenReplacer } from "https://deno.land/x/optic/formatters/mod.ts";
+
+const logger = new Logger().addStream(
   new ConsoleStream()
     .withFormat(
       new TokenReplacer()
@@ -388,7 +401,10 @@ formatted string.
 
 Example:
 ```typescript
-logger.addStream(
+import { Logger, ConsoleStream } from "https://deno.land/x/optic/mod.ts";
+import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
+
+const logger = new Logger().addStream(
   new ConsoleStream()
     .withFormat(
       new JsonFormatter()
@@ -446,7 +462,7 @@ export type MonitorFn = (logRecord: LogRecord) => void;
 
 Example:
 ```typescript
-import { MonitorFn } from "https://deno.land/x/optic/mod.ts";
+import { MonitorFn, LogRecord } from "https://deno.land/x/optic/mod.ts";
 
 const mon:MonitorFn = (logRecord:LogRecord):void => {
   if ((logRecord.msg as User).username === "jsmith") {
@@ -462,7 +478,7 @@ of type `MonitorFn` as above.  This gives you the power of a class for more
 complex monitors.
 
 ```typescript
-import { MonitorFn } from "https://deno.land/x/optic/mod.ts";
+import { Monitor, LogRecord } from "https://deno.land/x/optic/mod.ts";
 
 class UserMonitor implements Monitor {
   check(logRecord:LogRecord):void {
@@ -512,7 +528,7 @@ log record if nothing is transformed, or a copy of the original with the
 necessary transformations applied.  Example:
 
 ```typescript
-import { TransformerFn } from "https://deno.land/x/optic/mod.ts";
+import { TransformerFn, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
 
 const tr: TransformerFn = (stream: Stream, logRecord: LogRecord):LogRecord => ({
   msg: (logRecord.msg as string).startsWith("password:")
@@ -597,10 +613,12 @@ regular expression does not use groups then then entire match is replaced, howev
 if groups are used, only the groups are replaced.
 
 ```typescript
-import { RegExpReplacer, nonWhitespaceReplacer } from "https://deno.land/x/optic/mod.ts";
+import { nonWhitespaceReplacer, RegExpReplacer } from "https://deno.land/x/optic/transformers/regExpReplacer.ts";
+import { Logger } from "https://deno.land/x/optic/mod.ts";
 
-logger.addTransformer(new RegExpReplacer(/£([\d]+\.[\d]{2})/));
-logger.addTransformer(new RegExpReplacer(/password: (.*)/, nonWhitespaceReplacer));
+const logger = new Logger()
+  .addTransformer(new RegExpReplacer(/£([\d]+\.[\d]{2})/))
+  .addTransformer(new RegExpReplacer(/password: (.*)/, nonWhitespaceReplacer));
 
 logger.info("Amount: £122.51"); // becomes "Amount: £***.**" ('£' is not in a group)
 logger.info("password: MyS3cret! Pwd!"); // becomes "password: ********* ****"
@@ -657,7 +675,7 @@ another logger and stream.
 import { Filter, Stream, LogRecord } from "https://deno.land/x/optic/mod.ts";
 
 class MyFilter implements Filter {
-  shouldFilerOut(stream: Stream, logRecord: LogRecord): boolean {
+  shouldFilterOut(stream: Stream, logRecord: LogRecord): boolean {
     return (logRecord.msg as string).includes("bad stuff");
   }
 }
@@ -682,11 +700,12 @@ is filtered out.  The log record `msg` and `metadata` fields are first
 converted to a string if necessary before testing the regular expression.
 
 ```typescript
-import { RegExpFilter } from "https://deno.land/x/optic/mod.ts";
+import { Logger } from "https://deno.land/x/optic/mod.ts";
+import { RegExpFilter } from "https://deno.land/x/optic/filters/regExpFilter.ts";
 
 // Filters out log records containing `%` or `&` in the message or metadata
 const regExpFilter = new RegExpFilter(/[%&]+/);
-logger.addFilter(regExpFilter);
+const logger = new Logger().addFilter(regExpFilter);
 logger.error("Oh no!");  // not filtered
 logger.error("Oh no!", "& another thing");  // filtered out
 ```
@@ -698,11 +717,11 @@ either the log record `msg` or `metadata` fields (converting them to string
 first if required), then this log record is filtered out.  Example:
 
 ```typescript
-import { SubStringFilter } from "https://deno.land/x/optic/mod.ts";
+import { Logger } from "https://deno.land/x/optic/mod.ts";
+import { SubStringFilter } from "https://deno.land/x/optic/filters/subStringFilter.ts";
 
 const subStringFilter = new SubStringFilter("user1234");
-logger.addFilter(subStringFilter);
+const logger = new Logger().addFilter(subStringFilter);
 logger.info({user: "joe1944", action: "login"});  // not filtered
 logger.info({user: "user1234", action: "login"});  // filtered out
-
 ```

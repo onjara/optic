@@ -67,7 +67,7 @@ converted to a string if necessary before testing the regular expression.
 import { RegExpFilter } from "https://deno.land/x/optic/filters/regExpFilter.ts"
 
 const regExpFilter = new RegExpFilter(/[%&]+/);
-logger.addFilter(regExpFilter);
+const logger = new Logger().addFilter(regExpFilter);
 logger.error("Oh no!");  // not filtered
 logger.error("Oh no!", "& another thing");  // filtered out
 ```
@@ -80,9 +80,10 @@ first if required), then this log record is filtered out.  Example:
 
 ```typescript
 import { SubStringFilter } from "https://deno.land/x/optic/filters/subStringFilter.ts"
+import { Logger } from "https://deno.land/x/optic/mod.ts"
 
 const subStringFilter = new SubStringFilter("user1234");
-logger.addFilter(subStringFilter);
+const logger = new Logger().addFilter(subStringFilter);
 logger.info({user: "joe1944", action: "login"});  // not filtered
 logger.info({user: "user1234", action: "login"});  // filtered out
 

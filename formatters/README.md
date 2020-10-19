@@ -72,7 +72,7 @@ Available fields are:
 Complete example using `JsonFormatter`:
 ```typescript
 import { ConsoleStream, Logger } from "https://deno.land/x/optic/mod.ts";
-import { TokenReplacer } from "https://deno.land/x/optic/formatters/mod.ts";
+import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
 
 const logger = new Logger().addStream(
   new ConsoleStream()
@@ -171,7 +171,8 @@ export interface Formatter<T> {
 
 Example:
 ```typescript
-import { ConsoleStream, Formatter, LogRecord } from "https://deno.land/x/optic/mod.ts";
+import { ConsoleStream, Formatter, Logger, LogRecord } 
+  from "https://deno.land/x/optic/mod.ts";
 
 class MyFormatter implements Formatter<string> {
   format(logRecord: LogRecord): string {
@@ -179,7 +180,9 @@ class MyFormatter implements Formatter<string> {
   }
 }
 
-logger.addStream(new ConsoleStream().withFormat(new MyFormatter()));
+const logger = new Logger().addStream(
+  new ConsoleStream().withFormat(new MyFormatter()),
+);
 
 logger.info("Some info message");
 
