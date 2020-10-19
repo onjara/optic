@@ -109,7 +109,7 @@ function createReplacer(
       } else if (value instanceof Map) {
         return Array.from(value.entries());
       } else if (value instanceof RegExp) {
-        return { regexSource: value.source, flags: value.flags };
+        return { regExpSource: value.source, flags: value.flags };
       } else if (value instanceof Error) {
         return options?.suppressErrorStack
           ? value.name + ": " + value.message
@@ -151,7 +151,7 @@ export interface StringifyOptions {
  * @function stringify
  *
  * @description
- * JSON stringifier that handles circular values, Maps, Arrays, Sets, RegEx and Dates
+ * JSON stringifier that handles circular values, Maps, Arrays, Sets, RegExp and Dates
  *
  * @param the value to stringify
  * @param [options] a set of options to supply a custom replacer, custom 

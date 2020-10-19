@@ -1,7 +1,7 @@
 // Copyright 2020 the optic authors. All rights reserved. MIT license.
 import { assertEquals, assertMatch, test } from "../test_deps.ts";
 import { stringify } from "./stringify.ts";
-import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
+import { SimpleDateTimeFormatter } from "../formatters/simpleDateTimeFormatter.ts";
 
 const SEPT_24_2020 = new Date(1600981358481);
 const DATE_FMT = new SimpleDateTimeFormatter("hh:mm dddd MMM D");
@@ -87,15 +87,15 @@ test({
 });
 
 test({
-  name: "RegEx stringified correctly",
+  name: "RegExp stringified correctly",
   fn() {
     assertEquals(
       stringify(new RegExp(/£([\d]+\.[\d]{2})/g)),
-      `{"regexSource":"£([\\\\d]+\\\\.[\\\\d]{2})","flags":"g"}`,
+      `{"regExpSource":"£([\\\\d]+\\\\.[\\\\d]{2})","flags":"g"}`,
     );
     assertEquals(
       stringify(new RegExp(/£([\d]+\.[\d]{2})/)),
-      `{"regexSource":"£([\\\\d]+\\\\.[\\\\d]{2})","flags":""}`,
+      `{"regExpSource":"£([\\\\d]+\\\\.[\\\\d]{2})","flags":""}`,
     );
   },
 });

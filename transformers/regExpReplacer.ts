@@ -6,7 +6,7 @@ import { clone } from "./deepClone.ts";
 /**
  * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter 
  * 
- * A replacer function passed to a javascript `string.replace(regEx, replacer)`
+ * A replacer function passed to a javascript `string.replace(regExp, replacer)`
  * `args` will contain the following:
  * * p1..pn one arg for each reg ex group
  * * offset - offset in the whole string where the match starts
@@ -79,15 +79,15 @@ function escapeForRegExp(filename: string): string {
  * replacer function return value or replace all non-characters with `*`s.
  * `msg` and `metadata` fields are checked against the supplied RegExp.  Only
  * string values are compared and deep object checking is used.  The underlying
- * replacement is done via Javascript's `string.replace(regEx, replacer)`. The
+ * replacement is done via Javascript's `string.replace(regExp, replacer)`. The
  * default replacer function is alphaNumericReplacer.
  */
-export class RegExReplacer implements Transformer {
-  #regex: RegExp;
+export class RegExpReplacer implements Transformer {
+  #regExp: RegExp;
   #replacer: Replacer = alphaNumericReplacer;
 
-  constructor(regex: RegExp, replacer?: Replacer) {
-    this.#regex = regex;
+  constructor(regExp: RegExp, replacer?: Replacer) {
+    this.#regExp = regExp;
     if (replacer) this.#replacer = replacer;
   }
 
@@ -98,7 +98,7 @@ export class RegExReplacer implements Transformer {
     if (!shouldRedactMsg) {
       shouldRedactMsg = this.shouldRedact(
         logRecord.msg,
-        this.#regex,
+        this.#regExp,
         this.#replacer,
       );
     }
@@ -106,43 +106,43 @@ export class RegExReplacer implements Transformer {
     if (!shouldRedactMsg) {
       shouldRedactMeta = this.shouldRedact(
         logRecord.metadata,
-        this.#regex,
+        this.#regExp,
         this.#replacer,
       );
     }
 
     if (shouldRedactMsg || shouldRedactMeta) {
-      return new ObfuscatedViaRegExLogRecord(
+      return new ObfuscatedViaRegExpLogRecord(
         logRecord,
-        this.#regex,
+        this.#regExp,
         this.#replacer,
       );
     }
     return logRecord;
   }
 
-  shouldRedact(obj: unknown, regEx: RegExp, replacer: Replacer): boolean {
+  shouldRedact(obj: unknown, regExp: RegExp, replacer: Replacer): boolean {
     if (isObjectButNotArray(obj)) {
       for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (typeof castObj[key] === "string") {
-            if ((castObj[key] as string).match(regEx)) {
+            if ((castObj[key] as string).match(regExp)) {
               return true;
             }
           } else if (typeof castObj[key] === "object") {
-            return this.shouldRedact(castObj[key], regEx, replacer);
+            return this.shouldRedact(castObj[key], regExp, replacer);
           }
         }
       }
     } else if (Array.isArray(obj)) {
       for (let i = 0; i < obj.length; i++) {
-        if (this.shouldRedact(obj[i], regEx, replacer)) {
+        if (this.shouldRedact(obj[i], regExp, replacer)) {
           return true;
         }
       }
     } else if (typeof obj === "string") {
-      if (obj.match(regEx)) {
+      if (obj.match(regExp)) {
         return true;
       }
     }
@@ -150,7 +150,7 @@ export class RegExReplacer implements Transformer {
   }
 }
 
-class ObfuscatedViaRegExLogRecord implements LogRecord {
+class ObfuscatedViaRegExpLogRecord implements LogRecord {
   readonly msg: unknown;
   #metadata: unknown[];
   #dateTime: Date;
@@ -158,12 +158,12 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
   #logRecord: LogRecord;
   readonly logger: string;
 
-  constructor(logRecord: LogRecord, regEx: RegExp, replacer: Replacer) {
+  constructor(logRecord: LogRecord, regExp: RegExp, replacer: Replacer) {
     if (typeof logRecord.msg == "string") {
-      this.msg = logRecord.msg.replace(regEx, replacer);
+      this.msg = logRecord.msg.replace(regExp, replacer);
     } else {
       this.msg = clone(logRecord.msg);
-      this.redact(this.msg, regEx, replacer);
+      this.redact(this.msg, regExp, replacer);
     }
 
     this.#metadata = clone(logRecord.metadata);
@@ -171,11 +171,11 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
     for (let i = 0; i < this.#metadata.length; i++) {
       if (typeof this.#metadata[i] === "string") {
         this.#metadata[i] = (this.#metadata[i] as string).replace(
-          regEx,
+          regExp,
           replacer,
         );
       } else {
-        this.redact(this.#metadata[i], regEx, replacer);
+        this.redact(this.#metadata[i], regExp, replacer);
       }
     }
 
@@ -185,24 +185,24 @@ class ObfuscatedViaRegExLogRecord implements LogRecord {
     this.logger = logRecord.logger;
   }
 
-  redact(obj: unknown, regEx: RegExp, replacer: Replacer): void {
+  redact(obj: unknown, regExp: RegExp, replacer: Replacer): void {
     if (isObjectButNotArray(obj)) {
       for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const castObj = (obj as { [key: string]: unknown });
           if (typeof castObj[key] === "string") {
-            castObj[key] = (castObj[key] as string).replace(regEx, replacer);
+            castObj[key] = (castObj[key] as string).replace(regExp, replacer);
           } else if (typeof castObj[key] === "object") {
-            this.redact(castObj[key], regEx, replacer);
+            this.redact(castObj[key], regExp, replacer);
           }
         }
       }
     } else if (Array.isArray(obj)) {
       for (let i = 0; i < obj.length; i++) {
         if (typeof obj[i] === "string") {
-          obj[i] = obj[i].replace(regEx, replacer);
+          obj[i] = obj[i].replace(regExp, replacer);
         } else {
-          this.redact(obj[i], regEx, replacer);
+          this.redact(obj[i], regExp, replacer);
         }
       }
     }

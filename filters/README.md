@@ -47,7 +47,7 @@ class MyFilter implements Filter {
 ## Registering your filter
 
 Filters are registered directly with the logger as follows:
-```
+```typescript
 const myFilter = new MyFilter();
 const logger = new Logger().addFilter(myFilter);
 ```
@@ -64,8 +64,10 @@ converted to a string if necessary before testing the regular expression.
 
 ```typescript
 // Filters out log records containing `%` or `&` in the message or metadata
-const regExFilter = new RegExFilter(/[%&]+/);
-logger.addFilter(regExFilter);
+import { RegExpFilter } from "https://deno.land/x/optic/filters/regExpFilter.ts"
+
+const regExpFilter = new RegExpFilter(/[%&]+/);
+logger.addFilter(regExpFilter);
 logger.error("Oh no!");  // not filtered
 logger.error("Oh no!", "& another thing");  // filtered out
 ```
@@ -77,6 +79,8 @@ either the log record `msg` or `metadata` fields (converting them to string
 first if required), then this log record is filtered out.  Example:
 
 ```typescript
+import { SubStringFilter } from "https://deno.land/x/optic/filters/subStringFilter.ts"
+
 const subStringFilter = new SubStringFilter("user1234");
 logger.addFilter(subStringFilter);
 logger.info({user: "joe1944", action: "login"});  // not filtered

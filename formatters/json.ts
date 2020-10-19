@@ -8,7 +8,7 @@ import {
 } from "../types.ts";
 import { levelToName } from "../logger/levels.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
-import { stringify } from "./stringify.ts";
+import { stringify } from "../utils/stringify.ts";
 
 type Fields = "msg" | "metadata" | "level" | "dateTime" | "logger";
 

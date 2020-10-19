@@ -7,7 +7,7 @@ import {
   ValidationError,
 } from "../types.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
-import { asString } from "./asString.ts";
+import { asString } from "../utils/asString.ts";
 import { levelToName, longestLevelName } from "../logger/levels.ts";
 import { getColorForLevel } from "./color.ts";
 

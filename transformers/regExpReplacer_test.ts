@@ -1,8 +1,8 @@
 // Copyright 2020 the optic authors. All rights reserved. MIT license.
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
-import { RegExReplacer } from "./regExReplacer.ts";
-import { nonWhitespaceReplacer } from "./regExReplacer.ts";
+import { RegExpReplacer } from "./regExpReplacer.ts";
+import { nonWhitespaceReplacer } from "./regExpReplacer.ts";
 import type { LogRecord } from "../types.ts";
 
 const noopStream = {
@@ -24,7 +24,7 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/123/).transform(noopStream, lr);
     assert(newLr.msg instanceof Error);
     assert(newLr.metadata[1] instanceof Error);
     assertEquals(
@@ -49,8 +49,8 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/world/).transform(noopStream, lr);
-    const newLr2 = new RegExReplacer(/meta/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/world/).transform(noopStream, lr);
+    const newLr2 = new RegExpReplacer(/meta/).transform(noopStream, lr);
     assertEquals(newLr.msg, ["hello", 123, "*****", sym]);
     assertEquals(newLr2.metadata, [{ a: true, b: "hello" }, "****Hello", sym]);
   },
@@ -66,13 +66,13 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/123/).transform(noopStream, lr);
     assert(lr === newLr);
   },
 });
 
 test({
-  name: "RegEx redaction without groups: Msg as string",
+  name: "RegExp redaction without groups: Msg as string",
   fn() {
     const lr = {
       msg: "Log Message 1234, hello world",
@@ -81,10 +81,10 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/123/).transform(noopStream, lr);
     assertEquals(newLr.msg, "Log Message ***4, hello world");
 
-    const newLr2 = new RegExReplacer(/[s]{2}.*\d{4}/).transform(
+    const newLr2 = new RegExpReplacer(/[s]{2}.*\d{4}/).transform(
       noopStream,
       lr,
     );
@@ -93,7 +93,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction with groups: Msg as string",
+  name: "RegExp redaction with groups: Msg as string",
   fn() {
     const lr = {
       msg: "Log Message 1234, hello world",
@@ -102,19 +102,19 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/Message (\d{4})/).transform(
+    const newLr = new RegExpReplacer(/Message (\d{4})/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr.msg, "Log Message ****, hello world");
 
-    const newLr2 = new RegExReplacer(/Log ([a-zA-Z]+)/).transform(
+    const newLr2 = new RegExpReplacer(/Log ([a-zA-Z]+)/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr2.msg, "Log ******* 1234, hello world");
 
-    const newLr3 = new RegExReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).transform(
+    const newLr3 = new RegExpReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).transform(
       noopStream,
       lr,
     );
@@ -123,7 +123,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction without group: Metadata as string",
+  name: "RegExp redaction without group: Metadata as string",
   fn() {
     const lr = {
       msg: "some log message",
@@ -132,10 +132,10 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/123/).transform(noopStream, lr);
     assertEquals(newLr.metadata, ["Log Message ***4, hello world"]);
 
-    const newLr2 = new RegExReplacer(/[s]{2}.*\d{4}/).transform(
+    const newLr2 = new RegExpReplacer(/[s]{2}.*\d{4}/).transform(
       noopStream,
       lr,
     );
@@ -144,7 +144,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction with group: Metadata as string",
+  name: "RegExp redaction with group: Metadata as string",
   fn() {
     const lr = {
       msg: "some log message",
@@ -153,19 +153,19 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/Message (\d{4})/).transform(
+    const newLr = new RegExpReplacer(/Message (\d{4})/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr.metadata, ["Log Message ****, hello world"]);
 
-    const newLr2 = new RegExReplacer(/Log ([a-zA-Z]+)/).transform(
+    const newLr2 = new RegExpReplacer(/Log ([a-zA-Z]+)/).transform(
       noopStream,
       lr,
     );
     assertEquals(newLr2.metadata, ["Log ******* 1234, hello world"]);
 
-    const newLr3 = new RegExReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).transform(
+    const newLr3 = new RegExpReplacer(/Log ([a-zA-Z]+)\s\d(\d{2})\d/).transform(
       noopStream,
       lr,
     );
@@ -174,7 +174,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction: Msg as object",
+  name: "RegExp redaction: Msg as object",
   fn() {
     const lr = {
       msg: { a: "hello 1234", b: { c: "1234, there" } },
@@ -183,16 +183,16 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/123/).transform(noopStream, lr);
     assertEquals(newLr.msg, { a: "hello ***4", b: { c: "***4, there" } });
 
-    const newLr2 = new RegExReplacer(/[o].*\d{4}/).transform(noopStream, lr);
+    const newLr2 = new RegExpReplacer(/[o].*\d{4}/).transform(noopStream, lr);
     assertEquals(newLr2.msg, { a: "hell* ****", b: { c: "1234, there" } });
   },
 });
 
 test({
-  name: "RegEx redaction: Metadata as object",
+  name: "RegExp redaction: Metadata as object",
   fn() {
     const lr = {
       msg: "some log message",
@@ -201,19 +201,19 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/123/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/123/).transform(noopStream, lr);
     assertEquals(
       newLr.metadata,
       [{ a: "hello ***4", b: { c: "***4, there" } }, { d: "£76.22" }],
     );
 
-    const newLr2 = new RegExReplacer(/[o].*\d{4}/).transform(noopStream, lr);
+    const newLr2 = new RegExpReplacer(/[o].*\d{4}/).transform(noopStream, lr);
     assertEquals(
       newLr2.metadata,
       [{ a: "hell* ****", b: { c: "1234, there" } }, { d: "£76.22" }],
     );
 
-    const newLr3 = new RegExReplacer(/£([\d]+\.[\d]{2})/).transform(
+    const newLr3 = new RegExpReplacer(/£([\d]+\.[\d]{2})/).transform(
       noopStream,
       lr,
     );
@@ -225,7 +225,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction: Custom replacement functions work as expected",
+  name: "RegExp redaction: Custom replacement functions work as expected",
   fn() {
     const lr = {
       msg: "Date of birth: 30-04-1977",
@@ -234,7 +234,7 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(
+    const newLr = new RegExpReplacer(
       /\d{2}-\d{2}-\d{4}/,
       (match) => match.replace(/\d/g, "*"),
     ).transform(noopStream, lr);
@@ -243,7 +243,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction: nonWhitespaceReplacer works as expected",
+  name: "RegExp redaction: nonWhitespaceReplacer works as expected",
   fn() {
     const lr = {
       msg: "Date of birth: 30-04-1977",
@@ -252,13 +252,13 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(
+    const newLr = new RegExpReplacer(
       /\d{2}-\d{2}-\d{4}/,
       nonWhitespaceReplacer,
     ).transform(noopStream, lr);
     assertEquals(newLr.msg, "Date of birth: **********");
 
-    const newLr2 = new RegExReplacer(
+    const newLr2 = new RegExpReplacer(
       /Date of birth/,
       nonWhitespaceReplacer,
     ).transform(noopStream, lr);
@@ -267,7 +267,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction: unusual characters",
+  name: "RegExp redaction: unusual characters",
   fn() {
     const lr = {
       msg: `A¬!"£$%^&*()_-+=]}[{#~'@;:/?.>,<\|'Z`,
@@ -276,7 +276,7 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(
+    const newLr = new RegExpReplacer(
       /A(.*)Z/,
       nonWhitespaceReplacer,
     ).transform(noopStream, lr);
@@ -285,7 +285,7 @@ test({
 });
 
 test({
-  name: "RegEx redaction: Nested class redaction",
+  name: "RegExp redaction: Nested class redaction",
   fn() {
     class A {
       name = "hello world";
@@ -300,7 +300,7 @@ test({
       level: Level.Debug,
       logger: "default",
     };
-    const newLr = new RegExReplacer(/ell/).transform(noopStream, lr);
+    const newLr = new RegExpReplacer(/ell/).transform(noopStream, lr);
     assertEquals((newLr.msg as B).a.name, "h***o world");
   },
 });

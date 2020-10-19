@@ -6,9 +6,9 @@
 A powerful, highly extensible and easy to use logging framework for Deno. 
 
 ## At a glance
-* Highly extensible - build your own streams, filters, transformers, monitors, formatters and more
 * Easy to use fluid interface
 * Log anything
+* Modular and highly extensible - build your own streams, filters, transformers, monitors, formatters and more
 * Deferred log message resolution for greater performance
 * Filters - keep your logs clean
 * Transformers - hide sensitive data, strip new lines, encode data, etc.
@@ -585,9 +585,9 @@ logger.info({user: "abc29002", password: "s3cr3tpwd"});
 #### Regular expression redaction
 
 This obfuscator allows you to specify a regular expression and an optional
-replacer function.  The RegExReplacer will then go through the `msg` and 
+replacer function.  The RegExpReplacer will then go through the `msg` and 
 `metadata` fields looking for string values.  Anytime it finds one, it will
-run the Javascript `string.replace(regEx, replacer)` against it. For more details
+run the Javascript `string.replace(regExp, replacer)` against it. For more details
 on this, see [String.replace()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace).
 
 There are two included replacer functions. `alphaNumericReplacer` (the default) 
@@ -597,18 +597,18 @@ regular expression does not use groups then then entire match is replaced, howev
 if groups are used, only the groups are replaced.
 
 ```typescript
-import { RegExReplacer, nonWhitespaceReplacer } from "https://deno.land/x/optic/mod.ts";
+import { RegExpReplacer, nonWhitespaceReplacer } from "https://deno.land/x/optic/mod.ts";
 
-logger.addTransformer(new RegExReplacer(/£([\d]+\.[\d]{2})/));
-logger.addTransformer(new RegExReplacer(/password: (.*)/, nonWhitespaceReplacer));
+logger.addTransformer(new RegExpReplacer(/£([\d]+\.[\d]{2})/));
+logger.addTransformer(new RegExpReplacer(/password: (.*)/, nonWhitespaceReplacer));
 
 logger.info("Amount: £122.51"); // becomes "Amount: £***.**" ('£' is not in a group)
 logger.info("password: MyS3cret! Pwd!"); // becomes "password: ********* ****"
 ```
 
-RegEx and Replacer examples:
+RegExp and Replacer examples:
 
-RegEx|Test string|alphaNumericReplacer|nonWhitespaceReplacer
+RegExp|Test string|alphaNumericReplacer|nonWhitespaceReplacer
 -----|-----------|--------------------|---------------------
 /£([\d]+\.[\d]{2})/|£52.22|£**.**|£*****
 /\d{2}-\d{2}-\d{4}/|30-04-1954| \*\*-\*\*-\*\*\*\* |**********
@@ -682,11 +682,11 @@ is filtered out.  The log record `msg` and `metadata` fields are first
 converted to a string if necessary before testing the regular expression.
 
 ```typescript
-import { RegExFilter } from "https://deno.land/x/optic/mod.ts";
+import { RegExpFilter } from "https://deno.land/x/optic/mod.ts";
 
 // Filters out log records containing `%` or `&` in the message or metadata
-const regExFilter = new RegExFilter(/[%&]+/);
-logger.addFilter(regExFilter);
+const regExpFilter = new RegExpFilter(/[%&]+/);
+logger.addFilter(regExpFilter);
 logger.error("Oh no!");  // not filtered
 logger.error("Oh no!", "& another thing");  // filtered out
 ```

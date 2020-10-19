@@ -28,7 +28,7 @@ export function exists(file: string): boolean {
  */
 export function getLogFilesInDir(
   filename: string,
-  pattern: (dirEntryName: string, regExSafeFilename: string) => boolean,
+  pattern: (dirEntryName: string, regExpSafeFilename: string) => boolean,
 ): string[] {
   const matches: string[] = [];
 
@@ -51,26 +51,26 @@ export function getLogFilesInDir(
 
 export function matchesFilePattern(
   dirEntryName: string,
-  regExSafeFilename: string,
+  regExpSafeFilename: string,
 ): boolean {
-  return dirEntryName.match(new RegExp(regExSafeFilename + "\.\\d+$")) != null;
+  return dirEntryName.match(new RegExp(regExpSafeFilename + "\.\\d+$")) != null;
 }
 
 export function matchesDatePattern(
   dirEntryName: string,
-  regExSafeFilename: string,
+  regExpSafeFilename: string,
 ): boolean {
   return dirEntryName.match(
-    new RegExp(regExSafeFilename + "_\\d{4}\.\\d{2}\.\\d{2}$"),
+    new RegExp(regExpSafeFilename + "_\\d{4}\.\\d{2}\.\\d{2}$"),
   ) != null;
 }
 
 export function matchesDateTimePattern(
   dirEntryName: string,
-  regExSafeFilename: string,
+  regExpSafeFilename: string,
 ): boolean {
   return dirEntryName.match(
-    new RegExp(regExSafeFilename + "_\\d{4}\.\\d{2}\.\\d{2}_\\d{2}\.\\d{2}$"),
+    new RegExp(regExpSafeFilename + "_\\d{4}\.\\d{2}\.\\d{2}_\\d{2}\.\\d{2}$"),
   ) != null;
 }
 

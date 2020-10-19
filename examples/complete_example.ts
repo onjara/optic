@@ -1,13 +1,8 @@
 // Copyright 2020 the optic authors. All rights reserved. MIT license.
 import { every, FileStream, of } from "../streams/fileStream/mod.ts";
-import {
-  JsonFormatter,
-  Level,
-  Logger,
-  LogRecord,
-  PropertyRedaction,
-  Stream,
-} from "../mod.ts";
+import { Level, Logger, LogRecord, Stream } from "../mod.ts";
+import { JsonFormatter } from "../formatters/mod.ts";
+import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
 
 const fileStream = new FileStream("logFile.txt")
   .withMinLogLevel(Level.Warn)

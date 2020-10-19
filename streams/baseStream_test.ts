@@ -6,12 +6,14 @@ import {
   test,
 } from "../test_deps.ts";
 import { BaseStream } from "./baseStream.ts";
-import type { Formatter, LogMeta, LogRecord } from "../types.ts";
+import type { Formatter, LogMeta, LogRecord, Stream } from "../types.ts";
 import { Level } from "../logger/levels.ts";
-import { Logger, PropertyRedaction, SubStringFilter } from "../mod.ts";
+import { Logger } from "../mod.ts";
 import { LogMetaImpl } from "../logger/meta.ts";
 import { assertMatch } from "https://deno.land/std@0.69.0/testing/asserts.ts";
-import { stringify } from "../formatters/stringify.ts";
+import { stringify } from "../utils/stringify.ts";
+import { asString } from "../utils/asString.ts";
+import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
 
 class MsgPassThrough implements Formatter<string> {
   format(lr: LogRecord): string {
@@ -174,7 +176,9 @@ test({
     const logger = new Logger("config").addStream(testStream)
       .withMinLogLevel(Level.Info)
       .addTransformer(new PropertyRedaction("z"))
-      .addFilter(new SubStringFilter("def"))
+      .addFilter((stream: Stream, lr: LogRecord): boolean => {
+        return asString(lr.msg).indexOf("def") > -1;
+      })
       .addMonitor((logRecord: LogRecord) => {});
     logger.error("abc");
     logger.error("abc");

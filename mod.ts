@@ -14,25 +14,6 @@ export { Logger } from "./logger/logger.ts";
 export { BaseStream } from "./streams/baseStream.ts";
 export { ConsoleStream } from "./streams/consoleStream.ts";
 
-// Filters
-export { RegExFilter } from "./filters/regExFilter.ts";
-export { SubStringFilter } from "./filters/subStringFilter.ts";
-
-// Formatters
-export { ColorRule, getColorForLevel } from "./formatters/color.ts";
-export { JsonFormatter } from "./formatters/json.ts";
-export { TokenReplacer } from "./formatters/tokenReplacer.ts";
-export { SimpleDateTimeFormatter } from "./formatters/simpleDateTimeFormatter.ts";
-
-// Transformers
-export { PropertyRedaction } from "./transformers/propertyRedaction.ts";
-export {
-  alphaNumericReplacer,
-  nonWhitespaceReplacer,
-  RegExReplacer,
-  Replacer,
-} from "./transformers/regExReplacer.ts";
-
 // Types
 export {
   DateTimeFormatter,
@@ -50,3 +31,14 @@ export {
   TransformerFn,
   ValidationError,
 } from "./types.ts";
+
+// For transformer implementations, see:
+// https://github.com/onjara/optic/blob/master/transformers/propertyRedaction.ts
+// https://github.com/onjara/optic/blob/master/transformers/regExpReplacer.ts
+
+// For filter implementations, see:
+// https://github.com/onjara/optic/blob/master/filters/regExpFilter.ts
+// https://github.com/onjara/optic/blob/master/filters/subStringFilter.ts
+
+// For formatter implementations, see:
+// https://github.com/onjara/optic/blob/master/formatters/mod.ts
