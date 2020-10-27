@@ -1,9 +1,14 @@
 // Copyright 2020 the optic authors. All rights reserved. MIT license.
-import { assert, assertEquals, assertMatch, test } from "../test_deps.ts";
+import {
+  assert,
+  assertEquals,
+  assertMatch,
+  assertThrows,
+  test,
+} from "../test_deps.ts";
 import { TokenReplacer } from "./tokenReplacer.ts";
 import { Level } from "../logger/levels.ts";
 import { gray } from "../deps.ts";
-import { assertThrows } from "https://deno.land/std@0.74.0/testing/asserts.ts";
 import { ValidationError } from "../types.ts";
 
 const lr = {

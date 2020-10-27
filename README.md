@@ -80,6 +80,12 @@ log.debug(() => { throw new Error("I'm not thrown"); });
 
 // error > min log level, so function is evaluated and `msg` is set to "1234"
 log.error(() => { return "1234"; }); // logs "1234"
+
+const x = 5;
+log.if(x > 10).error("Since x < 10 this doesn't get logged");
+
+log.enabled(false);
+log.error("Logger is disabled, so this does nothing");
 ```
 
 ## Logging

@@ -6,7 +6,7 @@ export {
   assertEquals,
   assertMatch,
   assertStrictEquals,
-  assertStringContains,
+  assertStringIncludes,
   assertThrows,
   assertThrowsAsync,
-} from "https://deno.land/std@0.74.0/testing/asserts.ts";
+} from "https://deno.land/std@0.75.0/testing/asserts.ts";

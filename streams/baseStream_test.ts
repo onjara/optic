@@ -2,7 +2,8 @@
 import {
   assert,
   assertEquals,
-  assertStringContains,
+  assertMatch,
+  assertStringIncludes,
   test,
 } from "../test_deps.ts";
 import { BaseStream } from "./baseStream.ts";
@@ -10,7 +11,6 @@ import type { Formatter, LogMeta, LogRecord, Stream } from "../types.ts";
 import { Level } from "../logger/levels.ts";
 import { Logger } from "../mod.ts";
 import { LogMetaImpl } from "../logger/meta.ts";
-import { assertMatch } from "https://deno.land/std@0.69.0/testing/asserts.ts";
 import { stringify } from "../utils/stringify.ts";
 import { asString } from "../utils/asString.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
@@ -140,7 +140,7 @@ test({
     baseStream.withLogHeader();
     baseStream.logHeader(logMeta());
     assertEquals(baseStream.logs.length, 1);
-    assertStringContains(
+    assertStringIncludes(
       (baseStream.logs[0] as string),
       "Logging session initialized",
     );
@@ -162,7 +162,7 @@ test({
     testStream.withLogFooter();
     testStream.logFooter(meta);
     assertEquals(testStream.logs.length, 1);
-    assertStringContains(
+    assertStringIncludes(
       (testStream.logs[0] as string),
       "Logging session complete.  Duration",
     );

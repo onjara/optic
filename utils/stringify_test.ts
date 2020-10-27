@@ -143,12 +143,12 @@ test({
 test({
   name: "Circular dependencies stringified correctly",
   fn() {
-    const obj_a: Record<string, unknown> = {};
-    const obj_b: Record<string, unknown> = {};
-    const obj_c = { a: obj_a };
-    obj_a["b"] = obj_b;
-    obj_b["c"] = obj_c;
-    assertEquals(stringify(obj_a), `{"b":{"c":{"a":"[ref=.]"}}}`);
+    const objA: Record<string, unknown> = {};
+    const objB: Record<string, unknown> = {};
+    const objC = { a: objA };
+    objA["b"] = objB;
+    objB["c"] = objC;
+    assertEquals(stringify(objA), `{"b":{"c":{"a":"[ref=.]"}}}`);
 
     const deepRecursiveObj = {
       some: "prop",

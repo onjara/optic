@@ -15,13 +15,14 @@ export { BaseStream } from "./streams/baseStream.ts";
 export { ConsoleStream } from "./streams/consoleStream.ts";
 
 // Types
-export {
+export { IllegalStateError, ValidationError } from "./types.ts";
+
+export type {
   DateTimeFormatter,
   DateTimeFormatterFn,
   Filter,
   FilterFn,
   Formatter,
-  IllegalStateError,
   LogMeta,
   LogRecord,
   Monitor,
@@ -29,7 +30,6 @@ export {
   Stream,
   Transformer,
   TransformerFn,
-  ValidationError,
 } from "./types.ts";
 
 // For transformer implementations, see:
