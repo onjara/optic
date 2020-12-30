@@ -120,7 +120,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
 }
 
 function isObjectButNotErrorNorArray(obj: unknown): boolean {
-  return typeof obj === "object" 
-    && !(obj instanceof Error) 
-    && !Array.isArray(obj);
+  return typeof obj === "object" &&
+    !(obj instanceof Error) &&
+    !Array.isArray(obj);
 }
