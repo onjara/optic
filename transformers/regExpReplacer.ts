@@ -221,5 +221,5 @@ class ObfuscatedViaRegExpLogRecord implements LogRecord {
 }
 
 function isObjectButNotArray(obj: unknown): boolean {
-  return obj && typeof obj === "object" && !Array.isArray(obj);
+  return typeof obj === "object" && !Array.isArray(obj);
 }

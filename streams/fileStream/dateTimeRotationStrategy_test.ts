@@ -94,7 +94,7 @@ test({
 
 test({
   name: "MustNotExist init strategy is happy with no logs",
-  async fn() {
+  fn() {
     const rs = every(1).days().withLogFileRetentionPolicy(of(7).files());
     rs.initLogs(LOG_FILE, "mustNotExist");
   },

@@ -305,7 +305,7 @@ test({
 test({
   name:
     "FileSizeRotationStrategy: file based rotation will rotate all in scope log files",
-  async fn() {
+  fn() {
     Deno.writeFileSync(LOG_FILE, encoder.encode("orig"));
     Deno.writeFileSync(LOG_FILE + ".1", encoder.encode("1"));
     Deno.writeFileSync(LOG_FILE + ".2", encoder.encode("2"));
@@ -372,7 +372,7 @@ test({
   name:
     "FileSizeRotationStrategy: dateTime based rotation will rotate the only in scope log files",
   ignore: Deno.build.os === "windows",
-  async fn() {
+  fn() {
     Deno.writeFileSync(LOG_FILE, encoder.encode("orig"));
 
     const rs = every(15).bytes().withLogFileRetentionPolicy(of(3).days());
@@ -390,7 +390,7 @@ test({
 test({
   name:
     "FileSizeRotationStrategy: dateTime based rotation with mustNotExist initStrategy and one log file",
-  async fn() {
+  fn() {
     Deno.writeFileSync(LOG_FILE, encoder.encode("orig"));
 
     const rs = every(15).bytes().withLogFileRetentionPolicy(of(3).days());

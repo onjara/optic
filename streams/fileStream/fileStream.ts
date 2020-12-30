@@ -17,7 +17,7 @@ export class FileStream extends BaseStream {
   #filename: string;
   #rotationStrategy: RotationStrategy | undefined = undefined;
   #logFileInitStrategy: LogFileInitStrategy = "append";
-  #maxBufferSize: number = 8192;
+  #maxBufferSize = 8192;
   #buffer!: BufWriterSync;
   #logFile!: Deno.File;
   #deferredLogQueue: LogRecord[] = [];

@@ -15,7 +15,7 @@ import { ConsoleStream } from "../streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 import { LogMetaImpl } from "./meta.ts";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// deno-lint-ignore no-explicit-any
 export type AnyFunction = (...args: any[]) => any;
 
 const defaultStream = new ConsoleStream();

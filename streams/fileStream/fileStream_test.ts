@@ -192,7 +192,7 @@ test({
     assertEquals(Deno.statSync(LOG_FILE).size, 0, "Message still queued");
     assertEquals(fs.getBuffer().buffered(), 0, "Nothing buffered yet");
     //let queueMicrotask run to process queued messages to buffer
-    await new Promise((res) => {
+    await new Promise<void>((res) => {
       setTimeout((): void => {
         assertEquals(fs.getBuffer().buffered(), 12);
         fs.destroy();
