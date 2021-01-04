@@ -36,7 +36,7 @@ logger.info("Hello world!");  // outputs log record to the console
 ### Complete example
 ```typescript
 import { every, FileStream, of } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
-import { Level, Logger, LogRecord, Stream } from "https://deno.land/x/optic/mod.ts";
+import { Level, Logger, LogRecord, Stream, TimeUnit } from "https://deno.land/x/optic/mod.ts";
 import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
 import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
 
@@ -83,6 +83,11 @@ log.error(() => { return "1234"; }); // logs "1234"
 
 const x = 5;
 log.if(x > 10).error("Since x < 10 this doesn't get logged");
+
+for (let i=0; i < 1000000; i++) {
+  log.every(100).warn("Logs every 100th iteration");
+  log.atMostEvery(10, TimeUnit.SECONDS).warn("Logs at most once every 10 seconds");
+}
 
 log.enabled(false);
 log.error("Logger is disabled, so this does nothing");
@@ -260,6 +265,25 @@ logger.if(attempts > 3).warn("Excessive attempts by user");
 ```
 Note that even if the condition is true, the log record may not be logged if
 the minimum log level for the logger (and/or stream) is higher than this record.
+
+### Rate limiting the logger
+You can limit how many times the logger logs a particular statement in one of
+two ways;
+```
+logger.atMostEvery(5, TimeUnit.SECONDS).info("I'm only logged at most every 5 seconds");
+logger.every(100).info("I'm logged every 100 attempts");
+```
+__An important note__:  Rate limiters work in a context. The context for the rate
+limiting is determined, by default, on the amount, unit (for `atMostEvery`) and
+log level.  Where two or more `every` or `atMostEvery` statements match the same
+context, the same rate limiter will be used, possibly causing unintended side
+effects through race conditions on which of the statements will be logged when
+matching or exceeding the constraint.  To avoid this, you can enforce unique
+contexts by passing in an optional context string:
+```
+logger.atMostEvery(5, TimeUnit.SECONDS, "Context 1").info("Logged at most every 5 seconds");
+logger.atMostEvery(5, TimeUnit.SECONDS, "Context 2").info("Also logged at most every 5 seconds");
+```
 
 ### Disabling the logger
 You can programmatically disable the logger which transforms it into a no-op

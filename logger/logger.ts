@@ -8,12 +8,14 @@ import type {
   Monitor,
   MonitorFn,
   Stream,
+  TimeUnit,
   Transformer,
   TransformerFn,
 } from "../types.ts";
 import { ConsoleStream } from "../streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 import { LogMetaImpl } from "./meta.ts";
+import { RateLimitContext, RateLimiter } from "./rateLimitContext.ts";
 
 // deno-lint-ignore no-explicit-any
 export type AnyFunction = (...args: any[]) => any;
@@ -31,6 +33,8 @@ export class Logger {
   #meta: LogMetaImpl = new LogMetaImpl();
   #ifCondition = true;
   #enabled = true;
+  #rateLimiter = new RateLimiter();
+  #rateLimitContext: RateLimitContext | null = null;
 
   constructor(name?: string) {
     if (name) {
@@ -251,8 +255,10 @@ export class Logger {
   ): T | undefined {
     if (!this.#enabled || this.loggingBlocked(level)) {
       this.#ifCondition = true; //reset to true
+      this.#rateLimitContext = null;
       return msg instanceof Function ? undefined : msg;
     }
+    this.#rateLimitContext = null;
     const resolvedMsg = msg instanceof Function ? msg() : msg;
 
     let logRecord: LogRecord = new ImmutableLogRecord(
@@ -469,6 +475,47 @@ export class Logger {
     return this;
   }
 
+  /**
+   * Causes the next log action to only be recorded at most every x time units.  
+   * 
+   * Rate limiters work in a context. The context for the rate limiting is
+   * determined, by default, on the amount, unit and log level.  Where two or
+   * more `atMostEvery` statements match the same context, the same rate limiter
+   * will be used, possibly causing unintended side effects through race
+   * conditions on which of the statements will be logged when passing the time
+   * constraint.  To avoid this, you can enforce unique contexts by passing in
+   * an optional context string.
+   * 
+   * @param amount The number of time units which must pass before the log statement is allowed
+   * @param unit The time unit related to the amount
+   * @param context Optional unique context label to guarantee no side effects
+   * when using multiple rate limiting statements
+   */
+  atMostEvery(amount: number, unit: TimeUnit, context?: string): this {
+    this.#rateLimitContext = new RateLimitContext(amount, unit, context);
+    return this;
+  }
+
+  /**
+   * Causes the next log action to only be recorded every x times.  
+   * 
+   * Rate limiters work in a context. The context for the rate limiting is
+   * determined, by default, on the amount, unit and log level.  Where two or
+   * more `every` statements match the same context, the same rate limiter
+   * will be used, possibly causing unintended side effects through race
+   * conditions on which of the statements will be logged when matching the 
+   * every 'x' condition.  To avoid this, you can enforce unique contexts by
+   * passing in an optional context string.
+   * 
+   * @param amount Only log this statement every `amount` times, otherwise skip
+   * @param context Optional unique context label to guarantee no side effects
+   * when using multiple rate limiting statements
+   */
+  every(amount: number, context?: string): this {
+    this.#rateLimitContext = new RateLimitContext(amount, undefined, context);
+    return this;
+  }
+
   protected getArgs(): string[] {
     return Deno.args;
   }
@@ -478,6 +525,17 @@ export class Logger {
   }
 
   protected loggingBlocked(level: Level): boolean {
-    return this.#minLevel > level || !this.#ifCondition;
+    if (this.#minLevel > level || !this.#ifCondition) {
+      return true;
+    }
+
+    if (
+      this.#rateLimitContext &&
+      this.#rateLimiter.isRateLimited(this.#rateLimitContext, level)
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }

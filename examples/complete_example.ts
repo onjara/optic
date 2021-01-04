@@ -1,6 +1,6 @@
 // Copyright 2020 the optic authors. All rights reserved. MIT license.
 import { every, FileStream, of } from "../streams/fileStream/mod.ts";
-import { Level, Logger, LogRecord, Stream } from "../mod.ts";
+import { Level, Logger, LogRecord, Stream, TimeUnit } from "../mod.ts";
 import { JsonFormatter } from "../formatters/mod.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
 
@@ -35,3 +35,10 @@ log.debug(() => {
 log.error(() => {
   return "1234";
 }); // logs "1234"
+
+for (let i = 0; i < 1000000; i++) {
+  log.every(100).warn("Logs every 100th iteration");
+  log.atMostEvery(10, TimeUnit.SECONDS).warn(
+    "Logs at most once every 10 seconds",
+  );
+}

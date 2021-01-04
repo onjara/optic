@@ -209,3 +209,17 @@ export class IllegalStateError extends Error {
     this.name = "IllegalStateError";
   }
 }
+
+export class TimeUnit {
+  public static MILLISECONDS = new TimeUnit(1);
+  public static SECONDS = new TimeUnit(1000);
+  public static MINUTES = new TimeUnit(60000);
+  public static HOURS = new TimeUnit(3600000);
+  public static DAYS = new TimeUnit(86400000);
+
+  private constructor(private milliseconds: number) {}
+
+  getMilliseconds(): number {
+    return this.milliseconds;
+  }
+}
