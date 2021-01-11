@@ -154,7 +154,12 @@ test({
     const meta = logMeta();
     meta.streamStats.set(
       testStream,
-      { handled: new Map<number, number>(), filtered: 0, transformed: 0 },
+      {
+        handled: new Map<number, number>(),
+        filtered: 0,
+        transformed: 0,
+        duplicated: 0,
+      },
     );
     testStream.logFooter(meta);
     assertEquals(testStream.logs.length, 0);

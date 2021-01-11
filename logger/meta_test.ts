@@ -32,7 +32,12 @@ test({
     meta.monitors = 5;
     meta.streamStats.set(
       stream,
-      { handled: new Map<number, number>(), filtered: 6, transformed: 7 },
+      {
+        handled: new Map<number, number>(),
+        filtered: 6,
+        transformed: 7,
+        duplicated: 11,
+      },
     );
     meta.streamStats.get(stream)?.handled.set(Level.Debug, 8);
     meta.streamStats.get(stream)?.handled.set(Level.Info, 9);
@@ -54,5 +59,27 @@ test({
     assertEquals(record.logRecordsHandled, "Debug: 8, Info: 9, Warn: 10");
     assertEquals(record.recordsFiltered, 6);
     assertEquals(record.recordsTransformed, 7);
+    assertEquals(record.duplicatedRecords, 11);
+  },
+});
+
+test({
+  name: "if no duplicates, then do not output it",
+  fn() {
+    const stream = new TestStream();
+    const meta = new LogMetaImpl();
+    meta.streamStats.set(
+      stream,
+      {
+        handled: new Map<number, number>(),
+        filtered: 6,
+        transformed: 7,
+        duplicated: 0,
+      },
+    );
+
+    const record = meta.toRecord(stream);
+    assert(record.hasOwnProperty("recordsFiltered"));
+    assert(!record.hasOwnProperty("duplicatedRecords"));
   },
 });

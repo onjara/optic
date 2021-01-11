@@ -98,6 +98,21 @@ log.error("Logger is disabled, so this does nothing");
 All logging in Optic is done through a logger instance, which provides the 
 interface and framework for all logging activity.
 
+__In this section:__
+1. [Creating a logger](#creating-a-logger)
+2. [Sharing loggers across modules](#sharing-loggers-across-modules)
+3. [Logging an event](#logging-an-event)
+4. [Log levels](#log-levels)
+5. [Log records](#log-records)
+6. [Minimum log level](#minimum-log-level)
+7. [Logging lifecycle](#logging-lifecycle)
+8. [In-line logging](#in-line-logging)
+9. [Deferred logging](#deferred-logging)
+10. [Conditional logging](#conditional-logging)
+11. [Deduplicating logs](#deduplicating-log-messages)
+12. [Rate limiting logs](#rate-limiting-the-logger)
+13. [Disabling the logger](#disabling-the-logger)
+
 ### Creating a logger
 
 Before you can log anything you must first get an instance of a logger.
@@ -266,10 +281,45 @@ logger.if(attempts > 3).warn("Excessive attempts by user");
 Note that even if the condition is true, the log record may not be logged if
 the minimum log level for the logger (and/or stream) is higher than this record.
 
+### Deduplicating log messages
+You can use the logger to deduplicate log messages.  When enabled, if 3 or more
+log messages in a row are the same (same msg and supporting meta data) then 
+output of the duplicates is suppressed.  Once a new log message which is different
+is logged, then a new log message is finally cut (ahead of the new/different one)
+detailing the number of duplicated log messages which were suppressed.  This can
+clean up your logs in situations where significant duplicates are encountered.
+Additionally, significant performance gains can potentially be had by not
+recording duplicate log messages over and over.  Be aware, however, that comparing
+the current log message to the previous isn't free and if your logs have no
+or limited duplicates the performance may be reduced.  If performance is critical
+it is suggested that you test the deduplication capabilities.  This feature
+is disabled by default.
+
+To turn on deduping of logs:
+```typescript
+logger.withDedupe();
+```
+To turn off deduping of logs:
+```typescript
+logger.withDedupe(false);
+```
+Example:
+```typescript
+const logger = new Logger().withDedupe();
+for (let i = 0; i < 1000; i++) {
+  logger.info("hello world");
+}
+```
+Output:
+```
+2021-01-11T22:32:58.497Z Info  hello world 
+2021-01-11T22:32:58.506Z Info    ^-- last log repeated 999 additional times 
+```
+
 ### Rate limiting the logger
 You can limit how many times the logger logs a particular statement in one of
 two ways;
-```
+```typescript
 logger.atMostEvery(5, TimeUnit.SECONDS).info("I'm only logged at most every 5 seconds");
 logger.every(100).info("I'm logged every 100 attempts");
 ```
@@ -280,7 +330,7 @@ context, the same rate limiter will be used, possibly causing unintended side
 effects through race conditions on which of the statements will be logged when
 matching or exceeding the constraint.  To avoid this, you can enforce unique
 contexts by passing in an optional context string:
-```
+```typescript
 logger.atMostEvery(5, TimeUnit.SECONDS, "Context 1").info("Logged at most every 5 seconds");
 logger.atMostEvery(5, TimeUnit.SECONDS, "Context 2").info("Also logged at most every 5 seconds");
 ```

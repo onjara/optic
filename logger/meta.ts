@@ -13,7 +13,12 @@ export class LogMetaImpl implements LogMeta {
   monitors = 0;
   streamStats: Map<
     Stream,
-    { handled: Map<number, number>; filtered: number; transformed: number }
+    {
+      handled: Map<number, number>;
+      filtered: number;
+      transformed: number;
+      duplicated: number;
+    }
   > = new Map();
 
   toRecord(stream: Stream): Record<string, unknown> {
@@ -36,6 +41,9 @@ export class LogMetaImpl implements LogMeta {
       ) => levelToName(k) + ": " + streamStats.handled.get(k)).join(", ");
       record.recordsFiltered = streamStats.filtered;
       record.recordsTransformed = streamStats.transformed;
+      if (streamStats.duplicated > 0) {
+        record.duplicatedRecords = streamStats.duplicated;
+      }
     }
     return record;
   }

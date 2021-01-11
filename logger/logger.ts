@@ -16,6 +16,7 @@ import { ConsoleStream } from "../streams/consoleStream.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 import { LogMetaImpl } from "./meta.ts";
 import { RateLimitContext, RateLimiter } from "./rateLimitContext.ts";
+import { Dedupe } from "./dedupe.ts";
 
 // deno-lint-ignore no-explicit-any
 export type AnyFunction = (...args: any[]) => any;
@@ -35,6 +36,8 @@ export class Logger {
   #enabled = true;
   #rateLimiter = new RateLimiter();
   #rateLimitContext: RateLimitContext | null = null;
+  #deduper: Dedupe | null = null;
+  #shouldDedupe = false;
 
   constructor(name?: string) {
     if (name) {
@@ -44,7 +47,12 @@ export class Logger {
 
     this.#meta.streamStats.set(
       defaultStream,
-      { handled: new Map<number, number>(), filtered: 0, transformed: 0 },
+      {
+        handled: new Map<number, number>(),
+        filtered: 0,
+        transformed: 0,
+        duplicated: 0,
+      },
     );
 
     //TODO check permissions here for meta.unableToReadEnvVar once stable and sync version available
@@ -53,6 +61,7 @@ export class Logger {
 
     // Append footers and destroy loggers on unload of module
     addEventListener("unload", () => {
+      this.#deduper?.destroy();
       (this.#meta as LogMeta).sessionEnded = new Date();
       for (const stream of this.#streams) {
         if (stream.logFooter && this.#streamAdded && this.#enabled) {
@@ -131,7 +140,12 @@ export class Logger {
     if (stream.logHeader) stream.logHeader(this.#meta);
     this.#meta.streamStats.set(
       stream,
-      { handled: new Map<number, number>(), filtered: 0, transformed: 0 },
+      {
+        handled: new Map<number, number>(),
+        filtered: 0,
+        transformed: 0,
+        duplicated: 0,
+      },
     );
     return this;
   }
@@ -286,29 +300,36 @@ export class Logger {
         }
       }
 
-      if (this.#transformers.length > 0) {
-        // Apply transformers
-        for (let j = 0; !skip && j < this.#transformers.length; j++) {
-          let thisLogRecord = logRecord;
-          thisLogRecord = this.#transformers[j].transform(
-            stream,
-            thisLogRecord,
-          );
-          if (logRecord !== thisLogRecord) {
-            logRecord = thisLogRecord;
-            this.#meta.streamStats.get(stream)!.transformed++;
+      if (!skip) {
+        if (this.#transformers.length > 0) {
+          // Apply transformers
+          for (let j = 0; !skip && j < this.#transformers.length; j++) {
+            let thisLogRecord = logRecord;
+            thisLogRecord = this.#transformers[j].transform(
+              stream,
+              thisLogRecord,
+            );
+            if (logRecord !== thisLogRecord) {
+              logRecord = thisLogRecord;
+              this.#meta.streamStats.get(stream)!.transformed++;
+            }
           }
-        }
-        if (!skip) {
-          const handled = stream.handle(logRecord);
-          if (handled) {
-            this.registerStreamHandlingOfLogRecord(stream, level);
+
+          // potentially check for consecutive duplicate logs
+          if (!this.#shouldDedupe || !this.#deduper?.isDuplicate(logRecord)) {
+            const handled = stream.handle(logRecord);
+            if (handled) {
+              this.registerStreamHandlingOfLogRecord(stream, level);
+            }
           }
-        }
-      } else if (!skip) {
-        const handled = stream.handle(logRecord);
-        if (handled) {
-          this.registerStreamHandlingOfLogRecord(stream, level);
+        } else {
+          // potentially check for consecutive duplicate logs
+          if (!this.#shouldDedupe || !this.#deduper?.isDuplicate(logRecord)) {
+            const handled = stream.handle(logRecord);
+            if (handled) {
+              this.registerStreamHandlingOfLogRecord(stream, level);
+            }
+          }
         }
       }
     }
@@ -513,6 +534,26 @@ export class Logger {
    */
   every(amount: number, context?: string): this {
     this.#rateLimitContext = new RateLimitContext(amount, undefined, context);
+    return this;
+  }
+
+  /**
+   * Turn on or off (default is off) deduplication of log records.  If a log
+   * record is deemed to be a duplicate of the previous, and dedupe is enabled,
+   * then the log record is skipped and an internal count is incremented. Once
+   * a new log record which is not the same is encountered, a log message is
+   * first output detailing how many duplicates in a row were encountered.
+   * 
+   * @param shouldDedupe if not specified, then dedupe is enabled
+   */
+  withDedupe(shouldDedupe?: boolean): this {
+    if (shouldDedupe || shouldDedupe === undefined) {
+      this.#deduper = new Dedupe(this.#streams, this.#meta);
+      this.#shouldDedupe = true;
+    } else {
+      this.#shouldDedupe = false;
+      this.#deduper = null;
+    }
     return this;
   }
 

@@ -183,10 +183,15 @@ export interface LogMeta {
   minLogLevelFrom: string;
   /** The name of the logger for this metadata */
   readonly logger: string;
-  /** Count of handled (Map of Level -> count), filtered and transformed records by stream */
+  /** Count of handled (Map of Level -> count), filtered, transformed and duplicated records by stream */
   readonly streamStats: Map<
     Stream,
-    { handled: Map<number, number>; filtered: number; transformed: number }
+    {
+      handled: Map<number, number>;
+      filtered: number;
+      transformed: number;
+      duplicated: number;
+    }
   >;
   /** Number of filters added.  (Removed filters do not subtract from this total) */
   readonly filters: number;

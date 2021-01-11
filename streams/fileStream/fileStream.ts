@@ -50,8 +50,8 @@ export class FileStream extends BaseStream {
   }
 
   destroy(): void {
-    super.destroy();
     this.flush();
+    super.destroy();
     this.#logFile.close();
   }
 
@@ -62,6 +62,7 @@ export class FileStream extends BaseStream {
 
   logFooter(meta: LogMeta): void {
     if (!this.outputFooter) return;
+    this.flush();
     super.logFooter(meta);
   }
 
