@@ -513,6 +513,7 @@ export class Logger {
    * when using multiple rate limiting statements
    */
   atMostEvery(amount: number, unit: TimeUnit, context?: string): this {
+    if (!this.#enabled) return this;
     this.#rateLimitContext = new RateLimitContext(amount, unit, context);
     return this;
   }
@@ -533,6 +534,7 @@ export class Logger {
    * when using multiple rate limiting statements
    */
   every(amount: number, context?: string): this {
+    if (!this.#enabled) return this;
     this.#rateLimitContext = new RateLimitContext(amount, undefined, context);
     return this;
   }
@@ -547,10 +549,14 @@ export class Logger {
    * @param shouldDedupe if not specified, then dedupe is enabled
    */
   withDedupe(shouldDedupe?: boolean): this {
+    if (!this.#enabled) return this;
     if (shouldDedupe || shouldDedupe === undefined) {
       this.#deduper = new Dedupe(this.#streams, this.#meta);
       this.#shouldDedupe = true;
     } else {
+      if (this.#deduper) {
+        this.#deduper.destroy();
+      }
       this.#shouldDedupe = false;
       this.#deduper = null;
     }

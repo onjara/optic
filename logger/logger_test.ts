@@ -707,3 +707,52 @@ test({
     assert(!called);
   },
 });
+
+test({
+  name: "By default, duplicate logs are recorded",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger().addStream(testStream);
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    assertEquals(testStream.logRecords.length, 3);
+  }
+});
+
+test({
+  name: "When enabled, duplicates are condensed",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger().addStream(testStream).withDedupe();
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    dispatchEvent(new Event("unload"));
+    assertEquals(testStream.logRecords.length, 2);
+    assertEquals(testStream.logRecords[0].msg, "Hello world");
+    assertEquals(testStream.logRecords[1].msg, "  ^-- last log repeated 2 additional times");
+  }
+});
+
+test({
+  name: "Dedupe can be disabled after enabling",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger().addStream(testStream).withDedupe();
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    logger.withDedupe(false);
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    logger.warn("Hello world");
+    assertEquals(testStream.logRecords.length, 5);
+    assertEquals(testStream.logRecords[0].msg, "Hello world");
+    assertEquals(testStream.logRecords[1].msg, "  ^-- last log repeated 3 additional times");
+    assertEquals(testStream.logRecords[2].msg, "Hello world");
+    assertEquals(testStream.logRecords[3].msg, "Hello world");
+    assertEquals(testStream.logRecords[4].msg, "Hello world");
+  }
+});
