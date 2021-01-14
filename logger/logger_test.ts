@@ -717,7 +717,7 @@ test({
     logger.warn("Hello world");
     logger.warn("Hello world");
     assertEquals(testStream.logRecords.length, 3);
-  }
+  },
 });
 
 test({
@@ -731,8 +731,11 @@ test({
     dispatchEvent(new Event("unload"));
     assertEquals(testStream.logRecords.length, 2);
     assertEquals(testStream.logRecords[0].msg, "Hello world");
-    assertEquals(testStream.logRecords[1].msg, "  ^-- last log repeated 2 additional times");
-  }
+    assertEquals(
+      testStream.logRecords[1].msg,
+      "  ^-- last log repeated 2 additional times",
+    );
+  },
 });
 
 test({
@@ -750,9 +753,12 @@ test({
     logger.warn("Hello world");
     assertEquals(testStream.logRecords.length, 5);
     assertEquals(testStream.logRecords[0].msg, "Hello world");
-    assertEquals(testStream.logRecords[1].msg, "  ^-- last log repeated 3 additional times");
+    assertEquals(
+      testStream.logRecords[1].msg,
+      "  ^-- last log repeated 3 additional times",
+    );
     assertEquals(testStream.logRecords[2].msg, "Hello world");
     assertEquals(testStream.logRecords[3].msg, "Hello world");
     assertEquals(testStream.logRecords[4].msg, "Hello world");
-  }
+  },
 });
