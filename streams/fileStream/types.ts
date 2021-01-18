@@ -1,4 +1,4 @@
-// Copyright 2020 the optic authors. All rights reserved. MIT license.
+// Copyright 2021 the optic authors. All rights reserved. MIT license.
 
 /** The strategy to take when initializing logs:
  * * `"append"` - Reuse log file if it exists, create otherwise

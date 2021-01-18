@@ -1,4 +1,4 @@
-// Copyright 2020 the optic authors. All rights reserved. MIT license.
+// Copyright 2021 the optic authors. All rights reserved. MIT license.
 import { Level, nameToLevel } from "./levels.ts";
 import type {
   Filter,

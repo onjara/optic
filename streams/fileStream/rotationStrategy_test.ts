@@ -1,4 +1,4 @@
-// Copyright 2020 the optic authors. All rights reserved. MIT license.
+// Copyright 2021 the optic authors. All rights reserved. MIT license.
 import { assert, assertThrows, test } from "../../test_deps.ts";
 import { every } from "./rotationStrategy.ts";
 import { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";

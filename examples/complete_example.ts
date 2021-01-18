@@ -1,4 +1,4 @@
-// Copyright 2020 the optic authors. All rights reserved. MIT license.
+// Copyright 2021 the optic authors. All rights reserved. MIT license.
 import { every, FileStream, of } from "../streams/fileStream/mod.ts";
 import { Level, Logger, LogRecord, Stream, TimeUnit } from "../mod.ts";
 import { JsonFormatter } from "../formatters/mod.ts";

@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-// Copyright 2020 the optic authors. All rights reserved. MIT license.
+// Copyright 2021 the optic authors. All rights reserved. MIT license.
 // Adapted from https://github.com/pvorb/clone
 // MIT - Copyright © 2011-2016 Paul Vorbach and contributors.
 

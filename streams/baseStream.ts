@@ -1,4 +1,4 @@
-// Copyright 2020 the optic authors. All rights reserved. MIT license.
+// Copyright 2021 the optic authors. All rights reserved. MIT license.
 import { Level, levelToName } from "../logger/levels.ts";
 import type { Formatter, LogMeta, LogRecord, Stream } from "../types.ts";
 import { LogMetaImpl } from "../logger/meta.ts";
