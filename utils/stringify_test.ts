@@ -120,7 +120,7 @@ test({
     );
     assertMatch(
       stringify(new Error("hello")),
-      /Error: hello\\n\s{4}at fn \(stringify_test\.ts:.*/,
+      /Error: hello\\n\s{4}at fn \(.*stringify_test\.ts:.*/,
     );
   },
 });

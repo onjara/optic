@@ -10,8 +10,9 @@ echo '*** Adding to git'
 git add .
 
 echo '*** Updating dependencies'
-eggs update --file ./deps.ts
-eggs update --file ./streams/fileStream/deps.ts
+udd ./deps.ts
+udd ./test_deps.ts
+udd ./streams/fileStream/deps.ts
 
 echo '*** Formatting code'
 deno fmt
