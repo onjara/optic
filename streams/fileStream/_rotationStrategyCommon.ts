@@ -53,7 +53,7 @@ export function matchesFilePattern(
   dirEntryName: string,
   regExpSafeFilename: string,
 ): boolean {
-  return dirEntryName.match(new RegExp(regExpSafeFilename + "\.\\d+$")) != null;
+  return dirEntryName.match(new RegExp(regExpSafeFilename + ".\\d+$")) != null;
 }
 
 export function matchesDatePattern(
@@ -61,7 +61,7 @@ export function matchesDatePattern(
   regExpSafeFilename: string,
 ): boolean {
   return dirEntryName.match(
-    new RegExp(regExpSafeFilename + "_\\d{4}\.\\d{2}\.\\d{2}$"),
+    new RegExp(regExpSafeFilename + "_\\d{4}.\\d{2}.\\d{2}$"),
   ) != null;
 }
 
@@ -70,7 +70,7 @@ export function matchesDateTimePattern(
   regExpSafeFilename: string,
 ): boolean {
   return dirEntryName.match(
-    new RegExp(regExpSafeFilename + "_\\d{4}\.\\d{2}\.\\d{2}_\\d{2}\.\\d{2}$"),
+    new RegExp(regExpSafeFilename + "_\\d{4}.\\d{2}.\\d{2}_\\d{2}.\\d{2}$"),
   ) != null;
 }
 
