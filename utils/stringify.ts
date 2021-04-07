@@ -126,7 +126,7 @@ function createReplacer(
       //therefore you can always test if a value is NaN by checking it for equality to itself
       return "NaN";
     } else if (typeof value === "bigint") {
-      return value.toLocaleString();
+      return value.toString();
     } else if (typeof value === "symbol") {
       return String(value);
     } else if (typeof value === "function") {
