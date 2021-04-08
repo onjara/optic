@@ -564,7 +564,7 @@ export class Logger {
   }
 
   protected getArgs(): string[] {
-    return Deno.args;
+    return 'args' in Deno ? Deno.args : [];
   }
 
   protected getEnv(): { get(key: string): string | undefined } {
