@@ -154,7 +154,7 @@ export interface StringifyOptions {
  * JSON stringifier that handles circular values, Maps, Arrays, Sets, RegExp and Dates
  *
  * @param the value to stringify
- * @param [options] a set of options to supply a custom replacer, custom 
+ * @param [options] a set of options to supply a custom replacer, custom
  * circular replacer, a date time formatter and indent configuration
  * @returns the stringified output in JSON format
  */

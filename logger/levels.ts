@@ -37,8 +37,8 @@ export function nameToLevel(name: string): number {
   return level === undefined ? 1 : level;
 }
 
-/** Returns the length of the longest log level name. This is used when 
- * formatting the level to allow all levels to be padded with spaces to 
+/** Returns the length of the longest log level name. This is used when
+ * formatting the level to allow all levels to be padded with spaces to
  * the same length as the longest level name.
  */
 export function longestLevelName(): number {

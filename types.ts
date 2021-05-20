@@ -9,7 +9,7 @@ export interface Stream {
    * Optional.  If implemented, this method is called after the stream is
    * setup in the logger and provides the opportunity for the stream to output
    * log header records.
-   * 
+   *
    * @param meta Contains metadata from the Logger instance
    */
   logHeader?(meta: LogMeta): void;
@@ -18,7 +18,7 @@ export interface Stream {
    * Optional.  If implemented, this method is called after the stream is
    * destroyed via the logger and provides the opportunity for the stream to
    * output log footer records.
-   * 
+   *
    * @param meta Contains metadata from the Logger instance
    */
   logFooter?(meta: LogMeta): void;
@@ -31,7 +31,7 @@ export interface Stream {
 
   /**
    * Optional.  Provides the opportunity for the stream to perform any required
-   * teardown.  This function is called when the stream is removed from the 
+   * teardown.  This function is called when the stream is removed from the
    * logger or the module exits
    */
   destroy?(): void;
@@ -39,8 +39,8 @@ export interface Stream {
   /**
    * Handle the populated log record.  This will, for example, format the log
    * record and publish the resulting record to the end point.
-   * 
-   * @param logRecord 
+   *
+   * @param logRecord
    */
   handle(logRecord: LogRecord): boolean;
 }
@@ -51,7 +51,7 @@ export interface Stream {
 export interface Formatter<T> {
   /**
    * Given a logRecord instance, format it for output to the stream endpoint
-   * @param logRecord 
+   * @param logRecord
    */
   format(logRecord: LogRecord): T;
 }
@@ -70,7 +70,7 @@ export interface DateTimeFormatter {
 
 /**
  * Define a monitor.  Monitors spy on log records and do not interfere in any
- * way with the log process. Monitors may take additional actions based on 
+ * way with the log process. Monitors may take additional actions based on
  * conditions met by the log record, collect stats, etc..
  */
 export type MonitorFn = (logRecord: LogRecord) => void;
@@ -90,7 +90,7 @@ export interface Monitor {
 
   /**
    * Optional.  Provides the opportunity for the monitor to perform any required
-   * teardown.  This function is called when the monitor is removed from the 
+   * teardown.  This function is called when the monitor is removed from the
    * logger or the module exits
    */
   destroy?(): void;
@@ -117,7 +117,7 @@ export interface Filter {
 
   /**
    * Optional.  Provides the opportunity for the filter to perform any required
-   * teardown.  This function is called when the filter is removed from the 
+   * teardown.  This function is called when the filter is removed from the
    * logger or the module exits
    */
   destroy?(): void;
@@ -144,7 +144,7 @@ export interface Transformer {
 
   /**
    * Optional.  Provides the opportunity for the transformer to perform any required
-   * teardown.  This function is called when the transformer is removed from the 
+   * teardown.  This function is called when the transformer is removed from the
    * logger or the module exits
    */
   destroy?(): void;

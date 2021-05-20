@@ -6,7 +6,7 @@ import { nonWhitespaceReplacer } from "./regExpReplacer.ts";
 import type { LogRecord } from "../types.ts";
 
 const noopStream = {
-  handle(lr: LogRecord): boolean {
+  handle(_lr: LogRecord): boolean {
     return true;
   },
 };

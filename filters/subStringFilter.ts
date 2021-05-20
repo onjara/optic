@@ -14,7 +14,7 @@ export class SubStringFilter implements Filter {
     this.#subString = subString;
   }
 
-  shouldFilterOut(stream: Stream, logRecord: LogRecord): boolean {
+  shouldFilterOut(_stream: Stream, logRecord: LogRecord): boolean {
     const msgAsString = asString(logRecord.msg);
     const metadataAsString = asString(logRecord.metadata);
     return msgAsString.indexOf(this.#subString) >= 0 ||

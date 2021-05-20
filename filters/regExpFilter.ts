@@ -19,7 +19,7 @@ export class RegExpFilter implements Filter {
     }
   }
 
-  shouldFilterOut(stream: Stream, logRecord: LogRecord): boolean {
+  shouldFilterOut(_stream: Stream, logRecord: LogRecord): boolean {
     if (this.#regExp.test(asString(logRecord.msg))) {
       return true;
     } else if (logRecord.metadata.length > 0) {

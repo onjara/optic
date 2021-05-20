@@ -1,5 +1,5 @@
 // Copyright 2021 the optic authors. All rights reserved. MIT license.
-import { assert, assertThrows, test } from "../test_deps.ts";
+import { assert, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import type { LogRecord } from "../types.ts";
 import { SubStringFilter } from "./subStringFilter.ts";
@@ -24,7 +24,7 @@ function lrMeta(data: unknown[]) {
 }
 
 const stream = {
-  handle(logRecord: LogRecord): boolean {
+  handle(_logRecord: LogRecord): boolean {
     return true;
   },
 };

@@ -5,6 +5,7 @@
 echo '*** Removing erroneous test output ***'
 rm -f log*.txt*
 rm -f *.log*
+rm -f *_log.file_*
 
 echo '*** Adding to git'
 git add .
@@ -18,7 +19,7 @@ echo '*** Formatting code'
 deno fmt
 
 echo '*** Linting code ***'
-deno lint --unstable
+deno lint
 
 echo '*** Testing code'
 deno test -A

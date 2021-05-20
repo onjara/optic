@@ -128,7 +128,7 @@ test({
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
     class TestableDateTimeRotationStrategy extends DateTimeRotationStrategy {
-      protected getBirthTime(fi: Deno.FileInfo | undefined): Date | null {
+      protected getBirthTime(_fi: Deno.FileInfo | undefined): Date | null {
         return twoDaysAgo;
       }
     }
@@ -151,14 +151,14 @@ test({
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
     class TestableDateTimeRotationStrategy extends DateTimeRotationStrategy {
-      protected getBirthTime(fi: Deno.FileInfo | undefined): Date | null {
+      protected getBirthTime(_fi: Deno.FileInfo | undefined): Date | null {
         return twoDaysAgo;
       }
     }
 
     await createFile(LOG_FILE);
     const rs = new TestableDateTimeRotationStrategy(1, "days");
-    rs.withFilenameFormatter((f: string, d: Date) => "my_rotated_file.log");
+    rs.withFilenameFormatter((_f: string, _d: Date) => "my_rotated_file.log");
     rs.initLogs(LOG_FILE, "append");
     assert(!exists(LOG_FILE));
     assert(exists("my_rotated_file.log"));

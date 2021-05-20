@@ -30,7 +30,7 @@ export function asString(data: unknown): string {
   } else if (typeof data === "object") {
     try {
       return stringify(data);
-    } catch (err) {
+    } catch (_err) {
       return "[Unable to stringify()]";
     }
   }

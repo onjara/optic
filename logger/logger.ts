@@ -124,8 +124,8 @@ export class Logger {
     return this.#name;
   }
 
-  /** 
-   * Add a stream to this logger. By default the logger comes with a console 
+  /**
+   * Add a stream to this logger. By default the logger comes with a console
    * stream.  Adding any additional streams removes this default stream.
    */
   addStream(stream: Stream): Logger {
@@ -174,8 +174,8 @@ export class Logger {
     return this;
   }
 
-  /** 
-   * Remove monitor from the logger.  Once removed it will no longer spy on 
+  /**
+   * Remove monitor from the logger.  Once removed it will no longer spy on
    * log records passing through the logger.
    */
   removeMonitor(monitorToRemove: Monitor): Logger {
@@ -257,7 +257,7 @@ export class Logger {
       // Deno.env requires --allow-env permissions.  Add check here if they are granted once this is stable,
       // but for now just catch the no permission error.
       return this.getEnv().get("OPTIC_MIN_LEVEL");
-    } catch (err) {
+    } catch (_err) {
       return undefined;
     }
   }
@@ -353,7 +353,7 @@ export class Logger {
   /**
    * Trace is the lowest log level used for intimate tracing of flow through
    * logic.
-   * 
+   *
    * @param msg primary log message
    * @param metadata supporting log message data
    */
@@ -368,7 +368,7 @@ export class Logger {
 
   /**
    * Debug is a low log level used for tracking down issues
-   * 
+   *
    * @param msg primary log message
    * @param metadata supporting log message data
    */
@@ -383,7 +383,7 @@ export class Logger {
 
   /**
    * Info is a mid/low log level used for recording informational messages
-   * 
+   *
    * @param msg primary log message
    * @param metadata supporting log message data
    */
@@ -399,7 +399,7 @@ export class Logger {
   /**
    * Warn is a mid log level used for recording situations that are unexpected
    * or not quite right, but which are not necessarily causing issues
-   * 
+   *
    * @param msg primary log message
    * @param metadata supporting log message data
    */
@@ -418,7 +418,7 @@ export class Logger {
   /**
    * Error is a high log level used for recording situations where errors are
    * occurring and causing issues
-   * 
+   *
    * @param msg primary log message
    * @param metadata supporting log message data
    */
@@ -434,7 +434,7 @@ export class Logger {
   /**
    * Critical is the highest log level used for recording situations where the
    * execution flow itself is at risk due to catastrophic failures
-   * 
+   *
    * @param msg primary log message
    * @param metadata supporting log message data
    */
@@ -452,7 +452,7 @@ export class Logger {
 
   /**
    * Log at any level, including custom levels.
-   * 
+   *
    * @param level - a LogLevel
    * @param msg primary log message
    * @param metadata supporting log message data
@@ -482,11 +482,11 @@ export class Logger {
   }
 
   /**
-   * Set this to false to disable the logger completely. Default is true.  A 
+   * Set this to false to disable the logger completely. Default is true.  A
    * disabled logger is effectively a no-op logger.  Logs are not logged,
    * deferred log message values are not resolved, and removing/adding streams,
    * filters, monitors and transformers are silently ignored with no effect.
-   * 
+   *
    * The only action streams, monitors, filters or transformers will undertake in
    * a disabled logger (and which were added before the logger was disabled) will
    * be to call `destroy()` on unload of the module.
@@ -497,8 +497,8 @@ export class Logger {
   }
 
   /**
-   * Causes the next log action to only be recorded at most every x time units.  
-   * 
+   * Causes the next log action to only be recorded at most every x time units.
+   *
    * Rate limiters work in a context. The context for the rate limiting is
    * determined, by default, on the amount, unit and log level.  Where two or
    * more `atMostEvery` statements match the same context, the same rate limiter
@@ -506,7 +506,7 @@ export class Logger {
    * conditions on which of the statements will be logged when passing the time
    * constraint.  To avoid this, you can enforce unique contexts by passing in
    * an optional context string.
-   * 
+   *
    * @param amount The number of time units which must pass before the log statement is allowed
    * @param unit The time unit related to the amount
    * @param context Optional unique context label to guarantee no side effects
@@ -519,16 +519,16 @@ export class Logger {
   }
 
   /**
-   * Causes the next log action to only be recorded every x times.  
-   * 
+   * Causes the next log action to only be recorded every x times.
+   *
    * Rate limiters work in a context. The context for the rate limiting is
    * determined, by default, on the amount, unit and log level.  Where two or
    * more `every` statements match the same context, the same rate limiter
    * will be used, possibly causing unintended side effects through race
-   * conditions on which of the statements will be logged when matching the 
+   * conditions on which of the statements will be logged when matching the
    * every 'x' condition.  To avoid this, you can enforce unique contexts by
    * passing in an optional context string.
-   * 
+   *
    * @param amount Only log this statement every `amount` times, otherwise skip
    * @param context Optional unique context label to guarantee no side effects
    * when using multiple rate limiting statements
@@ -545,7 +545,7 @@ export class Logger {
    * then the log record is skipped and an internal count is incremented. Once
    * a new log record which is not the same is encountered, a log message is
    * first output detailing how many duplicates in a row were encountered.
-   * 
+   *
    * @param shouldDedupe if not specified, then dedupe is enabled
    */
   withDedupe(shouldDedupe?: boolean): this {

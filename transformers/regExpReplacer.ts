@@ -4,8 +4,8 @@ import type { Level } from "../logger/levels.ts";
 import { clone } from "./deepClone.ts";
 
 /**
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter 
- * 
+ * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter
+ *
  * A replacer function passed to a javascript `string.replace(regExp, replacer)`
  * `args` will contain the following:
  * * p1..pn one arg for each reg ex group
@@ -20,7 +20,7 @@ export type Replacer = (fullMatch: string, ...args: unknown[]) => string;
  * If the match has no groups, then the entire match is obfuscated. If the match
  * contains groups, then only the groups are obfuscated and non-group characters
  * in the full match are left untouched.
- * 
+ *
  * See also https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter
  */
 export function alphaNumericReplacer(
@@ -48,7 +48,7 @@ export function alphaNumericReplacer(
  * If the match has no groups, then the entire match is obfuscated. If the match
  * contains groups, then only the groups are obfuscated and non-group characters
  * in the full match are left untouched.
- * 
+ *
  * See also https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter
  */
 export function nonWhitespaceReplacer(
@@ -70,10 +70,6 @@ export function nonWhitespaceReplacer(
   }
 }
 
-function escapeForRegExp(filename: string): string {
-  return filename.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 /**
  * A transformer to match regular expressions and replace with the specified
  * replacer function return value or replace all non-characters with `*`s.
@@ -91,7 +87,7 @@ export class RegExpReplacer implements Transformer {
     if (replacer) this.#replacer = replacer;
   }
 
-  transform(stream: Stream, logRecord: LogRecord): LogRecord {
+  transform(_stream: Stream, logRecord: LogRecord): LogRecord {
     let shouldRedactMsg = false;
     let shouldRedactMeta = false;
 

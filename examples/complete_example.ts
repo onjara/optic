@@ -21,12 +21,14 @@ const fileStream = new FileStream("logFile.txt")
 
 const log = new Logger()
   .withMinLogLevel(Level.Warn)
-  .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
+  .addFilter((_stream: Stream, logRecord: LogRecord) =>
+    logRecord.msg === "spam"
+  )
   .addTransformer(new PropertyRedaction("password"))
   .addStream(fileStream);
 
 log.info("Level too low. This won't be logged");
-const logVal: string = log.critical("Hello world"); // logs and returns "Hello world"
+const _logVal: string = log.critical("Hello world"); // logs and returns "Hello world"
 log.warn("spam"); // "spam" records are filtered out
 log.warn({ user: "jsmith", password: "secret_password" }); // logs { "user": "jsmith", "password": "[Redacted]" }
 log.debug(() => {

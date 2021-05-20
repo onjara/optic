@@ -2,11 +2,11 @@
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { LogMetaImpl } from "./meta.ts";
 import { Level } from "./levels.ts";
-import { Formatter, LogMeta, LogRecord, Stream } from "../types.ts";
+import { Formatter, LogMeta } from "../types.ts";
 import { BaseStream } from "../streams/baseStream.ts";
 
 class MockFormatter implements Formatter<string> {
-  format(lr: LogRecord): string {
+  format(): string {
     return "logged";
   }
 }
@@ -15,7 +15,7 @@ class TestStream extends BaseStream {
   constructor() {
     super(new MockFormatter());
   }
-  log(msg: string): void {}
+  log(): void {}
 }
 
 test({

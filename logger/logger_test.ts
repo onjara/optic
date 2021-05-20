@@ -42,7 +42,7 @@ class TestStream implements Stream {
 
 class TestMonitor implements Monitor {
   functionsCalled: string[] = [];
-  check(logRecord: LogRecord) {
+  check(_logRecord: LogRecord) {
     this.functionsCalled.push("check");
   }
   setup() {
@@ -54,7 +54,7 @@ class TestMonitor implements Monitor {
 }
 class TestFilter implements Filter {
   functionsCalled: string[] = [];
-  shouldFilterOut(stream: Stream, logRecord: LogRecord): boolean {
+  shouldFilterOut(_stream: Stream, _logRecord: LogRecord): boolean {
     this.functionsCalled.push("shouldFilterOut");
     return false;
   }
@@ -67,7 +67,7 @@ class TestFilter implements Filter {
 }
 class TestTransformer implements Transformer {
   functionsCalled: string[] = [];
-  transform(stream: Stream, logRecord: LogRecord): LogRecord {
+  transform(_stream: Stream, logRecord: LogRecord): LogRecord {
     this.functionsCalled.push("transform");
     return logRecord;
   }
@@ -272,7 +272,7 @@ test({
   fn() {
     class TestMonitor implements Monitor {
       checkCount = 0;
-      check(logRecord: LogRecord): void {
+      check(_logRecord: LogRecord): void {
         this.checkCount++;
       }
     }
@@ -600,7 +600,7 @@ test({
       .withMinLogLevel(Level.Info)
       .addTransformer(new PropertyRedaction("z"))
       .addFilter(new SubStringFilter("def"))
-      .addMonitor((logRecord: LogRecord) => {});
+      .addMonitor((_logRecord: LogRecord) => {});
     logger.error("abc");
     logger.error("abc");
     logger.error("abc");
@@ -692,14 +692,14 @@ test({
     assertEquals(testStream.functionsCalled.length, 0);
 
     let called = false;
-    logger.addMonitor((logRecord: LogRecord) => {
+    logger.addMonitor((_logRecord: LogRecord) => {
       called = true;
     });
-    logger.addFilter((stream: Stream, logRecord: LogRecord) => {
+    logger.addFilter((_stream: Stream, _logRecord: LogRecord) => {
       called = true;
       return true;
     });
-    logger.addTransformer((stream: Stream, logRecord: LogRecord) => {
+    logger.addTransformer((_stream: Stream, logRecord: LogRecord) => {
       called = true;
       return logRecord;
     });

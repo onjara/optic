@@ -15,7 +15,7 @@ export class PropertyRedaction implements Transformer {
     this.#redactionKey = propertyToRedact;
   }
 
-  transform(stream: Stream, logRecord: LogRecord): LogRecord {
+  transform(_stream: Stream, logRecord: LogRecord): LogRecord {
     let shouldRedactMsg = false;
     let shouldRedactMeta = this.#redactionKey === "metadata";
 

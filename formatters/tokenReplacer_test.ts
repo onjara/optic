@@ -73,12 +73,12 @@ test({
       .withDateTimeFormat("YYYY")
       .format(lr);
     assertEquals(output, "2020");
-    output = new TokenReplacer().withFormat("{dateTime}").withDateTimeFormat((
-      d: Date,
-    ) => "from fn").format(lr);
+    output = new TokenReplacer().withFormat("{dateTime}").withDateTimeFormat(
+      () => "from fn",
+    ).format(lr);
     assertEquals(output, "from fn");
     output = new TokenReplacer().withFormat("{dateTime}").withDateTimeFormat(
-      { formatDateTime: (d: Date) => "from class" },
+      { formatDateTime: () => "from class" },
     ).format(lr);
     assertEquals(output, "from class");
   },

@@ -23,7 +23,7 @@ class MsgPassThrough implements Formatter<string> {
 }
 
 class AlternativeMsgPassThrough implements Formatter<string> {
-  format(lr: LogRecord): string {
+  format(_lr: LogRecord): string {
     return "world";
   }
 }
@@ -181,10 +181,10 @@ test({
     const logger = new Logger("config").addStream(testStream)
       .withMinLogLevel(Level.Info)
       .addTransformer(new PropertyRedaction("z"))
-      .addFilter((stream: Stream, lr: LogRecord): boolean => {
+      .addFilter((_stream: Stream, lr: LogRecord): boolean => {
         return asString(lr.msg).indexOf("def") > -1;
       })
-      .addMonitor((logRecord: LogRecord) => {});
+      .addMonitor((_logRecord: LogRecord) => {});
     logger.error("abc");
     logger.error("abc");
     logger.error("abc");

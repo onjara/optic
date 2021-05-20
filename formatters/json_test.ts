@@ -3,7 +3,6 @@ import { assertEquals, assertMatch, assertThrows, test } from "../test_deps.ts";
 import { Level } from "../logger/levels.ts";
 import { JsonFormatter } from "./json.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
-import type { LogRecord } from "../types.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";
 
 test({
@@ -81,7 +80,7 @@ test({
     const jfStar = new JsonFormatter().withPrettyPrintIndentation("**");
     const newLrA = new PropertyRedaction("ljh").transform(
       {
-        handle(lR: LogRecord): boolean {
+        handle(): boolean {
           return true;
         },
       },

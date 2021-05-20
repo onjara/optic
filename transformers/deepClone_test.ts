@@ -26,6 +26,7 @@ test({
     assertEquals(clone(h), h);
     assertEquals(clone(j), j);
     assertEquals(clone(k), k);
+    assertEquals(clone(l), l);
   },
 });
 

@@ -1,5 +1,5 @@
 import { TimeUnit } from "../types.ts";
-import { Level, levelToName } from "./levels.ts";
+import { Level } from "./levels.ts";
 
 export class RateLimiter {
   #contexts = new Map<string, number>();

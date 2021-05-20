@@ -10,7 +10,7 @@ export type LogFileInitStrategy = "append" | "overwrite" | "mustNotExist";
 export type Periods = "minutes" | "hours" | "days";
 
 export interface RotationStrategy {
-  /** 
+  /**
    * On logger initialization, initLogs will be called to clean up any old logs
    * or other initialization required here.
    */
@@ -34,7 +34,7 @@ export interface RotationStrategy {
    * of(12).hours()
    * of(125).minutes()
    * ```
-   *  
+   *
    */
   withLogFileRetentionPolicy(
     logFileRetentionPolicy: LogFileRetentionPolicy,

@@ -13,7 +13,7 @@ import { getColorForLevel } from "./color.ts";
 
 /**
  * A formatter which allows you to use tokens in a string for place
- * substitutions of log record fields.  Tokens are wrapped in curly 
+ * substitutions of log record fields.  Tokens are wrapped in curly
  * brackets, e.g. {msg}, and must correspond to one of `{dateTime}`, `{level}`,
  * `{msg}`, `{metadata}` or `{logger}`.  Unrecognized tokens will be left
  * unmodified.
@@ -62,7 +62,7 @@ export class TokenReplacer implements Formatter<string> {
    * This can help ensure that the next field will start at the same position
    * regardless of the length of the level.  This advantage requires that any
    * preceding fields are also of fixed length.
-   * 
+   *
    * @param padding min length to pad the {level} token value
    */
   withLevelPadding(padding: number): TokenReplacer {
@@ -72,11 +72,11 @@ export class TokenReplacer implements Formatter<string> {
 
   /**
    * Set the format to be used by constructing a string with tokens.  Tokens
-   * are fields from a log record surrounded in curly brackets.  Available 
+   * are fields from a log record surrounded in curly brackets.  Available
    * fields are: `{dateTime}`, `{level}`, `{msg}`, `{metadata}` or `{logger}`.
    * Default format is `"{dateTime} {level} {msg} {metadata}"`
-   * 
-   * @param tokenString 
+   *
+   * @param tokenString
    */
   withFormat(tokenString: string): this {
     const matches = tokenString.match(/{([^{].+?)}/g);
@@ -94,10 +94,10 @@ export class TokenReplacer implements Formatter<string> {
   }
 
   /**
-   * Allows the ability of the formatter to apply custom formatting to the 
+   * Allows the ability of the formatter to apply custom formatting to the
    * log message date/time.
-   * 
-   * @param dtf a custom date formatter function, a `DateTimeFormatter` 
+   *
+   * @param dtf a custom date formatter function, a `DateTimeFormatter`
    * implementation, or a `SimpleDateTimeFormatter` format string (see
    * `SimpleDateTimeFormatter` for details)
    */
@@ -118,7 +118,7 @@ export class TokenReplacer implements Formatter<string> {
    * and off color formatting of logs. Default is false.  Color affects an
    * entire log message string.  The color used is defined by the colorRules
    * map.
-   * 
+   *
    * @param on If true or unspecified, logs will be output in color
    */
   withColor(on?: boolean): TokenReplacer {

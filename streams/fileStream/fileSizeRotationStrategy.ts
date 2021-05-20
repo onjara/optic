@@ -14,7 +14,7 @@ import {
 } from "./_rotationStrategyCommon.ts";
 
 /**
- * A rotation strategy based on file size.  When the current log file grows 
+ * A rotation strategy based on file size.  When the current log file grows
  * beyond `maxBytes`, this will trigger a rotation before the log message
  * is written guaranteeing that no log file is larger than `maxBytes`
  */
@@ -92,9 +92,9 @@ export class FileSizeRotationStrategy implements RotationStrategy {
   }
 
   /**
-   * On initialization, remove any log files which fall outside the specified 
+   * On initialization, remove any log files which fall outside the specified
    * retention policy.
-   * @param filename 
+   * @param filename
    */
   private handleLogFileRetentionInit(filename: string): void {
     const logFiles = getLogFilesInDir(

@@ -10,7 +10,7 @@ import type { DateTimeFormatter } from "../types.ts";
  * ```
  * The formatting options are as per below.  Any characters not formatted are
  * left as is.  Tokens are case sensitive.
- * 
+ *
  * |Token|Example|Value|
  * |-----|-------|-----|
  * |`hh` |`00..23`|2 digit hours (24 hour time)|
@@ -34,7 +34,7 @@ import type { DateTimeFormatter } from "../types.ts";
  * |`M`|`1..12`|1-2 digit month|
  * |`dddd`|`Tuesday`|long form day of week|
  * |`ddd`|`Tue`|short form day of week|
- * 
+ *
  */
 export class SimpleDateTimeFormatter implements DateTimeFormatter {
   constructor(private format: string) {}
