@@ -501,7 +501,7 @@ export class Logger {
    *
    * Rate limiters work in a context. The context for the rate limiting is
    * determined, by default, on the amount, unit and log level.  Where two or
-   * more `atMostEvery` statements match the same context, the same rate limiter
+   * more `atMostEvery` statements match the same amount/unit/level, the same rate limiter
    * will be used, possibly causing unintended side effects through race
    * conditions on which of the statements will be logged when passing the time
    * constraint.  To avoid this, you can enforce unique contexts by passing in
@@ -522,8 +522,8 @@ export class Logger {
    * Causes the next log action to only be recorded every x times.
    *
    * Rate limiters work in a context. The context for the rate limiting is
-   * determined, by default, on the amount, unit and log level.  Where two or
-   * more `every` statements match the same context, the same rate limiter
+   * determined, by default, on the amount and log level.  Where two or
+   * more `every` statements match the amount/log-level, the same rate limiter
    * will be used, possibly causing unintended side effects through race
    * conditions on which of the statements will be logged when matching the
    * every 'x' condition.  To avoid this, you can enforce unique contexts by
