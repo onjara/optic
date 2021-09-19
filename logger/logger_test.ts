@@ -22,6 +22,10 @@ import {
   UnknownProfileMark,
 } from "./profileMeasure.ts";
 
+const hrPermission = { name: "hrtime" } as const;
+const isHrTime =
+  (await Deno.permissions.query(hrPermission)).state == "granted";
+
 class TestStream implements Stream {
   functionsCalled: string[] = [];
   meta: LogMeta | undefined;
@@ -932,8 +936,13 @@ test({
     const logger = new Logger().addStream(testStream);
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.measure();
-    //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
-    assert(/^0 \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
+    if (isHrTime) {
+      //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
+      assert(/^0 \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
+    } else {
+      //e.g. 0ms for PROCESS_START and x ms for NOW
+      assert(/^0 \d+$/.test(testStream.logRecords[0].msg as string));
+    }
   },
 });
 
@@ -946,12 +955,21 @@ test({
     const logger = new Logger().addStream(testStream);
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.measure("the description");
-    //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
-    assert(
-      /^the description 0 \d+\.\d+$/.test(
-        testStream.logRecords[0].msg as string,
-      ),
-    );
+    if (isHrTime) {
+      //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
+      assert(
+        /^the description 0 \d+\.\d+$/.test(
+          testStream.logRecords[0].msg as string,
+        ),
+      );
+    } else {
+      //e.g. 0ms for PROCESS_START and x ms for NOW
+      assert(
+        /^the description 0 \d+$/.test(
+          testStream.logRecords[0].msg as string,
+        ),
+      );
+    }
   },
 });
 
@@ -965,8 +983,15 @@ test({
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.mark("end");
     logger.measure(between("start", "end"));
-    //e.g. xx.xxxms for start and xx.xxxms for end
-    assert(/^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
+    if (isHrTime) {
+      //e.g. xx.xxxms for start and xx.xxxms for end
+      assert(
+        /^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string),
+      );
+    } else {
+      //e.g. x ms for start and y ms for end
+      assert(/^\d+ \d+$/.test(testStream.logRecords[0].msg as string));
+    }
   },
 });
 
@@ -980,12 +1005,21 @@ test({
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.mark("end");
     logger.measure(between("start", "end"), "the description");
-    //e.g. xx.xxxms for start and xx.xxxms for end
-    assert(
-      /^the description \d+\.\d+ \d+\.\d+$/.test(
-        testStream.logRecords[0].msg as string,
-      ),
-    );
+    if (isHrTime) {
+      //e.g. xx.xxxms for start and xx.xxxms for end
+      assert(
+        /^the description \d+\.\d+ \d+\.\d+$/.test(
+          testStream.logRecords[0].msg as string,
+        ),
+      );
+    } else {
+      //e.g. xx ms for start and yy ms for end
+      assert(
+        /^the description \d+ \d+$/.test(
+          testStream.logRecords[0].msg as string,
+        ),
+      );
+    }
   },
 });
 
@@ -998,8 +1032,15 @@ test({
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.mark("start");
     logger.measure(from("start"));
-    //e.g. xx.xxxms for start and xx.xxxms for end
-    assert(/^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
+    if (isHrTime) {
+      //e.g. xx.xxxms for start and xx.xxxms for end
+      assert(
+        /^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string),
+      );
+    } else {
+      //e.g. xx ms for start and yy ms for end
+      assert(/^\d+ \d+$/.test(testStream.logRecords[0].msg as string));
+    }
   },
 });
 
