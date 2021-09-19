@@ -25,12 +25,24 @@ export type {
   Formatter,
   LogMeta,
   LogRecord,
+  MeasureFormatter,
   Monitor,
   MonitorFn,
+  ProfileMark,
   Stream,
   Transformer,
   TransformerFn,
 } from "./types.ts";
+
+// Profiling
+export {
+  between,
+  from,
+  NOW,
+  PROCESS_START,
+  to,
+  UnknownProfileMark,
+} from "./logger/profileMeasure.ts";
 
 // For transformer implementations, see:
 // https://github.com/onjara/optic/blob/master/transformers/propertyRedaction.ts

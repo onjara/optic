@@ -34,7 +34,6 @@ export interface RotationStrategy {
    * of(12).hours()
    * of(125).minutes()
    * ```
-   *
    */
   withLogFileRetentionPolicy(
     logFileRetentionPolicy: LogFileRetentionPolicy,

@@ -2,10 +2,11 @@
 # pre-commit.sh - Run this script prior to commiting any changes to git to ensure
 # that all code is properly updated, formatted, linted and tested.
 #
-echo '*** Removing erroneous test output ***'
+echo '*** Removing unnecessary test output and old code coverage ***'
 rm -f log*.txt*
 rm -f *.log*
 rm -f *_log.file_*
+rm -rf coverage
 
 echo '*** Adding to git'
 git add .
@@ -21,8 +22,14 @@ deno fmt
 echo '*** Linting code ***'
 deno lint
 
-echo '*** Testing code'
-deno test -A
+echo '*** Testing code with coverage'
+deno test -A --coverage=cov_profile
+deno coverage cov_profile --lcov > cov_profile/cov.lcov
+genhtml -o cov_profile/html cov_profile/cov.lcov
+
+echo '*** Check unstable also compiles'
+deno cache --unstable mod.ts
+deno cache --unstable streams/fileStream/mod.ts
 
 echo '*** Checking git status'
 git status

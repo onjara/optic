@@ -15,6 +15,7 @@ A powerful, highly extensible and easy to use logging framework for Deno.
 - Filters - keep your logs clean
 - Transformers - hide sensitive data, strip new lines, encode data, etc.
 - Monitors - watch your logs and take action
+- Profiling - measure the performance of your code
 
 ## Table of contents
 
@@ -25,6 +26,7 @@ A powerful, highly extensible and easy to use logging framework for Deno.
 5. [Monitors](#monitors)
 6. [Transformers](#transformers)
 7. [Filters](#filters)
+8. [Profiling](#profiling)
 
 ## Quick start
 
@@ -46,6 +48,7 @@ import {
   of,
 } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
 import {
+  between,
   Level,
   Logger,
   LogRecord,
@@ -103,12 +106,17 @@ log.error(() => {
 const x = 5;
 log.if(x > 10).error("Since x < 10 this doesn't get logged");
 
+log.mark("before loop");
 for (let i = 0; i < 1000000; i++) {
   log.every(100).warn("Logs every 100th iteration");
   log.atMostEvery(10, TimeUnit.SECONDS).warn(
     "Logs at most once every 10 seconds",
   );
 }
+log.mark("after loop");
+log.profilingConfig().withLogLevel(Level.Warn);
+// logs (at warn level) time, memory usage and ops called for loop duration
+log.measure(between("before loop", "after loop"));
 
 log.enabled(false);
 log.error("Logger is disabled, so this does nothing");
@@ -913,4 +921,131 @@ const subStringFilter = new SubStringFilter("user1234");
 const logger = new Logger().addFilter(subStringFilter);
 logger.info({ user: "joe1944", action: "login" }); // not filtered
 logger.info({ user: "user1234", action: "login" }); // filtered out
+```
+
+## Profiling
+
+Optic's profiling capabilities allow you to measure your code's performance.
+Profiling is based on marks which are recorded at various points in your code
+base. A mark is a snapshot of your running application, recording the time,
+memory consumption and ops calls (these are the calls between the V8 engine and
+Deno runtime). Measures are then used to output differences between two marks to
+your logs.
+
+### Recording marks
+
+Recording marks in your code is very straightforward. The example below takes a
+snapshot of the time, memory usage and ops calls and saves these against an
+identifier (e.g. `below`).
+
+```ts
+logger.mark("before");
+someFunction();
+logger.mark("after");
+```
+
+### Measuring
+
+Measuring outputs the difference between two marks to your logs. For example,
+this will measure the performance of `someFunction()`:
+
+```ts
+import { between } from "https://deno.land/x/optic/mod.ts";
+
+logger.mark("before");
+someFunction();
+logger.mark("after");
+
+logger.measure(between("before", "after"), "with description");
+```
+
+#### Sample output
+
+By default, profiling uses the `SummaryMeasureFormatter` to format the measure
+log output. Example output:
+
+```ts
+//Measuring 'before' -> 'after' (with description), took 790ms; heap usage increased 9.2 MB to 11.7 MB; 18 ops dispatched, all completed
+```
+
+#### Special marks
+
+There are two special marks which can be used, `NOW` and `PROCESS_START`. The
+special mark `NOW` will generate a mark at the time of measurement, while
+`PROCESS_START` represents the moment the process started (with 0ms time, 0
+memory usage and 0 ops calls). These special marks do not require you to use the
+`mark` function in the logger first.
+
+#### Measuring examples
+
+```ts
+import {
+  between,
+  from,
+  NOW,
+  PROCESS_START,
+  to,
+} from "https://deno.land/x/optic/mod.ts";
+
+logger.mark("before");
+someFunction();
+logger.mark("after");
+
+//Measure between two marks (with optional description)
+logger.measure(between("before", "after"));
+logger.measure(between(PROCESS_START, "after"));
+logger.measure(between("before", NOW), "with description");
+
+//Measure from a mark to NOW (with optional description)
+logger.measure(from("before"));
+logger.measure(from("before"), "with description");
+
+//Measure from PROCESS_START to mark (with optional description)
+logger.measure(to("after"));
+logger.measure(to("after"), "with description");
+
+//Mesure from PROCESS_START to NOW (with optional description)
+logger.measure();
+logger.measure("with description");
+```
+
+### Configuring the profiler
+
+There are a number of options for you to configure the profiler with if you
+wish.
+
+```ts
+//Defaults shown below
+logger.profilingConfig()
+  .enabled(true) //Enable or disable all recording of marks or measures
+  .captureMemory(true) //Enable or disable capturing of memory information
+  .captureOps(true) //Enable or disable capturing of ops calls
+  .withLogLevel(Level.Info) //Set the log level at which the profile measure is output
+  .withFormatter(new SummaryMeasureFormatter()); //Formats the profiling log message
+```
+
+### Custom measure output
+
+As described above, by default the `SummaryMeasureFormatter` is used to format
+the output. You can specify your own measure formatter by implementing the
+interface `MeasureFormatter`:
+
+```ts
+interface MeasureFormatter<T> {
+  format(startMark: ProfileMark, endMark: ProfileMark, label?: string): T;
+}
+```
+
+Example:
+
+```ts
+import { MeasureFormatter } from "https://deno.land/x/optic/mod.ts";
+
+const myFormatter: MeasureFormatter<string> = {
+  format(startMark: ProfileMark, endMark: ProfileMark, label?: string): string {
+    return (endMark.timestamp - startMark.timestamp) + "ms" +
+      (label ? (" " + label) : "");
+  },
+};
+log.profilingConfig().withFormatter(myFormatter);
 ```

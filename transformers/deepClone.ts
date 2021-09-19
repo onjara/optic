@@ -23,8 +23,7 @@ const nativePromise = Promise;
  * @param `depth` - set to a number if the object is only to be cloned to
  *    a particular depth. (optional - defaults to Infinity)
  * @param `prototype` - sets the prototype to be used when cloning an object.
- *    (optional - defaults to parent prototype).
-*/
+ *    (optional - defaults to parent prototype). */
 export function clone(
   parent: any,
   circular?: any,

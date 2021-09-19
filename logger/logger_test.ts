@@ -6,12 +6,21 @@ import type {
   Filter,
   LogMeta,
   LogRecord,
+  MeasureFormatter,
   Monitor,
+  ProfileMark,
   Stream,
   Transformer,
 } from "../types.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
 import { SubStringFilter } from "../filters/subStringFilter.ts";
+import {
+  between,
+  from,
+  PROCESS_START,
+  ProfilingConfig,
+  UnknownProfileMark,
+} from "./profileMeasure.ts";
 
 class TestStream implements Stream {
   functionsCalled: string[] = [];
@@ -76,6 +85,20 @@ class TestTransformer implements Transformer {
   }
   destroy() {
     this.functionsCalled.push("destroy");
+  }
+}
+
+class TestMeasureFormatter implements MeasureFormatter<string> {
+  startMark: ProfileMark | undefined;
+  endMark: ProfileMark | undefined;
+  label: string | undefined;
+
+  format(startMark: ProfileMark, endMark: ProfileMark, label?: string): string {
+    this.startMark = startMark;
+    this.endMark = endMark;
+    this.label = label;
+    return (label ? (label + " ") : "") + startMark.timestamp + " " +
+      endMark.timestamp;
   }
 }
 
@@ -760,5 +783,259 @@ test({
     assertEquals(testStream.logRecords[2].msg, "Hello world");
     assertEquals(testStream.logRecords[3].msg, "Hello world");
     assertEquals(testStream.logRecords[4].msg, "Hello world");
+  },
+});
+
+test({
+  name: "Test profiling config accessible",
+  fn() {
+    const logger = new Logger();
+    const config: ProfilingConfig = logger.profilingConfig();
+    assert(config);
+  },
+});
+
+test({
+  name: "Profile start mark is added in constructor",
+  fn() {
+    const logger = new class extends Logger {
+      getMarks(): Map<string | symbol, ProfileMark> {
+        return super.getMarks();
+      }
+    }();
+    assertEquals(logger.getMarks().size, 1);
+    assert(logger.getMarks().get(PROCESS_START));
+  },
+});
+
+test({
+  name: "If logger or profiling not enabled then mark not recorded",
+  fn() {
+    const logger = new class extends Logger {
+      getMarks(): Map<string | symbol, ProfileMark> {
+        return super.getMarks();
+      }
+    }();
+    logger.enabled(false);
+    logger.mark("should not record");
+    assertEquals(logger.getMarks().size, 1);
+    assert(logger.getMarks().get(PROCESS_START));
+
+    logger.enabled(true);
+    logger.profilingConfig().enabled(false);
+    logger.mark("should not record");
+    assertEquals(logger.getMarks().size, 1);
+    assert(logger.getMarks().get(PROCESS_START));
+  },
+});
+
+test({
+  name: "Mark is recorded with mem and ops",
+  fn() {
+    const logger = new class extends Logger {
+      getMarks(): Map<string | symbol, ProfileMark> {
+        return super.getMarks();
+      }
+    }();
+    assert(logger.mark("should record mark"));
+    const mark = logger.getMarks().get("should record mark");
+    assert(mark);
+    assertEquals(mark.label, "should record mark");
+    assert(mark.timestamp);
+    assert(mark.memory);
+    assert(mark.opMetrics);
+  },
+});
+
+test({
+  name: "Mark is recorded with mem and not ops",
+  fn() {
+    const logger = new class extends Logger {
+      getMarks(): Map<string | symbol, ProfileMark> {
+        return super.getMarks();
+      }
+    }();
+    logger.profilingConfig().captureOps(false);
+    assert(logger.mark("should record mark"));
+    const mark = logger.getMarks().get("should record mark");
+    assert(mark);
+    assertEquals(mark.label, "should record mark");
+    assert(mark.timestamp);
+    assert(mark.memory);
+    assert(!mark.opMetrics);
+  },
+});
+
+test({
+  name: "Mark is recorded with no mem, with ops",
+  fn() {
+    const logger = new class extends Logger {
+      getMarks(): Map<string | symbol, ProfileMark> {
+        return super.getMarks();
+      }
+    }();
+    logger.profilingConfig().captureOps(false);
+    assert(logger.mark("should record mark"));
+    const mark = logger.getMarks().get("should record mark");
+    assert(mark);
+    assertEquals(mark.label, "should record mark");
+    assert(mark.timestamp);
+    assert(mark.memory);
+    assert(!mark.opMetrics);
+  },
+});
+
+test({
+  name: "Mark is recorded without mem or ops",
+  fn() {
+    const logger = new class extends Logger {
+      getMarks(): Map<string | symbol, ProfileMark> {
+        return super.getMarks();
+      }
+    }();
+    logger.profilingConfig().captureOps(false).captureMemory(false);
+    assert(logger.mark("should record mark"));
+    const mark = logger.getMarks().get("should record mark");
+    assert(mark);
+    assertEquals(mark.label, "should record mark");
+    assert(mark.timestamp);
+    assert(!mark.memory);
+    assert(!mark.opMetrics);
+  },
+});
+
+test({
+  name: "Measures aren't recorded if logger or profiled is disabled",
+  fn() {
+    const testStream = new TestStream();
+    const testMeasureFormatter = new TestMeasureFormatter();
+    const logger = new Logger().addStream(testStream);
+    logger.profilingConfig().withFormatter(testMeasureFormatter);
+
+    logger.enabled(false);
+    logger.measure();
+    assert(!testMeasureFormatter.startMark);
+    assertEquals(testStream.logRecords.length, 0);
+
+    logger.enabled(true).profilingConfig().enabled(false);
+    logger.measure();
+    assert(!testMeasureFormatter.startMark);
+    assertEquals(testStream.logRecords.length, 0);
+  },
+});
+
+test({
+  name: "If no marks specified then measure process start to now",
+  fn() {
+    const testStream = new TestStream();
+    const testMeasureFormatter = new TestMeasureFormatter();
+    const logger = new Logger().addStream(testStream);
+    logger.profilingConfig().withFormatter(testMeasureFormatter);
+    logger.measure();
+    //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
+    assert(/^0 \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
+  },
+});
+
+test({
+  name:
+    "If no marks specified then measure process start to now, with description",
+  fn() {
+    const testStream = new TestStream();
+    const testMeasureFormatter = new TestMeasureFormatter();
+    const logger = new Logger().addStream(testStream);
+    logger.profilingConfig().withFormatter(testMeasureFormatter);
+    logger.measure("the description");
+    //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
+    assert(
+      /^the description 0 \d+\.\d+$/.test(
+        testStream.logRecords[0].msg as string,
+      ),
+    );
+  },
+});
+
+test({
+  name: "If marks specified, then measure between marks",
+  fn() {
+    const testStream = new TestStream();
+    const testMeasureFormatter = new TestMeasureFormatter();
+    const logger = new Logger().addStream(testStream);
+    logger.mark("start");
+    logger.profilingConfig().withFormatter(testMeasureFormatter);
+    logger.mark("end");
+    logger.measure(between("start", "end"));
+    //e.g. xx.xxxms for start and xx.xxxms for end
+    assert(/^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
+  },
+});
+
+test({
+  name: "If marks specified, then measure between marks, with description",
+  fn() {
+    const testStream = new TestStream();
+    const testMeasureFormatter = new TestMeasureFormatter();
+    const logger = new Logger().addStream(testStream);
+    logger.mark("start");
+    logger.profilingConfig().withFormatter(testMeasureFormatter);
+    logger.mark("end");
+    logger.measure(between("start", "end"), "the description");
+    //e.g. xx.xxxms for start and xx.xxxms for end
+    assert(
+      /^the description \d+\.\d+ \d+\.\d+$/.test(
+        testStream.logRecords[0].msg as string,
+      ),
+    );
+  },
+});
+
+test({
+  name: "If only start mark specified, then measure between start and now",
+  fn() {
+    const testStream = new TestStream();
+    const testMeasureFormatter = new TestMeasureFormatter();
+    const logger = new Logger().addStream(testStream);
+    logger.profilingConfig().withFormatter(testMeasureFormatter);
+    logger.mark("start");
+    logger.measure(from("start"));
+    //e.g. xx.xxxms for start and xx.xxxms for end
+    assert(/^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
+  },
+});
+
+test({
+  name: "Unknown marks are handled appropriately",
+  fn() {
+    const testStream = new TestStream();
+    const testMeasureFormatter = new TestMeasureFormatter();
+    const logger = new Logger().addStream(testStream);
+    logger.profilingConfig().withFormatter(testMeasureFormatter);
+    logger.measure(between("1", "2"));
+    assert(testMeasureFormatter.startMark instanceof UnknownProfileMark);
+    assertEquals(
+      (testMeasureFormatter.startMark as UnknownProfileMark).markName,
+      "1",
+    );
+    assert(testMeasureFormatter.endMark instanceof UnknownProfileMark);
+    assertEquals(
+      (testMeasureFormatter.endMark as UnknownProfileMark).markName,
+      "2",
+    );
+  },
+});
+
+test({
+  name: "Log measures are logged at profile config log level",
+  fn() {
+    const testStream = new TestStream();
+    const logger = new Logger().addStream(testStream);
+    logger.profilingConfig().withFormatter(new TestMeasureFormatter());
+    logger.measure();
+    assertEquals(testStream.logRecords[0].level, Level.Info);
+    assertEquals(testStream.logRecords[0].metadata, []);
+
+    logger.profilingConfig().withLogLevel(Level.Error);
+    logger.measure();
+    assertEquals(testStream.logRecords[1].level, Level.Error);
   },
 });

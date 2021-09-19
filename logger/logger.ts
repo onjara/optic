@@ -7,6 +7,7 @@ import type {
   LogRecord,
   Monitor,
   MonitorFn,
+  ProfileMark,
   Stream,
   TimeUnit,
   Transformer,
@@ -17,11 +18,37 @@ import { ImmutableLogRecord } from "./logRecord.ts";
 import { LogMetaImpl } from "./meta.ts";
 import { RateLimitContext, RateLimiter } from "./rateLimitContext.ts";
 import { Dedupe } from "./dedupe.ts";
+import {
+  MarkSpecifiers,
+  NOW,
+  PROCESS_START,
+  ProfilingConfig,
+  UnknownProfileMark,
+} from "./profileMeasure.ts";
 
 // deno-lint-ignore no-explicit-any
 export type AnyFunction = (...args: any[]) => any;
 
 const defaultStream = new ConsoleStream();
+const processStartMark: ProfileMark = {
+  timestamp: 0,
+  opMetrics: {
+    ops: {},
+    opsDispatched: 0,
+    opsDispatchedSync: 0,
+    opsDispatchedAsync: 0,
+    opsDispatchedAsyncUnref: 0,
+    opsCompleted: 0,
+    opsCompletedSync: 0,
+    opsCompletedAsync: 0,
+    opsCompletedAsyncUnref: 0,
+    bytesSentControl: 0,
+    bytesSentData: 0,
+    bytesReceived: 0,
+  } as Deno.Metrics,
+  memory: { rss: 0, heapTotal: 0, heapUsed: 0, external: 0 },
+  label: "Process start",
+};
 
 export class Logger {
   #name = "default";
@@ -38,8 +65,12 @@ export class Logger {
   #rateLimitContext: RateLimitContext | null = null;
   #deduper: Dedupe | null = null;
   #shouldDedupe = false;
+  #profilingConfig = new ProfilingConfig();
+  #marks: Map<string | symbol, ProfileMark> = new Map();
 
   constructor(name?: string) {
+    this.#marks.set(PROCESS_START, processStartMark);
+
     if (name) {
       this.#name = name;
       this.#meta.logger = name;
@@ -563,6 +594,98 @@ export class Logger {
     return this;
   }
 
+  /**
+   * @returns the profiling configuration controlling recording and output of the logger profiler
+   */
+  profilingConfig(): ProfilingConfig {
+    return this.#profilingConfig;
+  }
+
+  /**
+   * Take a profiling snapshot and save for later.  This will record, against the mark,
+   * the elapsed time since the process start and, optionally, memory consumption
+   * and ops calls (both enabled by default). Percision of the elapsed time is either
+   * milliseconds (default) or microseconds (if the `--allow-hrtime` permission is granted)
+   *
+   * @param label a label to indentify this profiling mark
+   */
+  mark(label: string): this {
+    if (!this.#enabled || !this.#profilingConfig.isEnabled()) return this;
+    this.#_mark(label);
+    return this;
+  }
+
+  #_mark(label: string | symbol): void {
+    this.#marks.set(label, {
+      label: typeof label === "string" ? label : label.description,
+      timestamp: performance.now(),
+      ...(this.#profilingConfig.isCaptureMemory() &&
+        { memory: Deno.memoryUsage() }),
+      ...(this.#profilingConfig.isCaptureOps() &&
+        { opMetrics: Deno.metrics() }),
+    });
+  }
+
+  /**
+   * Output to the logs a profiling measure, detailing time taken and, optionally, memory and
+   * ops usage between two 'marks'.  A profiling measure may have mark specifiers
+   * (determining the start and end of the measurement) and also an optional description. If no
+   * mark specifiers are supplied, then the measurement is from process start until 'now'.
+   * Note, output to the logs depends on both the logger and profiling capability being enabled (default) and
+   * the logger able to output logs at the log level specified in the profiling config (default is Level.Info)
+   *
+   * Examples:
+   * ```typescript
+   * logger.mark('my mark');  //capture profiling snapshot
+   * logger.measure(); //log profile of process start -> now
+   * logger.measure('hello');  //log profile of process start -> now with description 'hello'
+   * logger.measure(to('my mark'));  //log profile of process start -> 'my mark'
+   * logger.measure(from('my mark')); //log profile of 'my mark' -> now
+   * logger.mark('another mark');
+   * logger.measure(between('my mark', 'another mark')); //log profile beween 'my mark' and 'another mark'
+   * ```
+   *
+   * Example output:
+   * ```
+   * Measuring 'my mark' -> 'another mark' (description), took 790ms; heap usage increased 9.2 MB to 11.7 MB; 18 ops dispatched, all completed
+   * ```
+   */
+  measure(): this;
+  measure(marks: MarkSpecifiers): this;
+  measure(description: string): this;
+  measure(marks: MarkSpecifiers, description: string): this;
+  measure(
+    marksOrDescription?: MarkSpecifiers | string,
+    description?: string,
+  ): this {
+    if (!this.#enabled || !this.#profilingConfig.isEnabled()) return this;
+
+    const inputMarks: MarkSpecifiers | undefined =
+      typeof marksOrDescription === "string" ? undefined : marksOrDescription;
+    const inputDesc: string | undefined = typeof marksOrDescription === "string"
+      ? marksOrDescription
+      : description;
+
+    const msg = (): unknown => {
+      if (!inputMarks || inputMarks.endMark === NOW) {
+        this.#_mark(NOW);
+      }
+      const startMark: ProfileMark =
+        this.#marks.get(inputMarks?.startMark || PROCESS_START) ||
+        new UnknownProfileMark((inputMarks!.startMark as string));
+      const endMark: ProfileMark =
+        this.#marks.get(inputMarks?.endMark || NOW) ||
+        new UnknownProfileMark((inputMarks!.endMark as string));
+      return this.#profilingConfig.getFormatter().format(
+        startMark,
+        endMark,
+        inputDesc,
+      );
+    };
+    this.logToStreams(this.#profilingConfig.getLogLevel(), msg, []);
+    return this;
+  }
+
   protected getArgs(): string[] {
     return (Deno as { args?: string[] }).args ?? [];
   }
@@ -584,5 +707,8 @@ export class Logger {
     }
 
     return false;
+  }
+  protected getMarks(): Map<string | symbol, ProfileMark> {
+    return this.#marks;
   }
 }

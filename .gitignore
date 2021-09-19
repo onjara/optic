@@ -1,0 +1,9 @@
+perf-tests
+todo
+tester.ts
+.vscode
+logFile.txt*
+log*.txt*
+*.log*
+*_log.file_*
+cov_profile

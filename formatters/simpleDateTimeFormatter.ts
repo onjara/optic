@@ -34,7 +34,6 @@ import type { DateTimeFormatter } from "../types.ts";
  * |`M`|`1..12`|1-2 digit month|
  * |`dddd`|`Tuesday`|long form day of week|
  * |`ddd`|`Tue`|short form day of week|
- *
  */
 export class SimpleDateTimeFormatter implements DateTimeFormatter {
   constructor(private format: string) {}
