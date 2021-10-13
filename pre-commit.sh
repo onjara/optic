@@ -22,10 +22,12 @@ deno fmt
 echo '*** Linting code ***'
 deno lint
 
-echo '*** Testing code with coverage'
-deno test -A --coverage=cov_profile
-deno coverage cov_profile --lcov > cov_profile/cov.lcov
-genhtml -o cov_profile/html cov_profile/cov.lcov
+#echo '*** Testing code with coverage'
+#deno test -A --coverage=cov_profile
+#deno coverage cov_profile --lcov > cov_profile/cov.lcov
+#genhtml -o cov_profile/html cov_profile/cov.lcov
+
+deno test -A
 
 echo '*** Check unstable also compiles'
 deno cache --unstable mod.ts

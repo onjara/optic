@@ -141,7 +141,7 @@ test({
     baseStream.logHeader(logMeta());
     assertEquals(baseStream.logs.length, 1);
     assertStringIncludes(
-      (baseStream.logs[0] as string),
+      baseStream.logs[0] as string,
       "Logging session initialized",
     );
   },
@@ -168,7 +168,7 @@ test({
     testStream.logFooter(meta);
     assertEquals(testStream.logs.length, 1);
     assertStringIncludes(
-      (testStream.logs[0] as string),
+      testStream.logs[0] as string,
       "Logging session complete.  Duration",
     );
   },

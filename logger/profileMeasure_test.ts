@@ -127,7 +127,8 @@ test({
       getMark({ label: "Now", memory: false, ops: false }),
     );
     assert(
-      /^Measuring 'Process start' -> 'Now', took \d+(?:\.\d+)?ms$/.test(output),
+      /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms$/
+        .test(output),
     );
   },
 });
@@ -141,7 +142,7 @@ test({
       "the description",
     );
     assert(
-      /^Measuring 'Process start' -> 'Now' \(the description\), took \d+(?:\.\d+)?ms$/
+      /^Measuring 'Process start' -> 'Now' \(the description\), took (?:\d+s\s)?\d+(?:\.\d+)?ms$/
         .test(output),
     );
   },
@@ -160,7 +161,7 @@ test({
       getMark({ label: "Now", memory: true, ops: false }),
     );
     assert(
-      /^Measuring 'Process start' -> 'Now', took \d+(?:\.\d+)?ms; heap usage is \d+\.\d+ [A-Z]{2}$/
+      /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; heap usage is \d+\.\d+ [A-Z]{2}$/
         .test(output),
     );
 
@@ -183,14 +184,14 @@ test({
       getMark({ label: "Now", memory: false, ops: true }),
     );
     assert(
-      /^Measuring 'Process start' -> 'Now', took \d+(?:\.\d+)?ms; \d+ ops dispatched, all completed$/
+      /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; \d+ ops dispatched, all completed$/
         .test(output),
     );
 
     const mark = getMark({ label: "Now", memory: false, ops: true });
     const outputNoOps = smf.format(mark, mark);
     assert(
-      /^Measuring 'Now' -> 'Now', took \d+(?:\.\d+)?ms; no ops dispatched, all completed$/
+      /^Measuring 'Now' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; no ops dispatched, all completed$/
         .test(outputNoOps),
     );
 
@@ -200,7 +201,7 @@ test({
       getMark({ label: "Now", memory: false, ops: true }),
     );
     assert(
-      /^Measuring 'Process start' -> 'Now', took \d+(?:\.\d+)?ms; \d+ ops dispatched, 1 ops still to complete$/
+      /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; \d+ ops dispatched, 1 ops still to complete$/
         .test(outputWithPendingOp),
     );
   },

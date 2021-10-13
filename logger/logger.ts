@@ -672,10 +672,10 @@ export class Logger {
       }
       const startMark: ProfileMark =
         this.#marks.get(inputMarks?.startMark || PROCESS_START) ||
-        new UnknownProfileMark((inputMarks!.startMark as string));
+        new UnknownProfileMark(inputMarks!.startMark as string);
       const endMark: ProfileMark =
         this.#marks.get(inputMarks?.endMark || NOW) ||
-        new UnknownProfileMark((inputMarks!.endMark as string));
+        new UnknownProfileMark(inputMarks!.endMark as string);
       return this.#profilingConfig.getFormatter().format(
         startMark,
         endMark,

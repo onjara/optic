@@ -14,10 +14,10 @@ export function formatMs(ms: number): string {
   let duration = ms - (hours * msInHour);
 
   const minutes = Math.trunc(duration / msInMinute);
-  duration -= (minutes * msInMinute);
+  duration -= minutes * msInMinute;
 
   const seconds = Math.trunc(duration / msInSecond);
-  duration -= (seconds * msInSecond);
+  duration -= seconds * msInSecond;
 
   if (hours > 0) portions.push(hours + "h");
   if (minutes > 0) portions.push(minutes + "m");
@@ -36,5 +36,5 @@ export function formatBytes(bytes: number) {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   const i = Math.floor(Math.log(Math.abs(bytes)) / Math.log(k));
-  return (bytes / Math.pow(k, i)).toFixed((i == 0 ? 0 : 1)) + " " + sizes[i];
+  return (bytes / Math.pow(k, i)).toFixed(i == 0 ? 0 : 1) + " " + sizes[i];
 }
