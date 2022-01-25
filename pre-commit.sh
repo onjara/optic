@@ -35,3 +35,7 @@ deno cache --unstable streams/fileStream/mod.ts
 
 echo '*** Checking git status'
 git status
+
+echo '#####'
+echo 'To sign a new tag:  git tag -s 1.3.13 -m "your tag message"'
+echo '#####'
