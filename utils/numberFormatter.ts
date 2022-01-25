@@ -1,6 +1,6 @@
 // Copyright 2021 the optic authors. All rights reserved. MIT license.
-const isHrtimeAllowed =
-  Deno.permissions && (await Deno.permissions.query({ name: "hrtime" })).state === "granted";
+const isHrtimeAllowed = Deno.permissions &&
+  (await Deno.permissions.query({ name: "hrtime" })).state === "granted";
 
 export function formatMs(ms: number): string {
   if (ms < 0) return ms + "ms";

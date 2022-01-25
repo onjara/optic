@@ -79,7 +79,7 @@ test({
     );
 
     const record = meta.toRecord(stream);
-    assert(record.hasOwnProperty("recordsFiltered"));
-    assert(!record.hasOwnProperty("duplicatedRecords"));
+    assert(Object.prototype.hasOwnProperty.call(record, "recordsFiltered"));
+    assert(!Object.prototype.hasOwnProperty.call(record, "duplicatedRecords"));
   },
 });

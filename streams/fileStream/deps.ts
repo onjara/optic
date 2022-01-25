@@ -2,9 +2,9 @@
 export {
   basename as posixBasename,
   dirname as posixDirname,
-} from "https://deno.land/std@0.111.0/path/posix.ts";
+} from "https://deno.land/std@0.122.0/path/posix.ts";
 export {
   basename as win32Basename,
   dirname as win32Dirname,
-} from "https://deno.land/std@0.111.0/path/win32.ts";
-export { BufWriterSync } from "https://deno.land/std@0.111.0/io/buffer.ts";
+} from "https://deno.land/std@0.122.0/path/win32.ts";
+export { BufWriterSync } from "https://deno.land/std@0.122.0/io/buffer.ts";
