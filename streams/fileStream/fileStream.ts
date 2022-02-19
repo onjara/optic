@@ -19,7 +19,7 @@ export class FileStream extends BaseStream {
   #logFileInitStrategy: LogFileInitStrategy = "append";
   #maxBufferSize = 8192;
   #buffer!: BufWriterSync;
-  #logFile!: Deno.File;
+  #logFile!: Deno.FsFile;
   #deferredLogQueue: LogRecord[] = [];
   #encoder = new TextEncoder();
 
