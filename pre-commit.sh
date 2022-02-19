@@ -37,6 +37,7 @@ echo '*** Checking git status'
 git status
 
 echo '#####'
+echo "Latest tag is: $(git describe --abbrev=0)"
 echo 'To sign a new tag:  git tag -s 1.3.13 -m "your tag message"'
 echo 'To push tags:       git push --tags'
 echo '#####'
