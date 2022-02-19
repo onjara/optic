@@ -38,4 +38,5 @@ git status
 
 echo '#####'
 echo 'To sign a new tag:  git tag -s 1.3.13 -m "your tag message"'
+echo 'To push tags:       git push --tags'
 echo '#####'
