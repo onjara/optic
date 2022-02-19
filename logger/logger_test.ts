@@ -1,4 +1,4 @@
-// Copyright 2021 the optic authors. All rights reserved. MIT license.
+// Copyright 2022 the optic authors. All rights reserved. MIT license.
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { Logger } from "./logger.ts";
 import { Level } from "./levels.ts";

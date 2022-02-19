@@ -1,4 +1,4 @@
-// Copyright 2021 the optic authors. All rights reserved. MIT license.
+// Copyright 2022 the optic authors. All rights reserved. MIT license.
 const isHrtimeAllowed = Deno.permissions &&
   (await Deno.permissions.query({ name: "hrtime" })).state === "granted";
 

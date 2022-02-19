@@ -1,4 +1,4 @@
-// Copyright 2021 the optic authors. All rights reserved. MIT license.
+// Copyright 2022 the optic authors. All rights reserved. MIT license.
 import { assertEquals, assertMatch, test } from "../test_deps.ts";
 import { asString } from "./asString.ts";
 

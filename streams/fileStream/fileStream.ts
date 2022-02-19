@@ -1,4 +1,4 @@
-// Copyright 2021 the optic authors. All rights reserved. MIT license.
+// Copyright 2022 the optic authors. All rights reserved. MIT license.
 import { BaseStream } from "../baseStream.ts";
 import { LogMeta, LogRecord, ValidationError } from "../../types.ts";
 import { TokenReplacer } from "../../formatters/tokenReplacer.ts";

@@ -1,4 +1,4 @@
-// Copyright 2021 the optic authors. All rights reserved. MIT license.
+// Copyright 2022 the optic authors. All rights reserved. MIT license.
 import { assertEquals, test } from "../test_deps.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 import { Level } from "./levels.ts";

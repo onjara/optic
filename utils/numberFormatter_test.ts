@@ -1,4 +1,4 @@
-// Copyright 2021 the optic authors. All rights reserved. MIT license.
+// Copyright 2022 the optic authors. All rights reserved. MIT license.
 import { assertEquals, test } from "../test_deps.ts";
 import { formatBytes, formatMs } from "./numberFormatter.ts";
 
