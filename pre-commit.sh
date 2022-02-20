@@ -30,8 +30,8 @@ deno lint
 deno test -A
 
 echo '*** Check unstable also compiles'
-deno cache --unstable mod.ts
-deno cache --unstable streams/fileStream/mod.ts
+deno cache --reload --unstable mod.ts
+deno cache --reload --unstable streams/fileStream/mod.ts
 
 echo '*** Checking git status'
 git status
