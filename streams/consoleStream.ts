@@ -6,7 +6,6 @@ import { TokenReplacer } from "../formatters/tokenReplacer.ts";
  * TokenReplacer log formatter with color.
  */
 export class ConsoleStream extends BaseStream {
-  #started = new Date();
 
   constructor() {
     super(new TokenReplacer().withColor());

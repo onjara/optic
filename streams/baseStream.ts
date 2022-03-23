@@ -13,8 +13,8 @@ export abstract class BaseStream implements Stream {
   outputHeader = true;
   outputFooter = true;
 
-  constructor(defaultFormatters: Formatter<string>) {
-    this.#formatter = defaultFormatters;
+  constructor(defaultFormatter: Formatter<string>) {
+    this.#formatter = defaultFormatter;
   }
 
   abstract log(msg: string): void;
@@ -59,6 +59,10 @@ export abstract class BaseStream implements Stream {
   withLogFooter(on?: boolean): this {
     this.outputFooter = (on === undefined) || on;
     return this;
+  }
+
+  getFormatter(): Formatter<string> {
+    return this.#formatter;
   }
 
   format(logRecord: LogRecord): string {
