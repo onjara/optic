@@ -2,9 +2,8 @@
 import type { DateTimeFormatter } from "../types.ts";
 
 /**
- * A simple Date/Time formatter class, partly based on moment's date formatting
- * syntax.  This class takes as in put a string which defines the formatting of
- * the timestamp.  E.g.
+ * A simple Date/Time formatter class.  This class takes as input a string which
+ * defines the formatting of the timestamp.  E.g.
  * ```
  * new SimpleDateTimeFormatter('hh:mm:ss:SSS YYYY-MM-DD');
  * ```
@@ -34,6 +33,10 @@ import type { DateTimeFormatter } from "../types.ts";
  * |`M`|`1..12`|1-2 digit month|
  * |`dddd`|`Tuesday`|long form day of week|
  * |`ddd`|`Tue`|short form day of week|
+ * |`t`|`+120`, `-330`|minutes offset of timezone from UTC
+ * |`tt`|`+0200`, `-0530`|hours/minutes offset of timezone from UTC
+ * |`ttt`|`UTC+0200`, `UTC-0530`|hours/minutes offset of timezone from UTC
+ * |`tttt`|`GMT+0200`, `GMT-0530`|hours/minutes offset of timezone from GMT
  */
 export class SimpleDateTimeFormatter implements DateTimeFormatter {
   constructor(private format: string) {}
@@ -194,10 +197,29 @@ export class SimpleDateTimeFormatter implements DateTimeFormatter {
       formatted = formatted.replace("ddd", this.#shortDays[dateTime.getDay()]);
     }
 
+    // Format timezone
+    if (formatted.indexOf("tttt") >= 0) {
+      formatted = formatted.replace("tttt", "GMT" + this.offsetMinutesToHoursMinutes(dateTime));
+    } else if (formatted.indexOf("ttt") >= 0) {
+      formatted = formatted.replace("ttt", "UTC" + this.offsetMinutesToHoursMinutes(dateTime));
+    } else if (formatted.indexOf("tt") >= 0) {
+      formatted = formatted.replace("tt", this.offsetMinutesToHoursMinutes(dateTime));
+    } else if (formatted.indexOf("t") >= 0) {
+      formatted = formatted.replace("t", dateTime.getTimezoneOffset() < 0 ? "" + dateTime.getTimezoneOffset() : "+" + dateTime.getTimezoneOffset());
+    }
+
     return formatted;
   }
 
   private toStringWithSignificantDigits(milli: number, sigFig: number) {
-    return String(milli).padStart(3, "0").substr(0, sigFig);
+    return String(milli).padStart(3, "0").slice(0, sigFig);
+  }
+
+  private offsetMinutesToHoursMinutes(dateTime: Date) {
+    const minutes = dateTime.getTimezoneOffset();
+    const hours = "" + Math.abs(Math.floor(minutes/60));
+    const mins = "" + Math.abs(minutes%60);
+    const sign = minutes < 0 ? "-" : "+";
+    return sign + hours.padStart(2, "0") + mins.padStart(2, "0");
   }
 }
