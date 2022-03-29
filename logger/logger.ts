@@ -525,6 +525,13 @@ export class Logger {
   }
 
   /**
+   * @returns true if the logger is currently enabled
+   */
+  isEnabled(): boolean {
+    return this.#enabled;
+  }
+
+  /**
    * Causes the next log action to only be recorded at most every x time units.
    *
    * Rate limiters work in a context. The context for the rate limiting is
