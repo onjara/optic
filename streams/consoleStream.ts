@@ -13,6 +13,6 @@ export class ConsoleStream extends BaseStream {
   }
 
   log(msg: string): void {
-    console.log(msg);
+    console.error(msg);
   }
 }
