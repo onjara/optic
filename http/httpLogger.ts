@@ -1,29 +1,27 @@
 import { ConnInfo, Handler } from "./http_deps.ts";
-import { ConsoleStream } from "../streams/consoleStream.ts";
 import { Filter, FilterFn, Monitor, MonitorFn, Stream } from "../types.ts";
 import { isRequestResponseConsumer } from "./types.ts";
 import { HttpLogRecord } from "./httpLogRecord.ts";
 import { Logger } from "../logger/logger.ts";
-import { HttpFormatter } from "./httpFormatter.ts";
 import { BaseStream } from "../mod.ts";
+import { HttpConsoleStream } from "./httpConsoleStream.ts";
 
 export class HttpLogger {
   #logger:Logger = new Logger();
-  #defaultConsoleStream = new ConsoleStream();
+  #defaultConsoleStream = new HttpConsoleStream();
   #streamAdded = false;
   #onError: undefined | ((error: unknown) => Response | Promise<Response>);
   #cloneRequest = false;
   #cloneResponse = false;
+  #enabled = true;
 
   constructor() {
-    this.#defaultConsoleStream.withLogFooter(false);
-    this.#defaultConsoleStream.withLogHeader(false);
-    this.#defaultConsoleStream.withFormat(new HttpFormatter());
     this.#logger.addStream(this.#defaultConsoleStream);
     this.setCloneRequestResponseAttributes(this.#defaultConsoleStream);
   }
 
   addStream(stream: Stream): HttpLogger {
+    if (!this.#enabled) return this;
     if (!this.#streamAdded) {
       this.#logger.removeStream(this.#defaultConsoleStream);
       this.#streamAdded = true;
@@ -47,42 +45,50 @@ export class HttpLogger {
   } 
 
   removeStream(removeStream: Stream): HttpLogger {
+    if (!this.#enabled) return this;
     this.#logger.removeStream(removeStream);
     return this;
   }
 
   addMonitor(monitor: Monitor | MonitorFn): HttpLogger {
+    if (!this.#enabled) return this;
     this.#logger.addMonitor(monitor);
     return this;
   }
 
   removeMonitor(monitorToRemove: Monitor): HttpLogger{
+    if (!this.#enabled) return this;
     this.#logger.removeMonitor(monitorToRemove);
     return this;
   }
   
   addFilter(filter: Filter | FilterFn): HttpLogger {
+    if (!this.#enabled) return this;
     this.#logger.addFilter(filter);
     return this;
   }
 
   removeFilter(filterToRemove: Filter): HttpLogger {
+    if (!this.#enabled) return this;
     this.#logger.removeFilter(filterToRemove);
     return this;
   }
 
-  enableLogging(condition: boolean): HttpLogger {
-    this.#logger.enabled(condition);
+  enabled(condition: boolean): HttpLogger {
+    this.#enabled = condition;
     return this;
+  }
+
+  /**
+   * @returns true if the logger is currently enabled
+   */
+   isEnabled(): boolean {
+    return this.#enabled;
   }
 
   withRequestErrorHandler(errorHandler: (error: unknown) => Response | Promise<Response>): HttpLogger {
+    if (!this.#enabled) return this;
     this.#onError = errorHandler;
-    return this;
-  }
-
-  withConsoleFormat(format:string): HttpLogger {
-    
     return this;
   }
 
@@ -102,17 +108,17 @@ export class HttpLogger {
       }
   
       logRecord.response = response;
-      this.#logger.info(logRecord);
+      if (this.#enabled) this.#logger.info(logRecord);
     } catch (error: unknown) {
       // Invoke onError handler when request handler throws, if available,
       // else bubble error back up to server
       if (this.#onError) {
         response = await this.#onError(error);
         logRecord.response = response;
-        this.#logger.info(logRecord);
+        if (this.#enabled) this.#logger.info(logRecord);
       } else {
         logRecord.response = error;
-        this.#logger.info(logRecord);
+        if (this.#enabled) this.#logger.info(logRecord);
         throw error;
       }
     }

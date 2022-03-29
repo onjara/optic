@@ -24,4 +24,8 @@ export class HttpConsoleStream implements HttpStream {
     this.consumesResponseBody = this.#formatter.consumesResponseBody;
     return this;
   }
+
+  getFormatter(): HttpFormatter {
+    return this.#formatter;
+  }
 }
