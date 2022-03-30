@@ -15,7 +15,7 @@ export class ConsoleStream extends BaseStream {
   }
 
   /**
-   * Unused but available to call console.log directly.  
+   * Unused but available to call console.log directly.
    * @param msg log message string
    */
   override log(msg: string): void {
