@@ -51,7 +51,8 @@ const processStartMark: ProfileMark = {
 };
 
 const opticEnvPermission = { name: "env", path: "OPTIC_MIN_LEVEL" } as const;
-const opticEnvGranted = (await Deno.permissions.query(opticEnvPermission)).state == "granted";
+const opticEnvGranted =
+  (await Deno.permissions.query(opticEnvPermission)).state == "granted";
 
 export class Logger {
   #name = "default";

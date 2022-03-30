@@ -2,15 +2,15 @@
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { ConsoleStream } from "./consoleStream.ts";
 import { Level } from "../logger/levels.ts";
-import { Formatter,LogRecord } from "../types.ts";
+import { Formatter, LogRecord } from "../types.ts";
 
 class MsgFormatter implements Formatter<string> {
   format(logRecord: LogRecord): string {
-    return '' + logRecord.msg;
+    return "" + logRecord.msg;
   }
 }
 
-function logToConsole(level:Level): void {
+function logToConsole(level: Level): void {
   const cs = new ConsoleStream().withFormat(new MsgFormatter());
   cs.handle({
     msg: "hello",
@@ -18,7 +18,7 @@ function logToConsole(level:Level): void {
     metadata: [],
     dateTime: new Date(),
     logger: "default",
-});
+  });
 }
 
 test({

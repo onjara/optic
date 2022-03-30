@@ -15,7 +15,7 @@ export class ConsoleStream extends BaseStream {
   }
 
   /**
-   * Always log to console.log 
+   * Always log to console.log
    * @param msg log message string
    */
   override log(msg: string): void {
@@ -24,12 +24,12 @@ export class ConsoleStream extends BaseStream {
 
   /**
    * Logs the output to the appropriate console handler.
-   * 
+   *
    * In reality this means:
    * - Warnings, errors and criticals are logged to stderr stream
    * - Everything else is written to the stdout stream
-   * 
-   * @param logRecord 
+   *
+   * @param logRecord
    * @returns true
    */
   override handle(logRecord: LogRecord): boolean {
@@ -50,5 +50,4 @@ export class ConsoleStream extends BaseStream {
 
     return true;
   }
-
 }
