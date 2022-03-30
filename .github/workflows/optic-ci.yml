@@ -21,4 +21,4 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: deno lint --unstable
       - name: run tests
-        run: deno test --allow-read --allow-write --allow-run
+        run: deno test --allow-read=. --allow-write=. --allow-run=touch --allow-env
