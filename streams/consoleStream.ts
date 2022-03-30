@@ -25,7 +25,7 @@ export class ConsoleStream extends BaseStream {
   /**
    * Logs the output to the appropriate console handler.
    *
-   * In reality this means:
+   * Specifically for a Deno process, this ultimately means:
    * - Warnings, errors and criticals are logged to stderr stream
    * - Everything else is written to the stdout stream
    *
