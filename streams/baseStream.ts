@@ -104,4 +104,8 @@ export abstract class BaseStream implements Stream {
       logger: meta.logger,
     };
   }
+
+  protected get minLevel() {
+    return this.#minLevel;
+  }
 }
