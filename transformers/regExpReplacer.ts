@@ -121,7 +121,7 @@ export class RegExpReplacer implements Transformer {
     if (isObjectButNotArray(obj)) {
       for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          const castObj = (obj as { [key: string]: unknown });
+          const castObj = obj as { [key: string]: unknown };
           if (typeof castObj[key] === "string") {
             if ((castObj[key] as string).match(regExp)) {
               return true;
@@ -185,7 +185,7 @@ class ObfuscatedViaRegExpLogRecord implements LogRecord {
     if (isObjectButNotArray(obj)) {
       for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          const castObj = (obj as { [key: string]: unknown });
+          const castObj = obj as { [key: string]: unknown };
           if (typeof castObj[key] === "string") {
             castObj[key] = (castObj[key] as string).replace(regExp, replacer);
           } else if (typeof castObj[key] === "object") {

@@ -41,7 +41,7 @@ export class PropertyRedaction implements Transformer {
     if (isObjectButNotErrorNorArray(obj)) {
       for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          const castObj = (obj as { [key: string]: unknown });
+          const castObj = obj as { [key: string]: unknown };
           if (key === property) {
             return true;
           } else if (typeof castObj[key] === "object") {
@@ -92,7 +92,7 @@ class ObfuscatedPropertyLogRecord implements LogRecord {
     if (isObjectButNotErrorNorArray(obj)) {
       for (const key in (obj as Record<string, unknown>)) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          const castObj = (obj as { [key: string]: unknown });
+          const castObj = obj as { [key: string]: unknown };
           if (key === property) {
             castObj[key] = "[Redacted]";
           } else if (typeof castObj[key] === "object") {

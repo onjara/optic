@@ -28,3 +28,15 @@ test({
     assertEquals(nameToLevel("made up level"), 1);
   },
 });
+
+test({
+  name: "level name map returns level for name case insensitive",
+  fn() {
+    assertEquals(nameToLevel("trace"), Level.Trace);
+    assertEquals(nameToLevel("DEBUG"), Level.Debug);
+    assertEquals(nameToLevel("inFo"), Level.Info);
+    assertEquals(nameToLevel("warN"), Level.Warn);
+    assertEquals(nameToLevel("ERROr"), Level.Error);
+    assertEquals(nameToLevel("critical"), Level.Critical);
+  },
+});
