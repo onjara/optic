@@ -81,8 +81,9 @@ automatically move the current log file to a backup file and start a fresh one,
 preventing any individual log file from getting to big. It can also help
 organize your log files better. There are two rotation strategies:
 
-- File size rotation__ - When the log file would grow beyond a specified size,
+- __File size rotation__ - When the log file would grow beyond a specified size,
   then the file is rotated.
+- __Date/Time rotation__ - Rotates after a specified time has passed
 
 ### File size rotation
 
