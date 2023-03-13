@@ -20,6 +20,15 @@ class OngoingRotationStrategy {
   bytes(): FileSizeRotationStrategy {
     return new FileSizeRotationStrategy(this.quantity);
   }
+  kb(): FileSizeRotationStrategy {
+    return new FileSizeRotationStrategy(this.quantity * 1024);
+  }
+  mb(): FileSizeRotationStrategy {
+    return new FileSizeRotationStrategy(this.quantity * 1024 * 1024);
+  }
+  gb(): FileSizeRotationStrategy {
+    return new FileSizeRotationStrategy(this.quantity * 1024 * 1024 * 1024);
+  }
   minutes(): DateTimeRotationStrategy {
     return new DateTimeRotationStrategy(this.quantity, "minutes");
   }

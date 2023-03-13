@@ -104,6 +104,10 @@ import {
 
 const fileStream = new FileStream("./logFile.txt")
   .withLogFileRotation(every(2000000).bytes());
+  // Or you can specify by kb, mb or gb
+  // .withLogFileRotation(every(5000).kb());
+  // .withLogFileRotation(every(200).mb());
+  // .withLogFileRotation(every(3).gb());
 ```
 
 ### Date/Time rotation
@@ -149,14 +153,14 @@ import {
 // Retain up to 7 log files maximum
 const fixedNumberLogFileRetention = new FileStream("./logFile.txt")
   .withLogFileRotation(
-    every(2000000).bytes()
+    every(200).mb()
       .withLogFileRetentionPolicy(of(7).files()),
   );
 
 // Retain logs files for maximum of 36 hours
 const fixedTimeframeLogFileRetention = new FileStream("./logFile.txt")
   .withLogFileRotation(
-    every(2000000).bytes()
+    every(500).kb()
       .withLogFileRetentionPolicy(of(36).hours()),
   );
 ```
