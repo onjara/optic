@@ -25,7 +25,7 @@ test({
     assertEquals(every(1).kb().maxBytes, 1024);
     assertEquals(every(1).mb().maxBytes, 1024 * 1024);
     assertEquals(every(1).gb().maxBytes, 1024 * 1024 * 1024);
-  }
+  },
 });
 
 test({

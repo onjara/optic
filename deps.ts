@@ -5,4 +5,4 @@ export {
   gray,
   red,
   yellow,
-} from "https://deno.land/std@0.177.0/fmt/colors.ts";
+} from "https://deno.land/std@0.179.0/fmt/colors.ts";

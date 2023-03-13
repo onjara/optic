@@ -81,9 +81,9 @@ automatically move the current log file to a backup file and start a fresh one,
 preventing any individual log file from getting to big. It can also help
 organize your log files better. There are two rotation strategies:
 
-- __File size rotation__ - When the log file would grow beyond a specified size,
+- **File size rotation** - When the log file would grow beyond a specified size,
   then the file is rotated.
-- __Date/Time rotation__ - Rotates after a specified time has passed
+- **Date/Time rotation** - Rotates after a specified time has passed
 
 ### File size rotation
 
@@ -104,10 +104,10 @@ import {
 
 const fileStream = new FileStream("./logFile.txt")
   .withLogFileRotation(every(2000000).bytes());
-  // Or you can specify by kb, mb or gb
-  // .withLogFileRotation(every(5000).kb());
-  // .withLogFileRotation(every(200).mb());
-  // .withLogFileRotation(every(3).gb());
+// Or you can specify by kb, mb or gb
+// .withLogFileRotation(every(5000).kb());
+// .withLogFileRotation(every(200).mb());
+// .withLogFileRotation(every(3).gb());
 ```
 
 ### Date/Time rotation
