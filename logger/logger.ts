@@ -94,11 +94,13 @@ export class Logger {
 
     this.setMinLogLevel();
 
-    addEventListener("unload", () => {this.shutdown()});
+    addEventListener("unload", () => {
+      this.shutdown();
+    });
   }
 
   /**
-   * Runs all logic to safely shutdown the logger, including calling destroy on 
+   * Runs all logic to safely shutdown the logger, including calling destroy on
    * all streams, monitors, filters, and transformers.  This function is automatically
    * called if an "unload" event is emitted, but it is up to the client to call
    * this in other scenarios, such as handling signals.  The logger cannot handle
