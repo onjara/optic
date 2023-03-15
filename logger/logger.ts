@@ -94,26 +94,40 @@ export class Logger {
 
     this.setMinLogLevel();
 
-    // Append footers and destroy loggers on unload of module
-    addEventListener("unload", () => {
-      this.#deduper?.destroy();
-      (this.#meta as LogMeta).sessionEnded = new Date();
-      for (const stream of this.#streams) {
-        if (stream.logFooter && this.#streamAdded && this.#enabled) {
-          stream.logFooter(this.#meta);
-        }
-        if (stream.destroy) stream.destroy();
+    addEventListener("unload", () => {this.shutdown()});
+  }
+
+  /**
+   * Runs all logic to safely shutdown the logger, including calling destroy on 
+   * all streams, monitors, filters, and transformers.  This function is automatically
+   * called if an "unload" event is emitted, but it is up to the client to call
+   * this in other scenarios, such as handling signals.  The logger cannot handle
+   * signals itself as this may interfere with the client's own signal handling.
+   *
+   * Calling this function will disable the logger, so it is safe to call multiple times
+   * with only the first call having any effect.  Subsequent calls are no-op.
+   */
+  shutdown() {
+    if (!this.#enabled) return;
+
+    this.#deduper?.destroy();
+    (this.#meta as LogMeta).sessionEnded = new Date();
+    for (const stream of this.#streams) {
+      if (stream.logFooter && this.#streamAdded && this.#enabled) {
+        stream.logFooter(this.#meta);
       }
-      for (const monitor of this.#monitors) {
-        if (monitor.destroy) monitor.destroy();
-      }
-      for (const filter of this.#filters) {
-        if (filter.destroy) filter.destroy();
-      }
-      for (const transformer of this.#transformers) {
-        if (transformer.destroy) transformer.destroy();
-      }
-    });
+      if (stream.destroy) stream.destroy();
+    }
+    for (const monitor of this.#monitors) {
+      if (monitor.destroy) monitor.destroy();
+    }
+    for (const filter of this.#filters) {
+      if (filter.destroy) filter.destroy();
+    }
+    for (const transformer of this.#transformers) {
+      if (transformer.destroy) transformer.destroy();
+    }
+    this.enabled(false);
   }
 
   private setMinLogLevel() {
@@ -155,6 +169,9 @@ export class Logger {
     return this;
   }
 
+  /**
+   * Returns the name of the logger
+   */
   name(): string {
     return this.#name;
   }

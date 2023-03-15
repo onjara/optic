@@ -415,10 +415,7 @@ disabled:
 - Adding or removing streams, filters, monitors or transformers is silently
   ignored and they are not added (or removed)
 - Changes to the minimum log level are silently ignored
-
-The only action the logger will undertake when disabled is, upon module unload,
-to carry out any tear down (e.g. `destroy()`) on any streams, filters, monitors
-or transformers which were registered before the logger was disabled.
+- No tear down of streams, filters, monitors or transformers is undertaken upon module unload or manual `shutdown()`. NOTE: this is a breaking change from v1.3.6 or earlier which did execute tear down on module unload.  Should you wish to perform tear down actions on a disabled logger, you can either renable the logger and manually call `logger.shutdown()` or call `destroy()` on each stream, filter, monitor or transformer associated with the logger
 
 To disable the logger:
 
