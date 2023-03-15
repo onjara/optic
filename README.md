@@ -142,6 +142,7 @@ interface and framework for all logging activity.
 11. [Deduplicating logs](#deduplicating-log-messages)
 12. [Rate limiting logs](#rate-limiting-the-logger)
 13. [Disabling the logger](#disabling-the-logger)
+14. [Shutting down the logger](#shutting-down-the-logger)
 
 ### Creating a logger
 
@@ -427,6 +428,18 @@ To disable the logger:
 ```typescript
 logger.enabled(false);
 ```
+
+### Shutting down the logger
+
+Under normal circumstances, when a Deno process completes it will fire an unload
+event. The logger is registered to perform a shutdown when this event is
+broadcast, meaning no explicit action is required by the client. During
+shutdown, the logger will call `destroy()` on all streams, filters, monitors or
+transformers registered to the logger.
+
+Sometimes, a client may wish to trigger a shutdown manually. For example, a
+client may listen for certain signal events and request a shutdown manually via
+`logger.shutdown()`. Shutting down the logger fully disables it.
 
 ## Streams
 
