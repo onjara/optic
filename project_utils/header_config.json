@@ -1,0 +1,13 @@
+{
+  "extensions": [
+    ".ts"
+  ],
+  "exclusions": [
+    "project_utils",
+    "examples"
+  ],
+  "headerText": "// Copyright {TIMEFRAME} the optic authors. All rights reserved. MIT license.",
+  "rootDir": ".",
+  "firstYear": 2020,
+  "quiet": false
+}

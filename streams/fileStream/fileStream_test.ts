@@ -1,4 +1,4 @@
-// Copyright 2022 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { assert, assertEquals, assertThrows, test } from "../../test_deps.ts";
 import { FileStream } from "./fileStream.ts";
 import {

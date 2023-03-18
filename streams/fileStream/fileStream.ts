@@ -1,4 +1,4 @@
-// Copyright 2022 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { BaseStream } from "../baseStream.ts";
 import { LogMeta, LogRecord, ValidationError } from "../../types.ts";
 import { TokenReplacer } from "../../formatters/tokenReplacer.ts";
@@ -22,6 +22,8 @@ export class FileStream extends BaseStream {
   #logFile!: Deno.FsFile;
   #deferredLogQueue: LogRecord[] = [];
   #encoder = new TextEncoder();
+  #autoFlushId = -1;
+  #autoFlushInterval = -1;
 
   constructor(filename: string) {
     super(new TokenReplacer());
