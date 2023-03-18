@@ -1,4 +1,4 @@
-// Copyright 2022 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 export const test = Deno.test;
 
 export {
@@ -9,4 +9,4 @@ export {
   assertStrictEquals,
   assertStringIncludes,
   assertThrows,
-} from "https://deno.land/std@0.179.0/testing/asserts.ts";
+} from "https://deno.land/std@0.180.0/testing/asserts.ts";

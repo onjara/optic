@@ -1,3 +1,4 @@
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { TimeUnit } from "../types.ts";
 import { Level } from "./levels.ts";

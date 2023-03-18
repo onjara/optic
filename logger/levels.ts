@@ -1,4 +1,4 @@
-// Copyright 2022 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 /** Default log levels */
 export enum Level {
   Trace = 10,

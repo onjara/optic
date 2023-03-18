@@ -1,3 +1,4 @@
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { LogRecord, Stream } from "../types.ts";
 import { asString } from "../utils/asString.ts";

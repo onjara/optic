@@ -1,3 +1,4 @@
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { TimeUnit } from "../types.ts";
 import { Level } from "./levels.ts";
 
