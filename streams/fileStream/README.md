@@ -55,13 +55,18 @@ The buffer is flushed in the following scenarios:
 - `flush()` is called manually. (e.g. `fileStream.flush()`)
 
 ### Auto-flushing
-You can also setup an auto-flush interval which will flush the buffer on a regular basis.  Example:
+
+You can also setup an auto-flush interval which will flush the buffer on a
+regular basis. Example:
+
 ```typescript
 import { FileStream } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
 import { intervalOf } from "https://deno.land/x/optic/utils/timeInterval.ts";
 
-const fileStream = new FileStream("./logFile.txt").withAutoFlushEvery(intervalOf(5).seconds());
+const fileStream = new FileStream("./logFile.txt")
+  .withAutoFlushEvery(intervalOf(5).seconds());
 ```
+
 which will flush the logs to the filesystem every 5 seconds.
 
 ## Log file initialization

@@ -160,7 +160,7 @@ export class FileStream extends BaseStream {
 
     this.#autoFlushId = setInterval(() => {
       this.flush();
-    }, amount.getPeriod()*1000);
+    }, amount.getPeriod() * 1000);
 
     Deno.unrefTimer(this.#autoFlushId);
 

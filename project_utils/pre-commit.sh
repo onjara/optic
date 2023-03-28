@@ -32,6 +32,14 @@ deno test -A
 echo '*** Check license and copyright headers'
 deno run --allow-read=. https://deno.land/x/copyright_license_checker@1.1.1/checker.ts project_utils/header_config.json
 
+if [ $? -eq 0 ]; then
+  echo ''
+else
+  echo '---License and copyright headers are NOT OK---'
+  echo 'Run: deno run --allow-read=. --allow-write=. https://deno.land/x/copyright_license_checker@1.1.1/updater.ts project_utils/header_config.json'
+  echo ''
+fi
+
 echo '*** Check unstable also compiles'
 deno cache --reload --unstable mod.ts
 deno cache --reload --unstable streams/fileStream/mod.ts

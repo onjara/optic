@@ -279,7 +279,9 @@ test({
 test({
   name: "Auto flush should flush buffer on interval",
   async fn() {
-    const fs = new TestableFileStream(LOG_FILE).withAutoFlushEvery(intervalOf(1).seconds());
+    const fs = new TestableFileStream(LOG_FILE).withAutoFlushEvery(
+      intervalOf(1).seconds(),
+    );
     fs.setup();
     fs.log("hello world");
 
@@ -299,5 +301,5 @@ test({
         res();
       }, 600); //600ms + 500ms = 1100ms which is greater than the 1 second interval
     });
-  }
+  },
 });

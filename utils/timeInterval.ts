@@ -1,6 +1,7 @@
+// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { IllegalStateError } from "../types.ts";
 
-export function intervalOf(period:number): OngoingInterval {
+export function intervalOf(period: number): OngoingInterval {
   return new OngoingInterval(period);
 }
 
