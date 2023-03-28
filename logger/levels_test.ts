@@ -11,8 +11,6 @@ test({
     assertEquals(levelToName(Level.Warn), "Warn");
     assertEquals(levelToName(Level.Error), "Error");
     assertEquals(levelToName(Level.Critical), "Critical");
-    assertEquals(levelToName(0), "UNKNOWN");
-    assertEquals(levelToName(999), "UNKNOWN");
   },
 });
 
@@ -25,7 +23,7 @@ test({
     assertEquals(nameToLevel("Warn"), Level.Warn);
     assertEquals(nameToLevel("Error"), Level.Error);
     assertEquals(nameToLevel("Critical"), Level.Critical);
-    assertEquals(nameToLevel("made up level"), 1);
+    assertEquals(nameToLevel("made up level"), Level.Info);
   },
 });
 

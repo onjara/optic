@@ -8,8 +8,9 @@ import {
 } from "../test_deps.ts";
 import { TokenReplacer } from "./tokenReplacer.ts";
 import { Level } from "../logger/levels.ts";
-import { gray } from "../deps.ts";
+import { gray, yellow } from "../deps.ts";
 import { ValidationError } from "../types.ts";
+import { colorRules } from "./color.ts";
 
 const lr = {
   msg: "Log Message",
@@ -159,23 +160,24 @@ test({
 test({
   name: "Given no color available for level, then no coloring is applied",
   fn() {
+    colorRules.delete(Level.Warn);
     const tr = new TokenReplacer().withColor();
-    lr.level = 99;
+    lr.level = Level.Warn;
     assertEquals(
       tr.format(lr),
-      "2020-06-17T02:24:00.000Z UNKNOWN  Log Message The metadata",
-      //      dateTime: new Date("2020-06-17T03:24:00"),
+      "2020-06-17T02:24:00.000Z Warn     Log Message The metadata",
     );
+    colorRules.set(Level.Warn, (msg: string) => yellow(msg));
   },
 });
+
 test({
   name: "Logger name is a valid token",
   fn() {
-    const tr = new TokenReplacer().withFormat("{msg} {logger}");
-    lr.level = 99;
+    const tr = new TokenReplacer().withFormat("{msg} (logger: {logger})");
     assertEquals(
       tr.format(lr),
-      "Log Message default",
+      "Log Message (logger: default)",
     );
   },
 });

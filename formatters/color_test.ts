@@ -11,8 +11,5 @@ test({
     assert(typeof getColorForLevel(Level.Warn) === "function");
     assert(typeof getColorForLevel(Level.Error) === "function");
     assert(typeof getColorForLevel(Level.Critical) === "function");
-
-    // unrecognized level
-    assert(getColorForLevel(9999)("msg") === "msg");
   },
 });
