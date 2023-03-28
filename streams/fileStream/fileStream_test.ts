@@ -10,6 +10,7 @@ import { LogMetaImpl } from "../../logger/meta.ts";
 import { Level } from "../../logger/levels.ts";
 import { LogRecord, ValidationError } from "../../types.ts";
 import { BufWriterSync } from "./deps.ts";
+import { intervalOf } from "../../utils/timeInterval.ts";
 
 const LOG_FILE = "./logFile.txt";
 const ENCODER = new TextEncoder();
@@ -273,4 +274,30 @@ test({
     fs.destroy();
     Deno.removeSync(LOG_FILE);
   },
+});
+
+test({
+  name: "Auto flush should flush buffer on interval",
+  async fn() {
+    const fs = new TestableFileStream(LOG_FILE).withAutoFlushEvery(intervalOf(1).seconds());
+    fs.setup();
+    fs.log("hello world");
+
+    //Assert that the log file is empty after 200ms, e.g. the buffer hasn't been flushed yet
+    await new Promise<void>((res) => {
+      setTimeout((): void => {
+        assertEquals(readFile(LOG_FILE), "");
+        res();
+      }, 500);
+    });
+
+    await new Promise<void>((res) => {
+      setTimeout((): void => {
+        assertEquals(readFile(LOG_FILE), "hello world\n");
+        fs.destroy();
+        Deno.removeSync(LOG_FILE);
+        res();
+      }, 600); //600ms + 500ms = 1100ms which is greater than the 1 second interval
+    });
+  }
 });

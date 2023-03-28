@@ -5,6 +5,7 @@ import { TokenReplacer } from "../../formatters/tokenReplacer.ts";
 import { Level } from "../../logger/levels.ts";
 import { LogFileInitStrategy, RotationStrategy } from "./types.ts";
 import { BufWriterSync } from "./deps.ts";
+import { TimeInterval } from "../../utils/timeInterval.ts";
 
 /**
  * A stream for log messages to go to a file.  You may also configure the following:
@@ -23,7 +24,6 @@ export class FileStream extends BaseStream {
   #deferredLogQueue: LogRecord[] = [];
   #encoder = new TextEncoder();
   #autoFlushId = -1;
-  #autoFlushInterval = -1;
 
   constructor(filename: string) {
     super(new TokenReplacer());
@@ -53,6 +53,9 @@ export class FileStream extends BaseStream {
 
   destroy(): void {
     this.flush();
+    if (this.#autoFlushId !== -1) {
+      clearInterval(this.#autoFlushId);
+    }
     super.destroy();
     this.#logFile.close();
   }
@@ -133,12 +136,34 @@ export class FileStream extends BaseStream {
     return this;
   }
 
-  /** The maximum size in bytes of the buffer storage before it is flushed. */
+  /** The maximum size in bytes of the buffer storage before it is flushed (default is 8192, e.g. 8kb)*/
   withBufferSize(bytes: number): this {
     if (bytes < 0) {
       throw new ValidationError("Buffer size cannot be negative");
     }
     this.#maxBufferSize = bytes;
+    return this;
+  }
+
+  /** Automatically flush the log buffer every `amount` of time. Examples:
+   * ```typescript
+   * withAutoFlushEvery(intervalOf(5).seconds())
+   * withAutoFlushEvery(intervalOf(4).minutes())
+   * withAutoFlushEvery(intervalOf(3).hours())
+   * withAutoFlushEvery(intervalOf(2).days())
+   * ```
+   */
+  withAutoFlushEvery(amount: TimeInterval): this {
+    if (this.#autoFlushId !== -1) {
+      clearInterval(this.#autoFlushId);
+    }
+
+    this.#autoFlushId = setInterval(() => {
+      this.flush();
+    }, amount.getPeriod()*1000);
+
+    Deno.unrefTimer(this.#autoFlushId);
+
     return this;
   }
 
