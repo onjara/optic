@@ -171,7 +171,7 @@ test({
     );
 
     // Insert arbitrary delay to help fix bizarre CI issue.
-    for(let i=0; i++; i < 100);
+    for(let i=0; i++; i < 10000);
 
     assert(
       /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
