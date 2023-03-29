@@ -150,7 +150,7 @@ test({
 
 test({
   name: "SummaryMeasureFormatter - no description, with memory, no ops",
-  fn() {
+  async fn() {
     const startOfTestMark = getMark({
       label: "start of test",
       memory: true,
@@ -171,7 +171,7 @@ test({
     );
 
     // Insert arbitrary delay to help fix bizarre CI issue.
-    for(let i=0; i++; i < 10000);
+    await new Promise(res => setTimeout(res, 100));
 
     assert(
       /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
