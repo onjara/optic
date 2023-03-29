@@ -169,7 +169,7 @@ test({
       startOfTestMark,
       getMark({ label: "Now", memory: true, ops: false }),
     );
-    // ???
+
     assert(
       /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
         .test(outputWithHeapIncrease),
