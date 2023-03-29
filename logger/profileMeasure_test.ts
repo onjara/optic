@@ -177,6 +177,10 @@ test({
     );
 
     assert(
+      /.*\d+(?:\.\d+)?ms;.*/.test(outputWithHeapIncrease),
+    );
+
+    assert(
       /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
         .test(outputWithHeapIncrease),
     );
