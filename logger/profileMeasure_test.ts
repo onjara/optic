@@ -170,7 +170,9 @@ test({
       getMark({ label: "Now", memory: true, ops: false }),
     );
 
-    // Assert that heap usage increased since the start of the test 
+    // Insert arbitrary delay to help fix bizarre CI issue.
+    for(let i=0; i++; i < 100);
+
     assert(
       /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
         .test(outputWithHeapIncrease),
