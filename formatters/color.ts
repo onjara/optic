@@ -12,14 +12,14 @@ export type ColorRule = (msg: string) => string;
  * A map of coloring rules per log level.  Custom log levels may also register
  * a new color rule, and existing levels may be updated with new rules too.
  */
-const colorRules: Map<Level, ColorRule> = new Map<Level, ColorRule>();
+export const colorRules: Map<Level, ColorRule> = new Map<Level, ColorRule>();
 colorRules.set(Level.Debug, (msg: string) => gray(msg));
 colorRules.set(Level.Info, (msg: string) => blue(msg));
 colorRules.set(Level.Warn, (msg: string) => yellow(msg));
 colorRules.set(Level.Error, (msg: string) => red(msg));
 colorRules.set(Level.Critical, (msg: string) => bold(red(msg)));
 
-export function getColorForLevel(level: number): ColorRule {
+export function getColorForLevel(level: Level): ColorRule {
   const color: ColorRule | undefined = colorRules.get(level);
   return color ? color : (msg: string) => msg;
 }

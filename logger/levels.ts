@@ -9,15 +9,15 @@ export enum Level {
   Critical = 60,
 }
 
-const levelMap = new Map<number, string>();
-levelMap.set(10, "Trace");
-levelMap.set(20, "Debug");
-levelMap.set(30, "Info");
-levelMap.set(40, "Warn");
-levelMap.set(50, "Error");
-levelMap.set(60, "Critical");
+const levelMap = new Map<Level, string>();
+levelMap.set(Level.Trace, "Trace");
+levelMap.set(Level.Debug, "Debug");
+levelMap.set(Level.Info, "Info");
+levelMap.set(Level.Warn, "Warn");
+levelMap.set(Level.Error, "Error");
+levelMap.set(Level.Critical, "Critical");
 
-const levelNameMap = new Map<string, number>();
+const levelNameMap = new Map<string, Level>();
 levelNameMap.set("Trace", Level.Trace);
 levelNameMap.set("Debug", Level.Debug);
 levelNameMap.set("Info", Level.Info);
@@ -31,9 +31,9 @@ export function levelToName(level: Level): string {
   return levelAsString ? levelAsString : "UNKNOWN";
 }
 
-/** Translate string value to Level, or 1 if not found */
-export function nameToLevel(name: string): number {
-  const level: number | undefined = levelNameMap.get(name);
+/** Translate string value to Level, or Level.Info if not found */
+export function nameToLevel(name: string): Level {
+  const level: Level | undefined = levelNameMap.get(name);
 
   //try a case insentive match
   if (level === undefined) {
@@ -44,7 +44,12 @@ export function nameToLevel(name: string): number {
     }
   }
 
-  return level === undefined ? 1 : level;
+  if (!level) {
+    console.log(`Unknown log level: ${name}, defaulting to 'Info'`);
+    return Level.Info;
+  }
+
+  return level;
 }
 
 /** Returns the length of the longest log level name. This is used when

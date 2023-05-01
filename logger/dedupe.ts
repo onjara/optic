@@ -1,13 +1,19 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { LogRecord, Stream } from "../types.ts";
 import { asString } from "../utils/asString.ts";
+import { Level } from "./levels.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
 import { LogMetaImpl } from "./meta.ts";
 
 export class Dedupe {
   #streams: Stream[];
   #meta: LogMetaImpl;
-  #lastLogRecord: LogRecord = new ImmutableLogRecord(undefined, [], 0, "");
+  #lastLogRecord: LogRecord = new ImmutableLogRecord(
+    undefined,
+    [],
+    Level.Debug,
+    "",
+  );
   #lastLogString = "";
   #dupeCount = 0;
 
