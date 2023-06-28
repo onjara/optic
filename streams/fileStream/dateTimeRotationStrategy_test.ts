@@ -28,11 +28,9 @@ async function setMTime(file: string, date: Date): Promise<void> {
   modTime += (date.getHours() < 10 ? "0" : "") + date.getHours();
   modTime += (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
   modTime += "." + (date.getSeconds() < 10 ? "0" : "") + date.getSeconds();
-  const p = Deno.run({
-    cmd: ["touch", "-m", "-t", modTime, file],
-  });
-  await p.status();
-  p.close();
+  await new Deno.Command("touch", {
+    args: ["-m", "-t", modTime, file],
+  }).output();
 }
 
 async function createFile(file: string, date?: Date): Promise<void> {
