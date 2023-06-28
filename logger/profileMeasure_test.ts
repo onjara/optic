@@ -181,8 +181,10 @@ test({
     );
 
     assert(
-      outputWithHeapIncrease.includes(""),
+      outputWithHeapIncrease.includes("ms; heap usage increased "),
     );
+
+    console.log(outputWithHeapIncrease);
 
     assert(
       /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
