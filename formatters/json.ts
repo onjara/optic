@@ -53,6 +53,7 @@ export class JsonFormatter implements Formatter<string> {
   /**
    * Specify the log record fields to populate in the json object.  The order of
    * the fields to output is the same as their index in the array.
+   * Default is ["dateTime", "level", "msg", "metadata"]
    */
   withFields(fields: Fields[]): this {
     if (fields.length === 0) {
@@ -66,6 +67,7 @@ export class JsonFormatter implements Formatter<string> {
    * If indent is a number, the resulting json object will be output as a pretty
    * printed string with `indent` as the number of spaces to indent.  If `indent`
    * is a string, this string is used instead of space(s) to indent.
+   * Default is 0 (no pretty printing)
    */
   withPrettyPrintIndentation(indent: number | string): this {
     this.#indent = indent;
