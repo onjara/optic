@@ -13,7 +13,7 @@ jobs:
       - name: download deno
         uses: denolib/setup-deno@v2
         with:
-          deno-version: v1.34.3
+          deno-version: v1.36.2
       - name: check format
         if: matrix.os == 'ubuntu-latest'
         run: deno fmt --check
