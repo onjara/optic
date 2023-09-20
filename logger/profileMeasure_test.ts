@@ -212,15 +212,19 @@ test({
         .test(outputNoOps),
     );
 
-    setTimeout(() => {}, 1); // push pending op to the task queue
-    const outputWithPendingOp = smf.format(
-      processStartMark,
-      getMark({ label: "Now", memory: false, ops: true }),
-    );
-    assert(
-      /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; \d+ ops dispatched, 1 ops still to complete$/
-        .test(outputWithPendingOp),
-    );
+    const id = setTimeout(() => {}, 1); // push pending op to the task queue
+    try {
+      const outputWithPendingOp = smf.format(
+        processStartMark,
+        getMark({ label: "Now", memory: false, ops: true }),
+      );
+      assert(
+        /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; \d+ ops dispatched, 1 ops still to complete$/
+          .test(outputWithPendingOp),
+      );
+    } finally {
+      clearTimeout(id);
+    }
   },
 });
 
