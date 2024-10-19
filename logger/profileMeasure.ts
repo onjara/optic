@@ -74,7 +74,6 @@ export function between(start: string, end: string): MarkSpecifiers {
 export class ProfilingConfig {
   #enabled = true;
   #captureMemory = true;
-  #captureOps = true;
   #logLevel = Level.Info;
   #formatter: MeasureFormatter<unknown> = new SummaryMeasureFormatter();
 
@@ -86,11 +85,6 @@ export class ProfilingConfig {
   /** Enable (default) or disable capturing of memory */
   captureMemory(captureMemory: boolean): this {
     this.#captureMemory = captureMemory;
-    return this;
-  }
-  /** Enable (default) or disable capturing of op metrics */
-  captureOps(captureOps: boolean): this {
-    this.#captureOps = captureOps;
     return this;
   }
   /** Set the log level at which the profiling is output (default is Level.Info) */
@@ -110,10 +104,6 @@ export class ProfilingConfig {
   /** returns true if profiling will capture memory details */
   isCaptureMemory(): boolean {
     return this.#captureMemory;
-  }
-  /** returns true if profiling will capture op metrics */
-  isCaptureOps(): boolean {
-    return this.#captureOps;
   }
   /** returns the log level at which profile measures will be output in the logs */
   getLogLevel(): Level {
@@ -161,22 +151,6 @@ export class SummaryMeasureFormatter implements MeasureFormatter<string> {
       }
     }
 
-    if (startMark.opMetrics && endMark.opMetrics) {
-      const opsDispatched = endMark.opMetrics.opsDispatched -
-        startMark.opMetrics.opsDispatched;
-      const opsNotCompleted = endMark.opMetrics.opsDispatched -
-        endMark.opMetrics.opsCompleted;
-      if (opsDispatched === 0) {
-        output += "; no ops dispatched, ";
-      } else {
-        output += "; " + opsDispatched + " ops dispatched, ";
-      }
-      if (opsNotCompleted === 0) {
-        output += "all completed";
-      } else {
-        output += opsNotCompleted + " ops still to complete";
-      }
-    }
     return output;
   }
 }

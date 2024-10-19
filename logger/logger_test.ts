@@ -22,9 +22,7 @@ import {
   UnknownProfileMark,
 } from "./profileMeasure.ts";
 
-const hrPermission = { name: "hrtime" } as const;
-const isHrTime =
-  (await Deno.permissions.query(hrPermission)).state == "granted";
+const envPermissionGranted = (await Deno.permissions.query({ name: "env" })).state === "granted";
 
 class TestStream implements Stream {
   functionsCalled: string[] = [];
@@ -120,7 +118,7 @@ test({
   name: "Logger min level can be set via cli arguments",
   fn() {
     const logger = new class extends Logger {
-      protected getArgs(): string[] {
+      protected override getArgs(): string[] {
         return ["minLogLevel=Info"];
       }
     }();
@@ -138,7 +136,7 @@ test({
   name: "Logger min level set to Level.Info if rubbish set for cli argument",
   fn() {
     const logger = new class extends Logger {
-      protected getArgs(): string[] {
+      protected override getArgs(): string[] {
         return ["minLogLevel=rubbish!"];
       }
     }();
@@ -148,9 +146,10 @@ test({
 
 test({
   name: "Logger min level can be set via env variable",
+  ignore: !envPermissionGranted,
   fn() {
     const logger = new class extends Logger {
-      protected getEnv(): { get(key: string): string | undefined } {
+      protected override getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
             return key === "OPTIC_MIN_LEVEL" ? "Error" : undefined;
@@ -167,9 +166,11 @@ test({
 
 test({
   name: "Logger min level set to Level.Info if rubbish set for env variable",
+  ignore: !envPermissionGranted,
+  permissions: { env: true},
   fn() {
     const logger = new class extends Logger {
-      protected getEnv(): { get(key: string): string | undefined } {
+      protected override getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
             return key === "OPTIC_MIN_LEVEL" ? "Rubbish!" : undefined;
@@ -180,19 +181,18 @@ test({
     assertEquals(logger.addStream(new TestStream()).minLogLevel(), Level.Info);
   },
 });
-
 test({
   name: "Args trump env variable min log levels",
   fn() {
     const logger = new class extends Logger {
-      protected getEnv(): { get(key: string): string | undefined } {
+      protected override getEnv(): { get(key: string): string | undefined } {
         return {
           get(key: string): string | undefined {
             return key === "OPTIC_MIN_LEVEL" ? "Error" : undefined;
           },
         };
       }
-      protected getArgs(): string[] {
+      protected override getArgs(): string[] {
         return ["minLogLevel=Info"];
       }
     }();
@@ -495,7 +495,7 @@ test({
   name: "Trace messages work as expected",
   fn() {
     class TestableTraceStream extends TestStream {
-      handle(logRecord: LogRecord): boolean {
+      override handle(logRecord: LogRecord): boolean {
         this.functionsCalled.push("handle");
         this.logRecords.push(logRecord);
         return true;
@@ -803,7 +803,7 @@ test({
   name: "Profile start mark is added in constructor",
   fn() {
     const logger = new class extends Logger {
-      getMarks(): Map<string | symbol, ProfileMark> {
+      override getMarks(): Map<string | symbol, ProfileMark> {
         return super.getMarks();
       }
     }();
@@ -816,7 +816,7 @@ test({
   name: "If logger or profiling not enabled then mark not recorded",
   fn() {
     const logger = new class extends Logger {
-      getMarks(): Map<string | symbol, ProfileMark> {
+      override getMarks(): Map<string | symbol, ProfileMark> {
         return super.getMarks();
       }
     }();
@@ -834,77 +834,41 @@ test({
 });
 
 test({
-  name: "Mark is recorded with mem and ops",
+  name: "Mark is recorded with mem",
   fn() {
     const logger = new class extends Logger {
-      getMarks(): Map<string | symbol, ProfileMark> {
+      override getMarks(): Map<string | symbol, ProfileMark> {
         return super.getMarks();
       }
     }();
     assert(logger.mark("should record mark"));
     const mark = logger.getMarks().get("should record mark");
     assert(mark);
-    assertEquals(mark.label, "should record mark");
-    assert(mark.timestamp);
-    assert(mark.memory);
-    assert(mark.opMetrics);
+    if (mark) {
+      assertEquals(mark.label, "should record mark");
+      assert(mark.timestamp);
+      assert(mark.memory);
+    }
   },
 });
 
 test({
-  name: "Mark is recorded with mem and not ops",
+  name: "Mark is recorded without mem",
   fn() {
     const logger = new class extends Logger {
-      getMarks(): Map<string | symbol, ProfileMark> {
+      override getMarks(): Map<string | symbol, ProfileMark> {
         return super.getMarks();
       }
     }();
-    logger.profilingConfig().captureOps(false);
+    logger.profilingConfig().captureMemory(false);
     assert(logger.mark("should record mark"));
     const mark = logger.getMarks().get("should record mark");
     assert(mark);
-    assertEquals(mark.label, "should record mark");
-    assert(mark.timestamp);
-    assert(mark.memory);
-    assert(!mark.opMetrics);
-  },
-});
-
-test({
-  name: "Mark is recorded with no mem, with ops",
-  fn() {
-    const logger = new class extends Logger {
-      getMarks(): Map<string | symbol, ProfileMark> {
-        return super.getMarks();
-      }
-    }();
-    logger.profilingConfig().captureOps(false);
-    assert(logger.mark("should record mark"));
-    const mark = logger.getMarks().get("should record mark");
-    assert(mark);
-    assertEquals(mark.label, "should record mark");
-    assert(mark.timestamp);
-    assert(mark.memory);
-    assert(!mark.opMetrics);
-  },
-});
-
-test({
-  name: "Mark is recorded without mem or ops",
-  fn() {
-    const logger = new class extends Logger {
-      getMarks(): Map<string | symbol, ProfileMark> {
-        return super.getMarks();
-      }
-    }();
-    logger.profilingConfig().captureOps(false).captureMemory(false);
-    assert(logger.mark("should record mark"));
-    const mark = logger.getMarks().get("should record mark");
-    assert(mark);
-    assertEquals(mark.label, "should record mark");
-    assert(mark.timestamp);
-    assert(!mark.memory);
-    assert(!mark.opMetrics);
+    if (mark) {
+      assertEquals(mark.label, "should record mark");
+      assert(mark.timestamp);
+      assert(!mark.memory);
+    }
   },
 });
 
@@ -936,13 +900,8 @@ test({
     const logger = new Logger().addStream(testStream);
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.measure();
-    if (isHrTime) {
-      //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
-      assert(/^0 \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
-    } else {
-      //e.g. 0ms for PROCESS_START and x ms for NOW
-      assert(/^0 \d+$/.test(testStream.logRecords[0].msg as string));
-    }
+    //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
+    assert(/^0 \d+\.\d+$/.test(testStream.logRecords[0].msg as string));
   },
 });
 
@@ -955,21 +914,12 @@ test({
     const logger = new Logger().addStream(testStream);
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.measure("the description");
-    if (isHrTime) {
-      //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
-      assert(
-        /^the description 0 \d+\.\d+$/.test(
-          testStream.logRecords[0].msg as string,
-        ),
-      );
-    } else {
-      //e.g. 0ms for PROCESS_START and x ms for NOW
-      assert(
-        /^the description 0 \d+$/.test(
-          testStream.logRecords[0].msg as string,
-        ),
-      );
-    }
+    //e.g. 0ms for PROCESS_START and xx.xxxms for NOW
+    assert(
+      /^the description 0 \d+\.\d+$/.test(
+        testStream.logRecords[0].msg as string,
+      ),
+    );
   },
 });
 
@@ -983,15 +933,10 @@ test({
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.mark("end");
     logger.measure(between("start", "end"));
-    if (isHrTime) {
-      //e.g. xx.xxxms for start and xx.xxxms for end
-      assert(
-        /^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string),
-      );
-    } else {
-      //e.g. x ms for start and y ms for end
-      assert(/^\d+ \d+$/.test(testStream.logRecords[0].msg as string));
-    }
+    //e.g. xx.xxxms for start and xx.xxxms for end
+    assert(
+      /^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string),
+    );
   },
 });
 
@@ -1005,21 +950,12 @@ test({
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.mark("end");
     logger.measure(between("start", "end"), "the description");
-    if (isHrTime) {
-      //e.g. xx.xxxms for start and xx.xxxms for end
-      assert(
-        /^the description \d+\.\d+ \d+\.\d+$/.test(
-          testStream.logRecords[0].msg as string,
-        ),
-      );
-    } else {
-      //e.g. xx ms for start and yy ms for end
-      assert(
-        /^the description \d+ \d+$/.test(
-          testStream.logRecords[0].msg as string,
-        ),
-      );
-    }
+    //e.g. xx.xxxms for start and xx.xxxms for end
+    assert(
+      /^the description \d+\.\d+ \d+\.\d+$/.test(
+        testStream.logRecords[0].msg as string,
+      ),
+    );
   },
 });
 
@@ -1032,15 +968,10 @@ test({
     logger.profilingConfig().withFormatter(testMeasureFormatter);
     logger.mark("start");
     logger.measure(from("start"));
-    if (isHrTime) {
-      //e.g. xx.xxxms for start and xx.xxxms for end
-      assert(
-        /^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string),
-      );
-    } else {
-      //e.g. xx ms for start and yy ms for end
-      assert(/^\d+ \d+$/.test(testStream.logRecords[0].msg as string));
-    }
+    //e.g. xx.xxxms for start and xx.xxxms for end
+    assert(
+      /^\d+\.\d+ \d+\.\d+$/.test(testStream.logRecords[0].msg as string),
+    );
   },
 });
 

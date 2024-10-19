@@ -32,20 +32,6 @@ export type NotFunction<T> = Exclude<T, Function>;
 const defaultStream = new ConsoleStream();
 const processStartMark: ProfileMark = {
   timestamp: 0,
-  opMetrics: {
-    ops: {},
-    opsDispatched: 0,
-    opsDispatchedSync: 0,
-    opsDispatchedAsync: 0,
-    opsDispatchedAsyncUnref: 0,
-    opsCompleted: 0,
-    opsCompletedSync: 0,
-    opsCompletedAsync: 0,
-    opsCompletedAsyncUnref: 0,
-    bytesSentControl: 0,
-    bytesSentData: 0,
-    bytesReceived: 0,
-  } as Deno.Metrics,
   memory: { rss: 0, heapTotal: 0, heapUsed: 0, external: 0 },
   label: "Process start",
 };
@@ -638,8 +624,6 @@ export class Logger {
       timestamp: performance.now(),
       ...(this.#profilingConfig.isCaptureMemory() &&
         { memory: Deno.memoryUsage() }),
-      ...(this.#profilingConfig.isCaptureOps() &&
-        { opMetrics: Deno.metrics() }),
     });
   }
 

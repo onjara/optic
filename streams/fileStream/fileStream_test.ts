@@ -20,7 +20,7 @@ class TestableFileStream extends FileStream {
   getBuffer(): BufWriterSync {
     return this._buffer();
   }
-  format(lr: LogRecord): string {
+  override format(lr: LogRecord): string {
     return lr.msg as string;
   }
 }

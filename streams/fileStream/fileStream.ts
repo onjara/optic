@@ -30,7 +30,7 @@ export class FileStream extends BaseStream {
     this.#filename = filename;
   }
 
-  setup(): void {
+  override setup(): void {
     super.setup();
 
     if (this.#rotationStrategy !== undefined) {
@@ -51,7 +51,7 @@ export class FileStream extends BaseStream {
     this.#buffer = new BufWriterSync(this.#logFile, this.#maxBufferSize);
   }
 
-  destroy(): void {
+  override destroy(): void {
     this.flush();
     if (this.#autoFlushId !== -1) {
       clearInterval(this.#autoFlushId);
@@ -60,18 +60,18 @@ export class FileStream extends BaseStream {
     this.#logFile.close();
   }
 
-  logHeader(meta: LogMeta): void {
+  override logHeader(meta: LogMeta): void {
     if (!this.outputHeader) return;
     super.logHeader(meta);
   }
 
-  logFooter(meta: LogMeta): void {
+  override logFooter(meta: LogMeta): void {
     if (!this.outputFooter) return;
     this.flush();
     super.logFooter(meta);
   }
 
-  handle(logRecord: LogRecord): boolean {
+  override handle(logRecord: LogRecord): boolean {
     if (this.minLogLevel > logRecord.level) return false;
 
     if (logRecord.level > Level.Error) {
@@ -101,7 +101,7 @@ export class FileStream extends BaseStream {
     const encodedMsg = this.#encoder.encode(msg + "\n");
     if (this.#rotationStrategy?.shouldRotate(encodedMsg)) {
       this.#buffer.flush();
-      Deno.close(this.#logFile.rid);
+      this.#logFile.close();
       this.#rotationStrategy.rotate(this.#filename, encodedMsg);
       this.#logFile = Deno.openSync(
         this.#filename,

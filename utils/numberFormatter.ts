@@ -1,6 +1,4 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
-const isHrtimeAllowed = Deno.permissions &&
-  (await Deno.permissions.query({ name: "hrtime" })).state === "granted";
 
 export function formatMs(ms: number): string {
   if (ms < 0) return ms + "ms";
@@ -23,7 +21,7 @@ export function formatMs(ms: number): string {
   if (minutes > 0) portions.push(minutes + "m");
   if (seconds > 0) portions.push(seconds + "s");
   if (duration > 0) {
-    portions.push((isHrtimeAllowed ? duration.toFixed(6) : duration) + "ms");
+    portions.push((duration.toFixed(6)) + "ms");
   }
 
   return portions.length > 0 ? portions.join(" ") : "0ms";

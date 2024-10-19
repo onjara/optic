@@ -235,8 +235,6 @@ export class TimeUnit {
 export interface ProfileMark {
   /** Number of ms since process start */
   timestamp: number;
-  /** Metrics on the op calls within Deno since process start*/
-  opMetrics?: Deno.Metrics;
   /** Details on current memory usage */
   memory?: Deno.MemoryUsage;
   /** Label for the profile mark */

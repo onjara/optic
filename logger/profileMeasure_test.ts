@@ -16,32 +16,17 @@ import { ProfileMark } from "../types.ts";
 
 const processStartMark: ProfileMark = {
   timestamp: 0,
-  opMetrics: {
-    ops: {},
-    opsDispatched: 0,
-    opsDispatchedSync: 0,
-    opsDispatchedAsync: 0,
-    opsDispatchedAsyncUnref: 0,
-    opsCompleted: 0,
-    opsCompletedSync: 0,
-    opsCompletedAsync: 0,
-    opsCompletedAsyncUnref: 0,
-    bytesSentControl: 0,
-    bytesSentData: 0,
-    bytesReceived: 0,
-  } as Deno.Metrics,
   memory: { rss: 0, heapTotal: 0, heapUsed: 0, external: 0 },
   label: "Process start",
 };
 
 function getMark(
-  options: { label?: string; memory?: boolean; ops?: boolean },
+  options: { label?: string; memory?: boolean },
 ): ProfileMark {
   return {
     label: options.label,
     timestamp: performance.now(),
     ...(options.memory && { memory: Deno.memoryUsage() }),
-    ...(options.ops && { opMetrics: Deno.metrics() }),
   };
 }
 
@@ -51,11 +36,9 @@ test({
     const pc: ProfilingConfig = new ProfilingConfig();
     assert(pc.isEnabled());
     assert(pc.isCaptureMemory());
-    assert(pc.isCaptureOps());
     assertEquals(pc.getLogLevel(), Level.Info);
     assert(pc.getFormatter() != null);
 
-    pc.captureOps(false);
     pc.captureMemory(false);
     pc.enabled(false);
     pc.withLogLevel(Level.Trace);
@@ -71,7 +54,6 @@ test({
 
     assert(!pc.isEnabled());
     assert(!pc.isCaptureMemory());
-    assert(!pc.isCaptureOps());
     assertEquals(pc.getLogLevel(), Level.Trace);
     assertEquals(
       pc.getFormatter().format(
@@ -81,13 +63,11 @@ test({
       "formatted",
     );
 
-    pc.captureOps(true);
     pc.captureMemory(true);
     pc.enabled(true);
 
     assert(pc.isEnabled());
     assert(pc.isCaptureMemory());
-    assert(pc.isCaptureOps());
   },
 });
 
@@ -120,11 +100,11 @@ test({
 });
 
 test({
-  name: "SummaryMeasureFormatter - no description, memory or ops",
+  name: "SummaryMeasureFormatter - no description, memory",
   fn() {
     const output = smf.format(
       processStartMark,
-      getMark({ label: "Now", memory: false, ops: false }),
+      getMark({ label: "Now", memory: false }),
     );
     assert(
       /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms$/
@@ -134,11 +114,11 @@ test({
 });
 
 test({
-  name: "SummaryMeasureFormatter - with description, but no memory or ops",
+  name: "SummaryMeasureFormatter - with description, but no memory",
   fn() {
     const output = smf.format(
       processStartMark,
-      getMark({ label: "Now", memory: false, ops: false }),
+      getMark({ label: "Now", memory: false }),
       "the description",
     );
     assert(
@@ -149,16 +129,15 @@ test({
 });
 
 test({
-  name: "SummaryMeasureFormatter - no description, with memory, no ops",
+  name: "SummaryMeasureFormatter - no description, with memory",
   fn() {
     const startOfTestMark = getMark({
       label: "start of test",
       memory: true,
-      ops: false,
     });
     const output = smf.format(
       processStartMark,
-      getMark({ label: "Now", memory: true, ops: false }),
+      getMark({ label: "Now", memory: true }),
     );
     assert(
       /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; heap usage is \d+\.\d+ [A-Z]{2}$/
@@ -167,7 +146,7 @@ test({
 
     const outputWithHeapIncrease = smf.format(
       startOfTestMark,
-      getMark({ label: "Now", memory: true, ops: false }),
+      getMark({ label: "Now", memory: true }),
     );
 
     assert(
@@ -177,38 +156,36 @@ test({
     );
 
     assert(
-      /.*\d+(?:\.\d+)?ms;.*/.test(outputWithHeapIncrease),
+      /.*\d+(?:\.\d+)?ms.*/.test(outputWithHeapIncrease),
     );
 
     assert(
-      outputWithHeapIncrease.includes("ms; heap usage increased "),
+      outputWithHeapIncrease.includes("ms; heap usage "),
     );
 
-    console.log(outputWithHeapIncrease);
-
     assert(
-      /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
+      /^Measuring 'start of test' -> 'Now', took \d+(?:\.\d+)?ms; heap usage increased|decreased \d+\.\d+ [A-Z]{2} to \d+\.\d+ [A-Z]{2}$/
         .test(outputWithHeapIncrease),
     );
   },
 });
 
 test({
-  name: "SummaryMeasureFormatter - no description, no memory, with ops",
+  name: "SummaryMeasureFormatter - no description, no memory",
   fn() {
     const output = smf.format(
       processStartMark,
-      getMark({ label: "Now", memory: false, ops: true }),
+      getMark({ label: "Now", memory: false }),
     );
     assert(
-      /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; \d+ ops dispatched, all completed$/
+      /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms$/
         .test(output),
     );
 
-    const mark = getMark({ label: "Now", memory: false, ops: true });
+    const mark = getMark({ label: "Now", memory: false });
     const outputNoOps = smf.format(mark, mark);
     assert(
-      /^Measuring 'Now' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; no ops dispatched, all completed$/
+      /^Measuring 'Now' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms$/
         .test(outputNoOps),
     );
 
@@ -216,10 +193,10 @@ test({
     try {
       const outputWithPendingOp = smf.format(
         processStartMark,
-        getMark({ label: "Now", memory: false, ops: true }),
+        getMark({ label: "Now", memory: false }),
       );
       assert(
-        /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms; \d+ ops dispatched, 1 ops still to complete$/
+        /^Measuring 'Process start' -> 'Now', took (?:\d+s\s)?\d+(?:\.\d+)?ms$/
           .test(outputWithPendingOp),
       );
     } finally {

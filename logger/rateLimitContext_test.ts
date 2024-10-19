@@ -24,7 +24,7 @@ test({
   fn() {
     const rlc = new RateLimitContext(120, TimeUnit.SECONDS);
     const rl = new class extends RateLimiter {
-      public getContexts(): Map<string, number> {
+      public override getContexts(): Map<string, number> {
         return super.getContexts();
       }
     }();
@@ -41,7 +41,7 @@ test({
   fn() {
     const rlc = new RateLimitContext(100);
     const rl = new class extends RateLimiter {
-      public getContexts(): Map<string, number> {
+      public override getContexts(): Map<string, number> {
         return super.getContexts();
       }
     }();

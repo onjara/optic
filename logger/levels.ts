@@ -35,7 +35,7 @@ export function levelToName(level: Level): string {
 export function nameToLevel(name: string): Level {
   const level: Level | undefined = levelNameMap.get(name);
 
-  //try a case insentive match
+  //try a case insensitive match
   if (level === undefined) {
     for (const [key, logLevel] of levelNameMap.entries()) {
       if (key.toLowerCase() === name.toLowerCase()) {
