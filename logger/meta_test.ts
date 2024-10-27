@@ -2,7 +2,7 @@
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { LogMetaImpl } from "./meta.ts";
 import { Level } from "./levels.ts";
-import { Formatter, LogMeta } from "../types.ts";
+import type { Formatter, LogMeta } from "../types.ts";
 import { BaseStream } from "../streams/baseStream.ts";
 
 class MockFormatter implements Formatter<string> {

@@ -1,7 +1,7 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { BaseStream } from "./baseStream.ts";
 import { TokenReplacer } from "../formatters/tokenReplacer.ts";
-import { LogRecord } from "../types.ts";
+import type { LogRecord } from "../types.ts";
 import { Level } from "../logger/levels.ts";
 
 /** A stream to send log messages to the console.  By default it uses the

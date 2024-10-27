@@ -2,7 +2,7 @@
 import { assert, assertEquals, test } from "../test_deps.ts";
 import { ConsoleStream } from "./consoleStream.ts";
 import { Level } from "../logger/levels.ts";
-import { Formatter, LogRecord } from "../types.ts";
+import type { Formatter, LogRecord } from "../types.ts";
 
 class MsgFormatter implements Formatter<string> {
   format(logRecord: LogRecord): string {

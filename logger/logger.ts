@@ -19,7 +19,7 @@ import { LogMetaImpl } from "./meta.ts";
 import { RateLimitContext, RateLimiter } from "./rateLimitContext.ts";
 import { Dedupe } from "./dedupe.ts";
 import {
-  MarkSpecifiers,
+  type MarkSpecifiers,
   NOW,
   PROCESS_START,
   ProfilingConfig,

@@ -1,9 +1,9 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
-import { LogRecord, Stream } from "../types.ts";
+import type { LogRecord, Stream } from "../types.ts";
 import { asString } from "../utils/asString.ts";
 import { Level } from "./levels.ts";
 import { ImmutableLogRecord } from "./logRecord.ts";
-import { LogMetaImpl } from "./meta.ts";
+import type { LogMetaImpl } from "./meta.ts";
 
 export class Dedupe {
   #streams: Stream[];

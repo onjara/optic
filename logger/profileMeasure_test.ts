@@ -4,7 +4,7 @@ import { assert, assertEquals, test } from "../test_deps.ts";
 import {
   between,
   from,
-  MarkSpecifiers,
+  type MarkSpecifiers,
   NOW,
   PROCESS_START,
   ProfilingConfig,
@@ -12,7 +12,7 @@ import {
   to,
   UnknownProfileMark,
 } from "./profileMeasure.ts";
-import { ProfileMark } from "../types.ts";
+import type { ProfileMark } from "../types.ts";
 
 const processStartMark: ProfileMark = {
   timestamp: 0,

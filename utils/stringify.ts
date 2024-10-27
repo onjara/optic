@@ -1,7 +1,7 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 // Adapted from https://github.com/planttheidea/fast-stringify (MIT, Copyright (c) 2018 Tony Quetano)
 
-import { DateTimeFormatter } from "../types.ts";
+import type { DateTimeFormatter } from "../types.ts";
 
 /**
  * @function getReferenceKey

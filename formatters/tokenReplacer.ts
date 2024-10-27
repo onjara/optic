@@ -1,9 +1,9 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import {
-  DateTimeFormatter,
-  DateTimeFormatterFn,
-  Formatter,
-  LogRecord,
+  type DateTimeFormatter,
+  type DateTimeFormatterFn,
+  type Formatter,
+  type LogRecord,
   ValidationError,
 } from "../types.ts";
 import { SimpleDateTimeFormatter } from "./simpleDateTimeFormatter.ts";

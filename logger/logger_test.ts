@@ -18,7 +18,7 @@ import {
   between,
   from,
   PROCESS_START,
-  ProfilingConfig,
+  type ProfilingConfig,
   UnknownProfileMark,
 } from "./profileMeasure.ts";
 

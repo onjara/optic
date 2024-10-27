@@ -1,7 +1,7 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 
 import { Level } from "../mod.ts";
-import { MeasureFormatter, ProfileMark } from "../types.ts";
+import type { MeasureFormatter, ProfileMark } from "../types.ts";
 import { formatBytes, formatMs } from "../utils/numberFormatter.ts";
 
 /**

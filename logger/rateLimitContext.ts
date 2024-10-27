@@ -1,6 +1,6 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
-import { TimeUnit } from "../types.ts";
-import { Level } from "./levels.ts";
+import type { TimeUnit } from "../types.ts";
+import type { Level } from "./levels.ts";
 
 export class RateLimiter {
   #contexts = new Map<string, number>();
