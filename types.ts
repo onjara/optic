@@ -216,11 +216,11 @@ export class IllegalStateError extends Error {
 }
 
 export class TimeUnit {
-  public static MILLISECONDS = new TimeUnit(1);
-  public static SECONDS = new TimeUnit(1000);
-  public static MINUTES = new TimeUnit(60000);
-  public static HOURS = new TimeUnit(3600000);
-  public static DAYS = new TimeUnit(86400000);
+  public static MILLISECONDS: TimeUnit = new TimeUnit(1);
+  public static SECONDS: TimeUnit = new TimeUnit(1000);
+  public static MINUTES: TimeUnit = new TimeUnit(60000);
+  public static HOURS: TimeUnit = new TimeUnit(3600000);
+  public static DAYS: TimeUnit = new TimeUnit(86400000);
 
   private constructor(private milliseconds: number) {}
 

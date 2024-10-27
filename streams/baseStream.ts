@@ -105,7 +105,7 @@ export abstract class BaseStream implements Stream {
     };
   }
 
-  protected get minLevel() {
+  protected get minLevel(): Level {
     return this.#minLevel;
   }
 }
