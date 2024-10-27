@@ -129,12 +129,16 @@ test({
     buff.write(helloWorldBytes);
     assertEquals(buff.buffered(), 11);
     assertEquals(buff.flushCount, 0);
-    
+
     buff.close();
     assertEquals(buff.flushCount, 1);
     assertEquals(buff.buffered(), 0);
     assertEquals(file.writtenChunks.length, 1);
     assertEquals(file.writtenChunks[0], helloWorldBytes);
-    assertThrows(() => buff.write(helloWorldBytes), Error, "Attempted to write to a closed buffer");
+    assertThrows(
+      () => buff.write(helloWorldBytes),
+      Error,
+      "Attempted to write to a closed buffer",
+    );
   },
 });

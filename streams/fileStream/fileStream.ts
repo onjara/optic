@@ -48,7 +48,10 @@ export class FileStream extends BaseStream {
       write: true,
     };
     this.#logFile = Deno.openSync(this.#filename, openOptions);
-    this.#buffer = new SyncBufferedFileWriter(this.#logFile, this.#maxBufferSize);
+    this.#buffer = new SyncBufferedFileWriter(
+      this.#logFile,
+      this.#maxBufferSize,
+    );
   }
 
   override destroy(): void {
@@ -108,7 +111,10 @@ export class FileStream extends BaseStream {
         this.#filename,
         { createNew: true, write: true },
       );
-      this.#buffer = new SyncBufferedFileWriter(this.#logFile, this.#maxBufferSize);
+      this.#buffer = new SyncBufferedFileWriter(
+        this.#logFile,
+        this.#maxBufferSize,
+      );
     }
     this.#buffer.write(encodedMsg);
   }

@@ -18,7 +18,7 @@ export class SyncBufferedFileWriter {
     if (this.isClosed) {
       throw new Error("Attempted to write to a closed buffer");
     }
-    
+
     if (this.bufferBytesUsed + data.length > this.bufferSizeInBytes) {
       // Flush buffer if incoming data would overflow buffer
       this.flush();
@@ -29,7 +29,7 @@ export class SyncBufferedFileWriter {
       this.writeFullBuffer(data);
       return;
     }
-    
+
     // Data will fit in the buffer, so add it and increment our bytes used count
     this.buffer.set(data, this.bufferBytesUsed);
     this.bufferBytesUsed += data.length;

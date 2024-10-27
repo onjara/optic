@@ -22,7 +22,8 @@ import {
   UnknownProfileMark,
 } from "./profileMeasure.ts";
 
-const envPermissionGranted = (await Deno.permissions.query({ name: "env" })).state === "granted";
+const envPermissionGranted =
+  (await Deno.permissions.query({ name: "env" })).state === "granted";
 
 class TestStream implements Stream {
   functionsCalled: string[] = [];
@@ -167,7 +168,7 @@ test({
 test({
   name: "Logger min level set to Level.Info if rubbish set for env variable",
   ignore: !envPermissionGranted,
-  permissions: { env: true},
+  permissions: { env: true },
   fn() {
     const logger = new class extends Logger {
       protected override getEnv(): { get(key: string): string | undefined } {

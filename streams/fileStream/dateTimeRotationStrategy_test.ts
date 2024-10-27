@@ -126,7 +126,9 @@ test({
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
     class TestableDateTimeRotationStrategy extends DateTimeRotationStrategy {
-      protected override getBirthTime(_fi: Deno.FileInfo | undefined): Date | null {
+      protected override getBirthTime(
+        _fi: Deno.FileInfo | undefined,
+      ): Date | null {
         return twoDaysAgo;
       }
     }
@@ -149,7 +151,9 @@ test({
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
     class TestableDateTimeRotationStrategy extends DateTimeRotationStrategy {
-      protected override getBirthTime(_fi: Deno.FileInfo | undefined): Date | null {
+      protected override getBirthTime(
+        _fi: Deno.FileInfo | undefined,
+      ): Date | null {
         return twoDaysAgo;
       }
     }

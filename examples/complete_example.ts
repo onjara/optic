@@ -1,5 +1,11 @@
 import { every, FileStream, of } from "../streams/fileStream/mod.ts";
-import { Level, Logger, type LogRecord, type Stream, TimeUnit } from "../mod.ts";
+import {
+  Level,
+  Logger,
+  type LogRecord,
+  type Stream,
+  TimeUnit,
+} from "../mod.ts";
 import { JsonFormatter } from "../formatters/mod.ts";
 import { PropertyRedaction } from "../transformers/propertyRedaction.ts";
 
