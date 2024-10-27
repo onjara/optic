@@ -1,23 +1,23 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
+import { Level } from "../../logger/levels.ts";
+import { LogMetaImpl } from "../../logger/meta.ts";
 import { assert, assertEquals, assertThrows, test } from "../../test_deps.ts";
+import { type LogRecord, ValidationError } from "../../types.ts";
+import { intervalOf } from "../../utils/timeInterval.ts";
 import { FileStream } from "./fileStream.ts";
-import {
+import type { SyncBufferedFileWriter } from "./syncBufferedFileWriter.ts";
+import type {
   LogFileInitStrategy,
   LogFileRetentionPolicy,
   RotationStrategy,
 } from "./types.ts";
-import { LogMetaImpl } from "../../logger/meta.ts";
-import { Level } from "../../logger/levels.ts";
-import { LogRecord, ValidationError } from "../../types.ts";
-import { BufWriterSync } from "./deps.ts";
-import { intervalOf } from "../../utils/timeInterval.ts";
 
 const LOG_FILE = "./logFile.txt";
 const ENCODER = new TextEncoder();
 const DECODER = new TextDecoder();
 
 class TestableFileStream extends FileStream {
-  getBuffer(): BufWriterSync {
+  getBuffer(): SyncBufferedFileWriter {
     return this._buffer();
   }
   override format(lr: LogRecord): string {
@@ -268,7 +268,7 @@ test({
   fn() {
     const fs = new TestableFileStream(LOG_FILE);
     fs.setup();
-    fs.getBuffer().writeSync(ENCODER.encode("hello world"));
+    fs.getBuffer().write(ENCODER.encode("hello world"));
     fs.flush();
     assertEquals(readFile(LOG_FILE), "hello world");
     fs.destroy();

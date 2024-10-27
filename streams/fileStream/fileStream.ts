@@ -1,11 +1,11 @@
 // Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
 import { BaseStream } from "../baseStream.ts";
-import { LogMeta, LogRecord, ValidationError } from "../../types.ts";
+import { type LogMeta, type LogRecord, ValidationError } from "../../types.ts";
 import { TokenReplacer } from "../../formatters/tokenReplacer.ts";
 import { Level } from "../../logger/levels.ts";
-import { LogFileInitStrategy, RotationStrategy } from "./types.ts";
-import { BufWriterSync } from "./deps.ts";
-import { TimeInterval } from "../../utils/timeInterval.ts";
+import type { LogFileInitStrategy, RotationStrategy } from "./types.ts";
+import type { TimeInterval } from "../../utils/timeInterval.ts";
+import { SyncBufferedFileWriter } from "./syncBufferedFileWriter.ts";
 
 /**
  * A stream for log messages to go to a file.  You may also configure the following:
@@ -19,7 +19,7 @@ export class FileStream extends BaseStream {
   #rotationStrategy: RotationStrategy | undefined = undefined;
   #logFileInitStrategy: LogFileInitStrategy = "append";
   #maxBufferSize = 8192;
-  #buffer!: BufWriterSync;
+  #buffer!: SyncBufferedFileWriter;
   #logFile!: Deno.FsFile;
   #deferredLogQueue: LogRecord[] = [];
   #encoder = new TextEncoder();
@@ -48,7 +48,7 @@ export class FileStream extends BaseStream {
       write: true,
     };
     this.#logFile = Deno.openSync(this.#filename, openOptions);
-    this.#buffer = new BufWriterSync(this.#logFile, this.#maxBufferSize);
+    this.#buffer = new SyncBufferedFileWriter(this.#logFile, this.#maxBufferSize);
   }
 
   override destroy(): void {
@@ -57,6 +57,7 @@ export class FileStream extends BaseStream {
       clearInterval(this.#autoFlushId);
     }
     super.destroy();
+    this.#buffer.close();
     this.#logFile.close();
   }
 
@@ -107,9 +108,9 @@ export class FileStream extends BaseStream {
         this.#filename,
         { createNew: true, write: true },
       );
-      this.#buffer = new BufWriterSync(this.#logFile, this.#maxBufferSize);
+      this.#buffer = new SyncBufferedFileWriter(this.#logFile, this.#maxBufferSize);
     }
-    this.#buffer.writeSync(encodedMsg);
+    this.#buffer.write(encodedMsg);
   }
 
   /** Force a flush of the log buffer */
@@ -117,9 +118,7 @@ export class FileStream extends BaseStream {
     if (this.#deferredLogQueue.length > 0) {
       this.processDeferredQueue();
     }
-    if (this.#buffer?.buffered() > 0) {
-      this.#buffer.flush();
-    }
+    this.#buffer.flush();
   }
 
   /** The strategy to use for rotating log files. Examples:
@@ -183,7 +182,7 @@ export class FileStream extends BaseStream {
     return this.#filename;
   }
 
-  protected _buffer(): BufWriterSync {
+  protected _buffer(): SyncBufferedFileWriter {
     return this.#buffer;
   }
 }

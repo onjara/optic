@@ -9,4 +9,4 @@ export {
   assertStrictEquals,
   assertStringIncludes,
   assertThrows,
-} from "https://deno.land/std@0.202.0/assert/mod.ts";
+} from "jsr:@std/assert@^1.0.6";
