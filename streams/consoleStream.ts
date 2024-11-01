@@ -1,4 +1,4 @@
-// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2024 the optic authors. All rights reserved. MIT license.
 import { BaseStream } from "./baseStream.ts";
 import { TokenReplacer } from "../formatters/tokenReplacer.ts";
 import type { LogRecord } from "../types.ts";

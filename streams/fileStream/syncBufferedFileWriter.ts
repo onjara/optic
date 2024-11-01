@@ -1,3 +1,4 @@
+// Copyright 2020-2024 the optic authors. All rights reserved. MIT license.
 /**
  * A class offering synchronous writing, with asynchronous file I/O using configurable buffering
  */

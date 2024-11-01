@@ -1,4 +1,4 @@
-// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2024 the optic authors. All rights reserved. MIT license.
 
 import { Level } from "../mod.ts";
 import type { MeasureFormatter, ProfileMark } from "../types.ts";

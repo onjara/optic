@@ -1,4 +1,4 @@
-// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2024 the optic authors. All rights reserved. MIT license.
 import type { LogRecord, Stream, Transformer } from "../types.ts";
 import type { Level } from "../logger/levels.ts";
 import { clone } from "./deepClone.ts";

@@ -1,4 +1,4 @@
-// Copyright 2020-2023 the optic authors. All rights reserved. MIT license.
+// Copyright 2020-2024 the optic authors. All rights reserved. MIT license.
 import { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";
 import { DateTimeRotationStrategy } from "./dateTimeRotationStrategy.ts";
 import { IllegalStateError } from "../../types.ts";
