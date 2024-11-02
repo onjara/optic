@@ -6,7 +6,7 @@ This stream will output log records to a log file. It has many options.
 
 The log file is specified in the constructor of the file stream:
 
-```typescript
+```ts
 import { FileStream } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
 const fs = new FileStream("/data/logs/logFile.txt");
 ```
@@ -16,7 +16,7 @@ const fs = new FileStream("/data/logs/logFile.txt");
 By default, the file stream will log messages at or above `Debug`. You may
 change this by programmatically setting the minimum log level:
 
-```typescript
+```ts
 const fs = new FileStream("./logFile.txt")
   .withMinLogLevel(Level.Error);
 ```
@@ -37,7 +37,7 @@ many smaller writes, resulting in greater module performance.
 The default buffer size is 8,192 bytes. This value can be set programmatically
 if you want a different buffer size:
 
-```typescript
+```ts
 const fileStream = new FileStream("./logFile.txt")
   .withBufferSize(30000); // in bytes
 ```
@@ -59,7 +59,7 @@ The buffer is flushed in the following scenarios:
 You can also setup an auto-flush interval which will flush the buffer on a
 regular basis. Example:
 
-```typescript
+```ts
 import { FileStream } from "https://deno.land/x/optic/streams/fileStream/mod.ts";
 import { intervalOf } from "https://deno.land/x/optic/utils/timeInterval.ts";
 
@@ -83,7 +83,7 @@ log file initialization mode. There are 3 options:
 
 The log file initialization option is specified via:
 
-```typescript
+```ts
 const fileStream = new FileStream("./logFile.txt")
   .withLogFileInitMode("append");
 ```
@@ -111,7 +111,7 @@ the new record(s) are written to a new, empty, `mod.log`.
 
 Example:
 
-```typescript
+```ts
 import {
   every,
   FileStream,
@@ -134,7 +134,7 @@ or `mod.log_2020.05.25_15.33`.
 
 Example:
 
-```typescript
+```ts
 import {
   every,
   FileStream,
@@ -158,7 +158,7 @@ stream initialization and on log rotation events.
 
 Examples:
 
-```typescript
+```ts
 import {
   every,
   FileStream,

@@ -28,7 +28,7 @@ export interface RotationStrategy {
 
   /**
    * Specify how many or for how log files are kept. Examples:
-   * ```typescript
+   * ```ts
    * of(20).files()
    * of(7).days()
    * of(12).hours()

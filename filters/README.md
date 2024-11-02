@@ -20,14 +20,14 @@ There are two ways to construct a filter.
 This is a good choice for short and simple filters. Filter functions must match
 the following type:
 
-```typescript
+```ts
 export type FilterFn = (stream: Stream, logRecord: LogRecord) => boolean;
 ```
 
 The function takes in a stream and logRecord and returns true if the logRecord
 should be filtered out. Example:
 
-```typescript
+```ts
 const filter: FilterFn = (stream: Stream, logRecord: LogRecord) =>
   (logRecord.msg as string).includes("bad stuff");
 ```
@@ -39,7 +39,7 @@ which is of type `FilterFn` as above. This gives you the power of a class for
 more complex filtering, or perhaps you want to redirect filtered out logs to
 another logger and stream.
 
-```typescript
+```ts
 class MyFilter implements Filter {
   shouldFilerOut(stream: Stream, logRecord: LogRecord): boolean {
     return (logRecord.msg as string).includes("bad stuff");
@@ -51,7 +51,7 @@ class MyFilter implements Filter {
 
 Filters are registered directly with the logger as follows:
 
-```typescript
+```ts
 const myFilter = new MyFilter();
 const logger = new Logger().addFilter(myFilter);
 ```
@@ -66,7 +66,7 @@ This filter takes in a regular expression. If it matches, then the log record is
 filtered out. The log record `msg` and `metadata` fields are first converted to
 a string if necessary before testing the regular expression.
 
-```typescript
+```ts
 // Filters out log records containing `%` or `&` in the message or metadata
 import { RegExpFilter } from "https://deno.land/x/optic/filters/regExpFilter.ts";
 
@@ -82,7 +82,7 @@ This filter takes in a string. If this string is found to be a substring of
 either the log record `msg` or `metadata` fields (converting them to string
 first if required), then this log record is filtered out. Example:
 
-```typescript
+```ts
 import { SubStringFilter } from "https://deno.land/x/optic/filters/subStringFilter.ts";
 import { Logger } from "https://deno.land/x/optic/mod.ts";
 

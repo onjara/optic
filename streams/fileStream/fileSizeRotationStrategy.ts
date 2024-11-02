@@ -193,7 +193,7 @@ export class FileSizeRotationStrategy implements RotationStrategy {
 
   /**
    * Set a policy for how long to keep rotated log files.  E.g.
-   * ```typescript
+   * ```ts
    * withLogFileRetentionPolicy(of(7).files())
    * withLogFileRetentionPolicy(of(14).days())
    * withLogFileRetentionPolicy(of(12).hours())

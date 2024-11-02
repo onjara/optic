@@ -32,8 +32,8 @@ A powerful, highly extensible and easy to use logging framework for Deno.
 
 ### Simple example
 
-```typescript
-import { Logger } from "https://deno.land/x/optic/mod.ts";
+```ts
+import { Logger } from "jsr:@onjara/optic/logger";
 
 const logger = new Logger();
 logger.info("Hello world!"); // outputs log record to the console
@@ -41,12 +41,12 @@ logger.info("Hello world!"); // outputs log record to the console
 
 ### Complete example
 
-```typescript
+```ts
 import {
   every,
   FileStream,
   of,
-} from "https://deno.land/x/optic/streams/fileStream/mod.ts";
+} from "jsr:@onjara/optic/streams";
 import {
   between,
   Level,
@@ -54,9 +54,9 @@ import {
   LogRecord,
   Stream,
   TimeUnit,
-} from "https://deno.land/x/optic/mod.ts";
-import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
-import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
+} from "jsr:@onjara/optic/logger";
+import { JsonFormatter } from "jsr:@onjara/optic/formatters";
+import { PropertyRedaction } from "jsr:@onjara/optic/transformers";
 
 // Configure the output file stream
 const fileStream = new FileStream("logFile.txt")
@@ -148,7 +148,7 @@ interface and framework for all logging activity.
 
 Before you can log anything you must first get an instance of a logger.
 
-```typescript
+```ts
 // Using an unnamed logger
 const defaultLogger = new Logger();
 
@@ -183,7 +183,7 @@ logger.info("hello world");
 You can log an event through any of the level functions on the logger, supplying
 a `msg` (of any type) and one or more optional `metadata` items. E.g.
 
-```typescript
+```ts
 logger.info("File loaded", "exa_113.txt", 1223, true);
 ```
 
@@ -204,14 +204,14 @@ Optic supports the following logging levels out of the box:
 
 These may be used directly via the logger, e.g.
 
-```typescript
+```ts
 logger.trace("Some trace info");
 logger.error("Oops, something went wrong");
 ```
 
 Or through the use of the Level enum, e.g.
 
-```typescript
+```ts
 logger.log(Level.Info, "Here some info");
 ```
 
@@ -240,7 +240,7 @@ a minimum level:
 Within the code, this can be set at any time and takes highest precedence of any
 method:
 
-```typescript
+```ts
 logger.withLevel(Level.Warn);
 ```
 
@@ -290,7 +290,7 @@ Logging events will undergo the following lifecycle:
 All log statements return the value of the `msg` field, allowing more concise
 coding. E.g.
 
-```typescript
+```ts
 const user: User = logger.info(getUser());
 
 // is equivalent to:
@@ -309,7 +309,7 @@ as the `msg` field in the LogRecord.
 
 Example:
 
-```typescript
+```ts
 const value = logger.info(() => {
   return expensiveObjectCreation();
 });
@@ -325,7 +325,7 @@ if it did not log it.
 You can specify a condition which must be met to log the log message. To do
 this, supply a boolean condition to the `if` function on the logger. E.g.
 
-```typescript
+```ts
 logger.if(attempts > 3).warn("Excessive attempts by user");
 ```
 
@@ -349,19 +349,19 @@ deduplication capabilities. This feature is disabled by default.
 
 To turn on deduping of logs:
 
-```typescript
+```ts
 logger.withDedupe();
 ```
 
 To turn off deduping of logs:
 
-```typescript
+```ts
 logger.withDedupe(false);
 ```
 
 Example:
 
-```typescript
+```ts
 const logger = new Logger().withDedupe();
 for (let i = 0; i < 1000; i++) {
   logger.info("hello world");
@@ -380,7 +380,7 @@ Output:
 You can limit how many times the logger logs a particular statement in one of
 two ways;
 
-```typescript
+```ts
 logger.atMostEvery(5, TimeUnit.SECONDS).info(
   "I'm only logged at most every 5 seconds",
 );
@@ -395,7 +395,7 @@ effects through race conditions on which of the statements will be logged when
 matching or exceeding the constraint. To avoid this, you can enforce unique
 contexts by passing in an optional context string:
 
-```typescript
+```ts
 logger.atMostEvery(5, TimeUnit.SECONDS, "Context 1").info(
   "Logged at most every 5 seconds",
 );
@@ -425,7 +425,7 @@ disabled:
 
 To disable the logger:
 
-```typescript
+```ts
 logger.enabled(false);
 ```
 
@@ -460,7 +460,7 @@ There are two out of the box streams available.
 
 A basic stream which outputs log messages to the console.
 
-```typescript
+```ts
 import { ConsoleStream, Level, Logger } from "https://deno.land/x/optic/mod.ts";
 import { TokenReplacer } from "https://deno.land/x/optic/formatters/mod.ts";
 
@@ -483,7 +483,7 @@ See [Formatting](#log-formatting) for further detail on formatting your logs.
 
 A stream which outputs log messages to the file system.
 
-```typescript
+```ts
 import { Level, Logger } from "https://deno.land/x/optic/mod.ts";
 import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
 import {
@@ -519,7 +519,7 @@ the record was handled).
 
 Basic example:
 
-```typescript
+```ts
 import { Logger, LogRecord, Stream } from "https://deno.land/x/optic/mod.ts";
 
 class SimpleStream implements Stream {
@@ -553,7 +553,7 @@ placeholders for the various log record fields.
 
 Example:
 
-```typescript
+```ts
 import { ConsoleStream, Logger } from "https://deno.land/x/optic/mod.ts";
 import { TokenReplacer } from "https://deno.land/x/optic/formatters/mod.ts";
 
@@ -580,7 +580,7 @@ formatted string.
 
 Example:
 
-```typescript
+```ts
 import { ConsoleStream, Logger } from "https://deno.land/x/optic/mod.ts";
 import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
 
@@ -603,7 +603,7 @@ full details.
 A formatter to be used within other formatters, this allows you to provide a
 custom format for your date/time fields. Example:
 
-```typescript
+```ts
 logger.addStream(
   new ConsoleStream()
     .withFormat(
@@ -643,13 +643,13 @@ There are two ways to construct a monitor:
 This is a good choice for short and simple monitors. Monitor functions must
 match the following type:
 
-```typescript
+```ts
 export type MonitorFn = (logRecord: LogRecord) => void;
 ```
 
 Example:
 
-```typescript
+```ts
 import { LogRecord, MonitorFn } from "https://deno.land/x/optic/mod.ts";
 
 const mon: MonitorFn = (logRecord: LogRecord): void => {
@@ -665,7 +665,7 @@ The Monitor interface requires implementation of the `check` function which is
 of type `MonitorFn` as above. This gives you the power of a class for more
 complex monitors.
 
-```typescript
+```ts
 import { LogRecord, Monitor } from "https://deno.land/x/optic/mod.ts";
 
 class UserMonitor implements Monitor {
@@ -681,7 +681,7 @@ class UserMonitor implements Monitor {
 
 Monitors are registered directly with the logger as follows:
 
-```typescript
+```ts
 const logger = new Logger().addMonitor(new UserMonitor());
 ```
 
@@ -710,7 +710,7 @@ There are two ways to construct an transformer.
 This is a good choice for short and simple transformers. Transformer functions
 must match the following type:
 
-```typescript
+```ts
 export type TransformerFn = (stream: Stream, logRecord: LogRecord) => LogRecord;
 ```
 
@@ -718,7 +718,7 @@ The function takes a stream and logRecord and returns either the original log
 record if nothing is transformed, or a copy of the original with the necessary
 transformations applied. Example:
 
-```typescript
+```ts
 import {
   LogRecord,
   Stream,
@@ -745,7 +745,7 @@ The Transformer interface requires implementation of the `transform` function,
 which is of type `TransformerFn` as above. This gives you the power of a class
 for more complex transformations.
 
-```typescript
+```ts
 import {
   LogRecord,
   Stream,
@@ -773,7 +773,7 @@ class PasswordObfuscator implements Transformer {
 
 Transformers are registered directly with the logger as follows:
 
-```typescript
+```ts
 const passwordObfuscator = new PasswordObfuscator();
 const logger = new Logger().addTransformer(passwordObfuscator);
 ```
@@ -790,7 +790,7 @@ searching), will replace the value of that property with the string
 `[Redacted]`. The original object is untouched, as transformation clones the
 object before obfuscation.
 
-```typescript
+```ts
 import { PropertyRedaction } from "https://deno.land/x/optic/mod.ts";
 
 logger.addTransformer(new PropertyRedaction("password"));
@@ -817,7 +817,7 @@ replace all non white space characters with `*`'s. For both replacers, if the
 regular expression does not use groups then then entire match is replaced,
 however if groups are used, only the groups are replaced.
 
-```typescript
+```ts
 import {
   nonWhitespaceReplacer,
   RegExpReplacer,
@@ -862,14 +862,14 @@ There are two ways to construct a filter.
 This is a good choice for short and simple filters. Filter functions must match
 the following type:
 
-```typescript
+```ts
 export type FilterFn = (stream: Stream, logRecord: LogRecord) => boolean;
 ```
 
 The function takes in a stream and logRecord and returns true if the logRecord
 should be filtered out. Example:
 
-```typescript
+```ts
 import { FilterFn, LogRecord, Stream } from "https://deno.land/x/optic/mod.ts";
 const filter: FilterFn = (stream: Stream, logRecord: LogRecord) =>
   (logRecord.msg as string).includes("bad stuff");
@@ -882,7 +882,7 @@ which is of type `FilterFn` as above. This gives you the power of a class for
 more complex filtering, or perhaps you want to redirect filtered out logs to
 another logger and stream.
 
-```typescript
+```ts
 import { Filter, LogRecord, Stream } from "https://deno.land/x/optic/mod.ts";
 
 class MyFilter implements Filter {
@@ -896,7 +896,7 @@ class MyFilter implements Filter {
 
 Filters are registered directly with the logger as follows:
 
-```typescript
+```ts
 const myFilter = new MyFilter();
 const logger = new Logger().addFilter(myFilter);
 ```
@@ -911,7 +911,7 @@ This filter takes in a regular expression. If it matches, then the log record is
 filtered out. The log record `msg` and `metadata` fields are first converted to
 a string if necessary before testing the regular expression.
 
-```typescript
+```ts
 import { Logger } from "https://deno.land/x/optic/mod.ts";
 import { RegExpFilter } from "https://deno.land/x/optic/filters/regExpFilter.ts";
 
@@ -928,7 +928,7 @@ This filter takes in a string. If this string is found to be a substring of
 either the log record `msg` or `metadata` fields (converting them to string
 first if required), then this log record is filtered out. Example:
 
-```typescript
+```ts
 import { Logger } from "https://deno.land/x/optic/mod.ts";
 import { SubStringFilter } from "https://deno.land/x/optic/filters/subStringFilter.ts";
 

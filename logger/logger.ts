@@ -28,6 +28,8 @@ import {
 
 export { Level, levelToName, longestLevelName, nameToLevel } from "./levels.ts";
 
+export { TimeUnit } from "../types.ts";
+
 export type {
   DateTimeFormatter,
   DateTimeFormatterFn,
@@ -41,7 +43,6 @@ export type {
   MonitorFn,
   ProfileMark,
   Stream,
-  TimeUnit,
   Transformer,
   TransformerFn,
   ValidationError,
@@ -657,7 +658,7 @@ export class Logger {
    * the logger able to output logs at the log level specified in the profiling config (default is Level.Info)
    *
    * Examples:
-   * ```typescript
+   * ```ts
    * logger.mark('my mark');  //capture profiling snapshot
    * logger.measure(); //log profile of process start -> now
    * logger.measure('hello');  //log profile of process start -> now with description 'hello'

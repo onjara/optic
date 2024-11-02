@@ -134,7 +134,7 @@ export class FileStream extends BaseStream {
   }
 
   /** The strategy to use for rotating log files. Examples:
-   * ```typescript
+   * ```ts
    * withLogFileRotation(every(20000).bytes())
    * withLogFileRotation(every(7).days())
    * withLogFileRotation(every(12).hours())
@@ -157,7 +157,7 @@ export class FileStream extends BaseStream {
   }
 
   /** Automatically flush the log buffer every `amount` of time. Examples:
-   * ```typescript
+   * ```ts
    * withAutoFlushEvery(intervalOf(5).seconds())
    * withAutoFlushEvery(intervalOf(4).minutes())
    * withAutoFlushEvery(intervalOf(3).hours())
