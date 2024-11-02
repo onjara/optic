@@ -1,7 +1,19 @@
 {
   "name": "@onjara/optic",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "exports": {
-    ".": "./mod.ts"
+    ".": "./mod.ts",
+    "./logger": "./logger/logger.ts",
+    "./streams": "./streams/mod.ts",
+    "./profileMeasure": "./logger/profileMeasure.ts",
+    "./transformers": "./transformers/mod.ts",
+    "./filters": "./filters/mod.ts",
+    "./formatters": "./formatters/mod.ts"
+  },
+  "publish": {
+    "exclude": [
+      ".github",
+      "project_utils"
+    ]
   }
 }

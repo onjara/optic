@@ -1,12 +1,19 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@onjara/optic@*": "2.0.0",
     "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/fmt@^1.0.2": "1.0.3",
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@std/path@^1.0.6": "1.0.8"
   },
   "jsr": {
+    "@onjara/optic@2.0.0": {
+      "integrity": "927cc6a3c543cc3f3da1d1498ead9583e1650a1e331aa5239407e7f3bfe2dcb5",
+      "dependencies": [
+        "jsr:@std/fmt"
+      ]
+    },
     "@std/assert@1.0.6": {
       "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
       "dependencies": [

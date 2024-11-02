@@ -26,6 +26,30 @@ import {
   UnknownProfileMark,
 } from "./profileMeasure.ts";
 
+export {
+  Level,
+  levelToName,
+  longestLevelName,
+  nameToLevel,
+} from "./levels.ts";
+
+export type {
+  TimeUnit, ValidationError,DateTimeFormatter,
+  DateTimeFormatterFn,
+  Filter,
+  FilterFn,
+  Formatter,
+  LogMeta,
+  LogRecord,
+  MeasureFormatter,
+  Monitor,
+  MonitorFn,
+  ProfileMark,
+  Stream,
+  Transformer,
+  TransformerFn,
+} from "../types.ts";
+
 // deno-lint-ignore ban-types
 export type NotFunction<T> = Exclude<T, Function>;
 

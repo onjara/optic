@@ -7,6 +7,12 @@ import type { LogFileInitStrategy, RotationStrategy } from "./types.ts";
 import type { TimeInterval } from "../../utils/timeInterval.ts";
 import { SyncBufferedFileWriter } from "./syncBufferedFileWriter.ts";
 
+export type { LogFileInitStrategy } from "./types.ts";
+export { DateTimeRotationStrategy } from "./dateTimeRotationStrategy.ts";
+export { FileSizeRotationStrategy } from "./fileSizeRotationStrategy.ts";
+export { of } from "./retentionPolicy.ts";
+export { every } from "./rotationStrategy.ts";
+
 /**
  * A stream for log messages to go to a file.  You may also configure the following:
  * * Max buffer size (default 8192 bytes)

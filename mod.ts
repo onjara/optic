@@ -15,7 +15,7 @@ export { BaseStream } from "./streams/baseStream.ts";
 export { ConsoleStream } from "./streams/consoleStream.ts";
 
 // Types
-export { IllegalStateError, TimeUnit, ValidationError } from "./types.ts";
+export { TimeUnit, ValidationError } from "./types.ts";
 
 export type {
   DateTimeFormatter,
