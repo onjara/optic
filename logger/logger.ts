@@ -26,15 +26,10 @@ import {
   UnknownProfileMark,
 } from "./profileMeasure.ts";
 
-export {
-  Level,
-  levelToName,
-  longestLevelName,
-  nameToLevel,
-} from "./levels.ts";
+export { Level, levelToName, longestLevelName, nameToLevel } from "./levels.ts";
 
 export type {
-  TimeUnit, ValidationError,DateTimeFormatter,
+  DateTimeFormatter,
   DateTimeFormatterFn,
   Filter,
   FilterFn,
@@ -46,8 +41,10 @@ export type {
   MonitorFn,
   ProfileMark,
   Stream,
+  TimeUnit,
   Transformer,
   TransformerFn,
+  ValidationError,
 } from "../types.ts";
 
 // deno-lint-ignore ban-types
