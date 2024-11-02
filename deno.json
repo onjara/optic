@@ -12,8 +12,11 @@
   },
   "publish": {
     "exclude": [
-      ".github", "project_utils"
+      ".github",
+      "project_utils"
     ]
+  },
+  "tasks": {
+    "pre-commit": "./project_utils/pre-commit.sh"
   }
 }
- 

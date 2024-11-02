@@ -42,11 +42,7 @@ logger.info("Hello world!"); // outputs log record to the console
 ### Complete example
 
 ```ts
-import {
-  every,
-  FileStream,
-  of,
-} from "jsr:@onjara/optic/streams";
+import { every, FileStream, of } from "jsr:@onjara/optic/streams";
 import {
   between,
   Level,
