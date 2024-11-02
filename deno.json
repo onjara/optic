@@ -1,6 +1,6 @@
 {
   "name": "@onjara/optic",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "exports": {
     ".": "./mod.ts",
     "./logger": "./logger/logger.ts",
