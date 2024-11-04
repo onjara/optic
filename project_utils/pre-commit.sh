@@ -13,12 +13,6 @@ echo '*** Adding to git'
 git add .
 
 echo ''
-echo '*** Updating dependencies'
-udd ./deps.ts
-udd ./test_deps.ts
-udd ./streams/fileStream/deps.ts
-
-echo ''
 echo '*** Formatting code'
 deno fmt
 
@@ -48,7 +42,7 @@ fi
 
 echo '*** Check unstable also compiles'
 deno cache --reload --unstable mod.ts
-deno cache --reload --unstable streams/fileStream/mod.ts
+deno cache --reload --unstable streams/fileStream/fileStream.ts
 
 echo ''
 echo '*** Checking git status'

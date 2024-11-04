@@ -1,4 +1,4 @@
-import { every, FileStream, of } from "../streams/fileStream/mod.ts";
+import { every, FileStream, of } from "../streams/fileStream/fileStream.ts";
 import {
   Level,
   Logger,

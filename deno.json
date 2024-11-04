@@ -1,10 +1,12 @@
 {
   "name": "@onjara/optic",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "exports": {
     ".": "./mod.ts",
     "./logger": "./logger/logger.ts",
-    "./streams": "./streams/mod.ts",
+    "./baseStream": "./streams/baseStream.ts",
+    "./consoleStream": "./streams/consoleStream.ts",
+    "./fileStream": "./streams/fileStream/fileStream.ts",
     "./profileMeasure": "./logger/profileMeasure.ts",
     "./transformers": "./transformers/mod.ts",
     "./filters": "./filters/mod.ts",

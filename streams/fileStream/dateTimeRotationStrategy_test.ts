@@ -2,7 +2,7 @@
 import { assert, assertThrows, test } from "../../test_deps.ts";
 import { DateTimeRotationStrategy } from "./dateTimeRotationStrategy.ts";
 import { IllegalStateError, ValidationError } from "../../types.ts";
-import { every, of } from "./mod.ts";
+import { every, of } from "./fileStream.ts";
 import { twoDig } from "./_rotationStrategyCommon.ts";
 
 const isWindows = Deno.build.os === "windows";
